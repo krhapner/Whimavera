@@ -15,7 +15,7 @@ for (const [path, url] of Object.entries(files)) {
 
 /** Descriptive alt text per activity image (used when the image exists). */
 export const activityImageAlt = {
-  'flower-crown-studio': 'Children’s flower crowns made from faux blooms and ribbon on a craft table',
+  'flower-crown-studio': 'A flower crown station with finished crowns on cake stands, a tray of blooms and baskets of ribbon',
   'fairy-treasure-hunt': 'A basket of large fairy gems, drawstring pouches and picture clue cards on a garden bench',
   'toadstool-cupcake-bar': 'A cupcake decorating table with pink and red frosting, white candy spots and finished toadstool cupcakes',
   'fairy-potion-lab': 'Cups of blue butterfly-pea tea turning purple and pink beside lemon wedges and droppers',
