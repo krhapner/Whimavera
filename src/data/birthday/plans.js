@@ -58,6 +58,8 @@ const fairyGarden = {
     },
   ],
 
+  // `kinds` match the "How do they love to play?" answers; matching activities
+  // are surfaced first in the plan.
   games: [
     {
       name: 'Fairy Treasure Hunt',
@@ -65,6 +67,7 @@ const fairyGarden = {
       description:
         'Hide "fairy gems" around the garden. Each guest gets a little pouch and a picture clue card — no reading required.',
       energy: 'Active',
+      kinds: ['hunts', 'outdoors', 'active'],
     },
     {
       name: 'Flower Crown Studio',
@@ -72,6 +75,23 @@ const fairyGarden = {
       description:
         'Pre-made pipe-cleaner bases + faux blooms and ribbon. Every fairy leaves with a crown they designed.',
       energy: 'Calm',
+      kinds: ['crafts', 'pretend'],
+    },
+    {
+      name: 'Toadstool Cupcake Bar',
+      time: '20 min',
+      description:
+        'Plain cupcakes, red and pink frosting, and white candy dots. Each guest decorates their own toadstool to eat at the feast.',
+      energy: 'Calm',
+      kinds: ['cooking', 'crafts'],
+    },
+    {
+      name: 'Fairy Potion Lab',
+      time: '15 min',
+      description:
+        'Butterfly-pea tea turns from blue to pink with a squeeze of lemon. Little scientists mix "potions" in clear cups and name their spells.',
+      energy: 'Calm',
+      kinds: ['science', 'cooking', 'pretend'],
     },
     {
       name: 'Musical Toadstools',
@@ -79,6 +99,7 @@ const fairyGarden = {
       description:
         'Musical chairs, gently: paper toadstool mats on the grass and nobody is "out" — remove a toadstool and everyone shares.',
       energy: 'Active',
+      kinds: ['music', 'active'],
     },
     {
       name: 'Freeze, Fairy!',
@@ -86,6 +107,23 @@ const fairyGarden = {
       description:
         'Flutter while the music plays; freeze in your best fairy pose when it stops. Perfect between activities.',
       energy: 'Active',
+      kinds: ['music', 'active', 'pretend'],
+    },
+    {
+      name: 'Bug & Bloom Safari',
+      time: '15 min',
+      description:
+        'Magnifying glasses and a picture checklist: a ladybug, a feather, something purple, a heart-shaped leaf.',
+      energy: 'Active',
+      kinds: ['outdoors', 'science', 'hunts'],
+    },
+    {
+      name: 'Fairy Storytime',
+      time: '10 min',
+      description:
+        'Gather on blankets for a short fairy tale read aloud — a calm landing right before cake.',
+      energy: 'Calm',
+      kinds: ['quiet'],
     },
     {
       name: 'Wish Jars',
@@ -93,6 +131,7 @@ const fairyGarden = {
       description:
         'Fill small jars with colored sand and confetti, then write (or draw) a wish for the birthday child.',
       energy: 'Calm',
+      kinds: ['crafts', 'quiet'],
     },
   ],
 

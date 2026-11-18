@@ -13,6 +13,11 @@ const SECTIONS = [
   ['checklist', 'Checklist'],
 ]
 
+const PLAY = {
+  crafts: 'crafting', cooking: 'cooking', active: 'running around', music: 'music',
+  pretend: 'pretend play', hunts: 'treasure hunts', science: 'science', outdoors: 'the outdoors', quiet: 'quiet play',
+}
+
 const LABELS = {
   location: { backyard: 'Backyard', home: 'At home', park: 'Park', venue: 'Venue' },
   style: { diy: 'Mostly DIY', mix: 'DIY + ready-made', ready: 'Ready-made' },
@@ -168,16 +173,29 @@ export default function Results({ plan, onShowExample }) {
       {/* Games */}
       <section className="section section--tinted" id="games">
         <div className="container">
-          <SectionHeading eyebrow="04 · Games & activities" title={`Made for ${ageLabel(answers.ageRange)}`} intro="Alternating calm and active keeps little fairies happy (and avoids meltdowns)." />
+          <SectionHeading
+            eyebrow="04 · Games & activities"
+            title={`Made for ${ageLabel(answers.ageRange)}`}
+            intro={
+              (answers.interests || []).length
+                ? `Picked first for a child who loves ${listify((answers.interests || []).map((k) => PLAY[k]))}. Alternate calm and active to keep the energy happy.`
+                : 'Alternating calm and active keeps little fairies happy (and avoids meltdowns).'
+            }
+          />
           <div className="card-grid">
             {plan.games.map((g) => (
-              <article key={g.name} className="card">
+              <article key={g.name} className={`card ${g.matches.length ? 'card--match' : ''}`}>
                 <div className="card__meta">
                   <Tag tone={g.energy === 'Calm' ? 'sage' : 'blush'}>{g.energy}</Tag>
                   <span>{g.time}</span>
                 </div>
                 <h3 className="display-3">{g.name}</h3>
                 <p>{g.description}</p>
+                {g.matches.length > 0 && (
+                  <p className="card__match">
+                    <Sparkle size={10} /> For their love of {listify(g.matches.map((k) => PLAY[k]))}
+                  </p>
+                )}
               </article>
             ))}
           </div>
@@ -274,4 +292,9 @@ export default function Results({ plan, onShowExample }) {
       </section>
     </div>
   )
+}
+
+function listify(items) {
+  if (items.length <= 1) return items.join('')
+  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`
 }

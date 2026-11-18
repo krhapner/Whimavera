@@ -129,7 +129,7 @@ export default function Questionnaire({ eventType, answers, onChange, onComplete
           <div><dt>Age</dt><dd>{answers.ageRange}</dd></div>
           <div><dt>Guests</dt><dd>{answers.guestCount}</dd></div>
           <div><dt>Budget</dt><dd>${answers.budget}</dd></div>
-          <div><dt>Loves</dt><dd>{(answers.interests || []).length} picked</dd></div>
+          <div><dt>Play style</dt><dd>{(answers.interests || []).length} picked</dd></div>
         </dl>
       </aside>
     </section>

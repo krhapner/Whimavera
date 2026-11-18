@@ -18,6 +18,12 @@ export function buildPlan(eventType, answers) {
   const guests = answers.guestCount
   const total = answers.budget
 
+  // Rank activities by how many of the child's play styles they match.
+  const loves = answers.interests || []
+  const games = template.games
+    .map((g, i) => ({ ...g, matches: (g.kinds || []).filter((k) => loves.includes(k)), order: i }))
+    .sort((a, b) => b.matches.length - a.matches.length || a.order - b.order)
+
   const budget = template.budget.map((b) => ({ ...b, amount: roundTo(total * b.share) }))
 
   const shop = template.shop.map((cat) => ({
@@ -53,6 +59,7 @@ export function buildPlan(eventType, answers) {
     guests,
     total,
     budget,
+    games,
     shop,
     shopTotal,
     title: isPreview ? `A ${theme.name} Birthday` : template.title,

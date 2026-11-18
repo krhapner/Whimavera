@@ -2009,3 +2009,18 @@ svg {
   .mood-words { gap: 6px 18px; font-size: 20px; }
   .mood-words span + span::before { display: none; }
 }
+
+.card--match {
+  border-color: var(--blush);
+  background: linear-gradient(180deg, #fffaf6, var(--paper));
+}
+.card__match {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px !important;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  font-size: 13px !important;
+  color: var(--blush-deep) !important;
+}
