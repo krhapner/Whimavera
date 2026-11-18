@@ -45,14 +45,6 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
             <figcaption className="photo-caption">
               <span>Featured</span> The Fairy Garden, for a six-year-old’s afternoon
             </figcaption>
-            <div className="hero__badge">
-              <Sparkle size={12} />
-              <span>
-                12 guests
-                <br />
-                <strong>$300</strong>
-              </span>
-            </div>
           </figure>
         </div>
       </section>
