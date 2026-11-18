@@ -1,6 +1,7 @@
 import Scene from './Scene.jsx'
 import { Tag, Sparkle } from './ui.jsx'
 import { PlanToggle } from './PlanBar.jsx'
+import { ShopSuppliesButton } from './Shopping.jsx'
 
 const PLACEHOLDER_KINDS = ['crown', 'balloons', 'tablescape', 'cake']
 
@@ -72,11 +73,10 @@ export default function ActivityCard({ activity, theme, index, onOpen, inPlan, o
           </span>
         </div>
       </button>
-      {onToggle && (
-        <div className="act-card__foot">
-          <PlanToggle inPlan={inPlan} onToggle={onToggle} label={activity.name} />
-        </div>
-      )}
+      <div className="act-card__foot">
+        <ShopSuppliesButton kind="activity" id={activity.id} title={activity.name} label="Shop supplies" />
+        {onToggle && <PlanToggle inPlan={inPlan} onToggle={onToggle} label={activity.name} />}
+      </div>
     </article>
   )
 }

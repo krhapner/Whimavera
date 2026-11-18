@@ -1,5 +1,10 @@
 import { useMemo, useState } from 'react'
 import GuideShell from './GuideShell.jsx'
+import { AmazonButton, AffiliateDisclosure } from './Shopping.jsx'
+import { amazonLink, searchPhrase } from '../lib/shopping.js'
+
+// Shelf-stable ingredients worth linking; fresh food is bought locally.
+const SHOP_AISLES = new Set(['Baking', 'Pantry'])
 import Stepper from './Stepper.jsx'
 import { MenuImage, tagTone } from './FoodCard.jsx'
 import { Tag } from './ui.jsx'
@@ -158,6 +163,9 @@ export default function RecipeGuide({ item, theme, childCount, adults, setAdults
                             {i.optional && <em> (optional)</em>}
                             {i.note && <span className="mat__note">{i.note}</span>}
                           </span>
+                          {SHOP_AISLES.has(i.aisle) && !i.noShop && (
+                            <AmazonButton link={amazonLink({ search: searchPhrase(i.name) })} label="Find" subtle className="ingr__shop" />
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -180,6 +188,7 @@ export default function RecipeGuide({ item, theme, childCount, adults, setAdults
                     </button>
                   )}
                 </div>
+                <AffiliateDisclosure className="affiliate-note--inline" />
                 {recipe.equipment.length > 0 && (
                   <>
                     <h4 className="guide__sub">You’ll also need</h4>

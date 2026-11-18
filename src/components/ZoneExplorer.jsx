@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Scene from './Scene.jsx'
 import { PlanToggle } from './PlanBar.jsx'
+import { ShopSuppliesButton } from './Shopping.jsx'
 
 const FALLBACK_KINDS = ['balloons', 'tablescape', 'crown', 'detail', 'invite']
 const TIER_LABEL = { budget: 'Budget', classic: 'Classic', premium: 'Premium' }
@@ -78,11 +79,10 @@ export default function ZoneExplorer({ zones, theme, onToggle, onSwap }) {
                         ))}
                       </div>
                     )}
-                    {onToggle && (
-                      <div className="zx__actions">
-                        <PlanToggle inPlan={z.inPlan} onToggle={() => onToggle(z.id, !z.inPlan)} label={z.zone} />
-                      </div>
-                    )}
+                    <div className="zx__actions">
+                      {v.supplies?.length > 0 && <ShopSuppliesButton kind="decor" id={z.id} variantId={v.id} title={`${z.zone} · ${v.name}`} label="Shop this look" />}
+                      {onToggle && <PlanToggle inPlan={z.inPlan} onToggle={() => onToggle(z.id, !z.inPlan)} label={z.zone} />}
+                    </div>
                   </div>
                 </div>
               </div>

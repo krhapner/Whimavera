@@ -3280,3 +3280,344 @@ svg {
 @media (max-width: 720px) {
   .budget__rows--est li { grid-template-columns: 12px 1fr auto; }
 }
+
+/* ============ Shopping ============ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.amz-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--ivory);
+  font: 500 13px/1 var(--sans);
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.25s, transform 0.25s var(--ease);
+}
+.amz-btn:hover {
+  background: #4a403a;
+}
+.amz-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.amz-btn__arrow {
+  font-size: 11px;
+  opacity: 0.75;
+}
+.amz-btn--subtle {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.amz-btn--subtle:hover {
+  background: var(--paper);
+  border-color: var(--blush-deep);
+}
+.affiliate-note {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+.shop-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 4px;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font: 500 13px/1 var(--sans);
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--blush);
+  text-underline-offset: 4px;
+}
+.shop-trigger:hover {
+  color: var(--ink);
+  text-decoration-color: var(--blush-deep);
+}
+.shop-trigger:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.act-card__foot {
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Supply rows */
+.supply-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.supply {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.supply__main {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.supply__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+.supply__name {
+  font-family: var(--serif);
+  font-size: 19px;
+  color: var(--ink);
+}
+.supply__qty {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.supply__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 4px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.supply__pick {
+  color: var(--gold);
+}
+.supply__for {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 13px;
+}
+.supply__note {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.supply__alts {
+  margin-top: 8px;
+  font-size: 13px;
+}
+.supply__alts summary {
+  cursor: pointer;
+  color: var(--blush-deep);
+  width: fit-content;
+}
+.supply__alts ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+}
+.supply__alts li {
+  margin: 4px 0;
+}
+.supply__alts a {
+  color: var(--ink);
+}
+.supply__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.check--sm {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.supply__skip {
+  font-size: 13px;
+}
+.supply.is-owned .supply__name,
+.supply.is-skipped .supply__name {
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-faint);
+  color: var(--ink-faint);
+}
+.supply.is-skipped {
+  opacity: 0.65;
+}
+.supply--home .supply__name {
+  color: var(--ink-soft);
+}
+.kit-list {
+  margin-top: 22px;
+}
+.kit-list ul {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.kit-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  padding: 14px 18px;
+  background: var(--ivory-2);
+  border-radius: var(--r-sm);
+}
+.kit-list li div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.kit-list li span {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* Shopping panel */
+.sheet__head {
+  padding: 8px 0 6px;
+}
+.sheet__plan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: var(--ivory-2);
+  border-radius: var(--r-sm);
+}
+.sheet__plan-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Recipe ingredient links */
+.ingr li {
+  align-items: baseline;
+}
+.ingr__shop {
+  margin-left: auto;
+  padding: 5px 11px;
+  font-size: 12px;
+}
+.affiliate-note--inline {
+  margin-top: 8px;
+}
+
+/* Consolidated party list */
+.party-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: 18px;
+}
+.party-list__head > div:first-child {
+  flex: 1 1 420px;
+}
+.party-list__counts {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin: 6px 0 0;
+}
+.party-list__actions {
+  display: flex;
+  gap: 10px;
+}
+.optional-ideas {
+  margin-top: 14px;
+}
+.optional-ideas summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink-soft);
+  padding: 6px 0;
+}
+.zx__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+.diy__plan {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 720px) {
+  .supply__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    gap: 10px 16px;
+  }
+  .supply__name {
+    font-size: 18px;
+  }
+}
+
+@media print {
+  .site-header,
+  .site-footer,
+  header,
+  footer,
+  .tabs,
+  .no-print,
+  .page-hero,
+  .cta-band,
+  .supply__actions,
+  .supply__alts,
+  .kit-list,
+  .optional-ideas {
+    display: none !important;
+  }
+  .supply.is-owned,
+  .supply.is-skipped {
+    display: none;
+  }
+  body,
+  .app {
+    background: #fff;
+  }
+}
+.ingr li {
+  grid-template-columns: 120px 1fr auto;
+}
+.ingr li > :nth-child(2):last-child {
+  grid-column: 2 / -1;
+}
+.ingr__shop {
+  margin-left: 0;
+  align-self: center;
+}
+@media (max-width: 720px) {
+  .ingr li {
+    grid-template-columns: 84px 1fr auto;
+    gap: 10px;
+  }
+}

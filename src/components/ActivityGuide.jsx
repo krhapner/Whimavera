@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
+import { SupplyRow, KitList, AffiliateDisclosure } from './Shopping.jsx'
+import { linesForActivity, consolidate, kitsFor, amazonLink } from '../lib/shopping.js'
 import GuideShell from './GuideShell.jsx'
 import { ActivityImage } from './ActivityCard.jsx'
 import { Tag, Sparkle } from './ui.jsx'
@@ -16,15 +18,18 @@ const TIP_GROUPS = [
  * Escape closes, focus is trapped while open and returned to the card after.
  */
 export default function ActivityGuide({ activity, theme, index, playLabel, onClose }) {
-  const [have, setHave] = useState(() => new Set())
   const g = activity.guide
-
-  const toggle = (key) =>
-    setHave((s) => {
-      const n = new Set(s)
-      n.has(key) ? n.delete(key) : n.add(key)
-      return n
-    })
+  // Each material resolves to a reusable supply with an Amazon link; things
+  // made at home stay in the list without a shopping link.
+  const materialRows = useMemo(
+    () =>
+      g.materials.map((m, i) => {
+        const [l] = linesForActivity({ id: activity.id, name: activity.name, guide: { materials: [m] } })
+        return { key: `${m.name}-${i}`, m, item: l ? consolidate([l])[0] : null }
+      }),
+    [activity.id, activity.name, g],
+  )
+  const kits = useMemo(() => kitsFor([activity.id]).map((k) => ({ ...k, link: amazonLink(k) })), [activity.id])
 
   const ages = g.ages ? `Ages ${g.ages.min}–${g.ages.max}` : null
   const tipGroups = TIP_GROUPS.filter(([k]) => g.tips[k].length)
@@ -86,58 +91,32 @@ export default function ActivityGuide({ activity, theme, index, playLabel, onClo
         )}
 
         {g.materials.length > 0 && (
-          <section className="guide__section">
-            <h3 className="guide__h">Materials needed</h3>
-            <p className="guide__hint">Tick things off as you gather them.</p>
-            <ul className="mat-list">
-              {g.materials.map((m) => {
-                const on = have.has(m.name)
-                return (
-                  <li key={m.name}>
-                    <label className={`check ${on ? 'is-on' : ''}`}>
-                      <input type="checkbox" checked={on} onChange={() => toggle(m.name)} />
-                      <span className="check__box" aria-hidden="true" />
-                      <span className="mat">
-                        <span className="mat__top">
-                          <span className="mat__name">{m.name}</span>
-                          <span className="mat__qty">{m.quantity.label}</span>
-                        </span>
-                        {(m.quantity.detail || m.note) && (
-                          <span className="mat__note">{[m.quantity.detail, m.note].filter(Boolean).join(' · ')}</span>
-                        )}
-                        {m.substitute && <span className="mat__note">Swap: {m.substitute}</span>}
-                        {(m.optional || m.reusable) && (
-                          <span className="mat__tags">
-                            {m.optional && <span>Optional</span>}
-                            {m.reusable && <span>Reusable</span>}
-                          </span>
-                        )}
-                      </span>
-                    </label>
+          <section className="guide__section" id={`materials-${activity.id}`}>
+            <h3 className="guide__h">Materials & shopping</h3>
+            <p className="guide__hint">
+              {g.guests ? `Quantities for ${g.guests} guests. ` : ''}Tick what you already have — shop the rest, or use the swaps.
+            </p>
+            <ul className="supply-list">
+              {materialRows.map((row) =>
+                row.item ? (
+                  <SupplyRow key={row.key} item={row.item} />
+                ) : (
+                  <li key={row.key} className="supply supply--home">
+                    <div className="supply__main">
+                      <div className="supply__top">
+                        <span className="supply__name">{row.m.name}</span>
+                        <span className="supply__qty">{row.m.quantity.label}</span>
+                      </div>
+                      <div className="supply__meta">
+                        <span>Made or gathered at home</span>
+                      </div>
+                    </div>
                   </li>
-                )
-              })}
+                ),
+              )}
             </ul>
-          </section>
-        )}
-
-        {g.hasProducts && (
-          <section className="guide__section">
-            <h3 className="guide__h">Shop the supplies</h3>
-            <ul className="shop-supplies">
-              {g.materials
-                .filter((m) => m.products.length)
-                .flatMap((m) =>
-                  m.products.map((p) => (
-                    <li key={p.url}>
-                      <span>{m.name}</span>
-                      <a href={p.url} target="_blank" rel="noopener sponsored">
-                        {p.title} · {p.retailer}
-                      </a>
-                    </li>
-                  )),
-                )}
-            </ul>
+            <KitList kits={kits} />
+            <AffiliateDisclosure />
           </section>
         )}
 

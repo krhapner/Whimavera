@@ -10,6 +10,7 @@ import Questionnaire from './screens/Questionnaire.jsx'
 import Results from './screens/Results.jsx'
 import ShopDiy from './screens/ShopDiy.jsx'
 import Premium from './screens/Premium.jsx'
+import { ShopContext, SupplySheet } from './components/Shopping.jsx'
 
 const STORAGE_KEY = 'whimavera.answers.v1'
 const PLANNED_KEY = 'whimavera.hasPlan.v1'
@@ -143,6 +144,24 @@ export default function App() {
     reset: () => updateSelections(() => emptySelections()),
   }
 
+  // Shopping: owned supplies and deselected supplies are shared across the
+  // whole app and persisted. Opening a shopping panel never changes the plan.
+  const [ownedIds, setOwnedIds] = usePersisted('whimavera.owned.v1', [])
+  const [skippedIds, setSkippedIds] = usePersisted('whimavera.skipped.v1', [])
+  const [shopRequest, setShopRequest] = useState(null)
+  const flip = (setter) => (id) => setter((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
+  const shopApi = useMemo(
+    () => ({
+      owned: new Set(ownedIds),
+      skipped: new Set(skippedIds),
+      toggleOwned: flip(setOwnedIds),
+      toggleSkipped: flip(setSkippedIds),
+      openShop: (req) => setShopRequest(req),
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ownedIds, skippedIds],
+  )
+
   const startWithTheme = (themeId) => {
     setAnswers((a) => ({ ...a, theme: themeId }))
     navigate('plan')
@@ -211,12 +230,29 @@ export default function App() {
   }
 
   return (
+    <ShopContext.Provider value={shopApi}>
     <div className="app">
       <Header route={baseRoute === 'shopping' ? 'shop' : baseRoute} />
       <main key={baseRoute} className="screen-enter">
         {screen}
       </main>
       <Footer />
+      {shopRequest && (
+        <SupplySheet
+          request={shopRequest}
+          plan={plan}
+          catalog={catalog}
+          derived={derived}
+          planApi={planApi}
+          onClose={() => setShopRequest(null)}
+          onViewGuide={(id) => {
+            setShopRequest(null)
+            if (baseRoute !== 'results') navigate('results')
+            openGuide(id)
+          }}
+        />
+      )}
     </div>
+    </ShopContext.Provider>
   )
 }

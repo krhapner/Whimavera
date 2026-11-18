@@ -86,3 +86,26 @@ To add a new celebration type such as weddings, register it in `eventTypes.js` w
 - **Product links** are placeholders (`#`).
 - **Photography** comes from free Unsplash photos, listed in `src/data/photos.js`. `npm run photos` downloads them into `src/assets/photos/` so they're bundled into every build, including the single-file preview. If a photo isn't downloaded it's hot-linked instead, and if it can't load at all the matching illustrated scene shows. Themes without photos use their illustrations.
 - No payments, accounts, AI calls or retailer integrations.
+
+## Amazon shopping (affiliate)
+
+Shopping is woven through the plan — activity and food cards (“Shop supplies” / “Shop ingredients”), activity guides (“Materials & shopping”), decor zones (“Shop this look”), DIY projects, recipe ingredients, and the consolidated **Shop your party** list.
+
+**How it fits together**
+
+| Piece | File |
+|---|---|
+| Tracking tag (one place) | `src/config/affiliate.js` — `VITE_AMAZON_ASSOCIATE_TAG`, default `whimavera-20` |
+| URL generator | `src/lib/amazon.js` — `amazonSearchUrl`, `amazonProductUrl`, `withAffiliateTag`, `amazonLinkFor` |
+| Reusable supply catalog | `src/data/supplies/catalog.js` — `SUPPLIES`, `KITS`, `KITS_FOR`, `THEME_SUPPLIES` |
+| Shopping engine | `src/lib/shopping.js` — resolves materials to supplies, consolidates, builds lists |
+| UI pieces | `src/components/Shopping.jsx` — `AmazonButton`, `SupplyRow`, `SupplySheet`, `KitList`, disclosure |
+
+- Materials are matched to supplies by exact name through `aliases`, so the same supply is recognised across activities and themes and its quantities are combined. Reusable items (a speaker, wire cutters) count once.
+- Anything not in the catalog still gets a relevant Amazon search built from its name, so missing mappings never break shopping.
+- **To add a curated product:** add `asin: 'B0XXXXXXXX'` (or a full `url`) to the supply in `catalog.js`. Every card, guide and list switches to that product. Pasted URLs keep their parameters; any existing `tag` is replaced with ours.
+- Kits are always presented as “Browse … kits” searches, never as a specific product.
+- Owned items (`whimavera.owned.v1`) and items marked “Not needed” (`whimavera.skipped.v1`) persist in the browser. Opening a shopping panel or clicking a link never changes the plan; Amazon opens in a new tab only on a click. Nothing is added to an Amazon cart.
+- No Amazon prices, ratings, images or availability are shown. “Typical cost” ranges are generic planning estimates.
+
+**Tests:** `npm test` runs `test:links` (every generated link carries exactly one `whimavera-20` tag, params preserved, non-Amazon URLs refused) and `test:ui` (jsdom interaction checks: shopping from unselected cards, guides, add/remove, shared materials, guests, budget, owned/skip, print, persistence).

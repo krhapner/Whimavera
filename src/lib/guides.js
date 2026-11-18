@@ -93,6 +93,8 @@ const str = (v) => (typeof v === 'string' && v.trim() ? v.trim() : null)
 const strList = (v) => (Array.isArray(v) ? v.map(str).filter(Boolean) : [])
 const num = (v) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : null)
 
+const pluralOf = (u) => (!u ? '' : /(s|x|z|ch|sh)$/.test(u) ? `${u}es` : /[^aeiou]y$/.test(u) ? `${u.slice(0, -1)}ies` : `${u}s`)
+
 /** Validate and fill defaults. Returns null only if the guide is unusable. */
 export function normalizeGuide(raw) {
   if (!raw || typeof raw !== 'object' || !str(raw.id)) return null
@@ -110,7 +112,7 @@ export function normalizeGuide(raw) {
         name: str(m.name),
         qty,
         unit: str(m.unit) || '',
-        unitPlural: str(m.unitPlural) || (str(m.unit) ? `${str(m.unit)}s` : ''),
+        unitPlural: str(m.unitPlural) || pluralOf(str(m.unit) || ''),
         note: str(m.note),
         optional: !!m.optional,
         reusable: !!m.reusable,

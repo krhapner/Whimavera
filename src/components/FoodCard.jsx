@@ -1,6 +1,7 @@
 import Scene from './Scene.jsx'
 import { Tag } from './ui.jsx'
 import { PlanToggle } from './PlanBar.jsx'
+import { ShopSuppliesButton } from './Shopping.jsx'
 
 const PLACEHOLDER_KINDS = ['cake', 'tablescape', 'balloons', 'crown']
 const TONE = { Sweet: 'blush', Showpiece: 'blush', Fresh: 'sage', Savory: 'neutral', Drink: 'sage' }
@@ -63,11 +64,10 @@ export default function FoodCard({ item, theme, index = 0, onOpen, inList, inPla
           </span>
         </div>
       </button>
-      {onToggle && (
-        <div className="act-card__foot">
-          <PlanToggle inPlan={inPlan} onToggle={onToggle} label={item.recipe?.title || item.name} />
-        </div>
-      )}
+      <div className="act-card__foot">
+        {item.recipe && <ShopSuppliesButton kind="food" id={item.id} title={item.recipe?.title || item.name} label="Shop ingredients" />}
+        {onToggle && <PlanToggle inPlan={inPlan} onToggle={onToggle} label={item.recipe?.title || item.name} />}
+      </div>
     </article>
   )
 }

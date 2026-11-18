@@ -426,7 +426,7 @@ export default function Results({
             <p className="lede">See everything to buy, what to make, and where to save.</p>
           </div>
           <div className="cta-band__actions">
-            <Button as="a" href="#shop">Shop or DIY</Button>
+            <Button as="a" href="#shop">Shop your party</Button>
             <Button as="a" href="#premium" variant="secondary">{theme.name} printables · $29</Button>
           </div>
         </div>
