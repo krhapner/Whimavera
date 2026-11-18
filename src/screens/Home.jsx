@@ -41,7 +41,7 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
             <p className="hero__fine">No account needed · Takes about two minutes</p>
           </div>
           <figure className="hero__image">
-            <Scene kind="hero" photo="fairyHero" palette={featured.palette} motif={featured.motif} alt="A fairy garden party table among flowers" />
+            <Scene kind="hero" photo="homeHero" palette={featured.palette} motif={featured.motif} alt="Children in fairy wings twirling at a fairy garden party" />
             <figcaption className="photo-caption">
               <span>Featured</span> The Fairy Garden, for a six-year-old’s afternoon
             </figcaption>
