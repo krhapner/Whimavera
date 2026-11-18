@@ -42,9 +42,9 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
             <p className="hero__fine">No account needed · Takes about two minutes</p>
           </div>
           <figure className="hero__image">
-            <Scene kind="hero" photo={featured.photos?.hero} palette={featured.palette} motif={featured.motif} alt="A fairy garden party table with a balloon arch" />
+            <Scene kind="hero" photo="kidsCandles" palette={featured.palette} motif={featured.motif} alt="Children blowing out birthday candles" />
             <figcaption className="photo-caption">
-              <span>Featured</span> The Fairy Garden, for a six-year-old’s afternoon
+              <span>Make a wish</span> Parties planned around the people they’re for
             </figcaption>
             <div className="hero__badge">
               <Sparkle size={12} />
@@ -116,7 +116,7 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
       {/* Editorial feature */}
       <section className="section container feature">
         <div className="feature__images">
-          <Scene kind="cake" photo="floralCake" palette={featured.palette} className="feature__a" alt="Fairy garden cake" />
+          <Scene kind="cake" photo="donutTower" palette={featured.palette} className="feature__a" alt="Fairy garden cake" />
           <Scene kind="crown" palette={featured.palette} className="feature__b" alt="Flower crown" />
         </div>
         <div className="feature__copy">

@@ -190,7 +190,7 @@ export default function Results({ plan, onShowExample }) {
           <div>
             <SectionHeading eyebrow="05 · Food & refreshments" title="A fairy feast" intro={`Quantities planned for ${plan.guests} children plus a few grown-ups.`} />
             <figure className="split__img">
-              <Scene kind="cake" photo={plan.isPreview ? undefined : 'floralCake'} palette={pal} alt="Cake" />
+              <Scene kind="cake" photo={plan.isPreview ? undefined : 'cupcakes'} palette={pal} alt="Cake" />
             </figure>
           </div>
           <ul className="menu">

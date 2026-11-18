@@ -7,7 +7,7 @@ export const birthdayThemes = [
     tagline: 'Moss, toadstools & twinkling lights',
     motif: 'mushroom',
     ages: ['3-5', '6-8'],
-    photos: { hero: 'blushCake', card: 'redMushroom', detail: 'mossMushrooms' },
+    photos: { hero: 'partyHats', card: 'pinkTable', detail: 'pinkTable' },
     palette: [
       { name: 'Blush Petal', hex: '#E9C6C1' },
       { name: 'Sage Moss', hex: '#A9B79E' },
@@ -64,6 +64,7 @@ export const birthdayThemes = [
     tagline: 'Fossils, ferns & desert sunsets',
     motif: 'leaf',
     ages: ['3-5', '6-8'],
+    photos: { card: 'dinoParty' },
     palette: [
       { name: 'Terracotta', hex: '#D8A386' },
       { name: 'Olive', hex: '#A3A57E' },
@@ -78,7 +79,7 @@ export const birthdayThemes = [
     tagline: 'Gingham, berries & sunny pastels',
     motif: 'rainbow',
     ages: ['1-2', '3-5'],
-    photos: { card: 'pastelSetup' },
+    photos: { card: 'partyFlatlay' },
     palette: [
       { name: 'Strawberry', hex: '#EDB3B0' },
       { name: 'Apricot', hex: '#F2CDA3' },

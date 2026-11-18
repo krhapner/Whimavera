@@ -12,10 +12,10 @@ const fairyGarden = {
   moodWords: ['Whimsical', 'Botanical', 'Soft-lit', 'Hand-made'],
 
   board: [
-    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'tableSetting' },
-    { kind: 'cake', caption: 'A cake dressed in fresh blooms', photo: 'layerCake' },
+    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'pinkTable' },
+    { kind: 'cake', caption: 'Sprinkles & birthday candles', photo: 'donutTower' },
     { kind: 'detail', caption: 'Toadstools & moss', photo: 'mossMushrooms' },
-    { kind: 'balloons', caption: 'Soft pastel balloons', photo: 'softBalloons' },
+    { kind: 'balloons', caption: 'A ceiling of balloons', photo: 'brightBalloons' },
     { kind: 'invite', caption: 'Deckled-edge invitation' },
     { kind: 'crown', caption: 'Flower crown station' },
   ],
