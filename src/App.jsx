@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Header, Footer } from './components/Layout.jsx'
 import { liveEventType } from './data/eventTypes.js'
 import { buildPlan } from './lib/buildPlan.js'
-import { useHashRoute, navigate } from './lib/router.js'
+import { useHashRoute, navigate, baseRouteOf, guideIdFrom } from './lib/router.js'
 import Home from './screens/Home.jsx'
 import Questionnaire from './screens/Questionnaire.jsx'
 import Results from './screens/Results.jsx'
@@ -24,6 +24,8 @@ function loadAnswers() {
 
 export default function App() {
   const route = useHashRoute('home')
+  const baseRoute = baseRouteOf(route)
+  const guideId = guideIdFrom(route)
   const [answers, setAnswers] = useState(loadAnswers)
   const [hasPlan, setHasPlan] = useState(() => {
     try {
@@ -49,13 +51,34 @@ export default function App() {
     }
   }, [answers])
 
+  // Scroll to top only when the screen changes — opening or closing an
+  // activity guide keeps the results exactly where they were.
   useEffect(() => {
     try {
       window.scrollTo(0, 0)
     } catch {
       /* ignore */
     }
-  }, [route])
+  }, [baseRoute])
+
+  // Guides: remember whether opening added a history entry, so closing can
+  // use Back (natural) or a replace (deep link / sandboxed preview).
+  const guidePushed = useRef(false)
+  const openGuide = useCallback((id) => {
+    guidePushed.current = navigate(`guide-${id}`)
+  }, [])
+  const closeGuide = useCallback(() => {
+    if (guidePushed.current) {
+      guidePushed.current = false
+      try {
+        history.back()
+        return
+      } catch {
+        /* fall through */
+      }
+    }
+    navigate('results', { replace: true })
+  }, [])
 
   const plan = useMemo(() => buildPlan(liveEventType, answers), [answers])
 
@@ -70,7 +93,7 @@ export default function App() {
   }
 
   let screen
-  switch (route) {
+  switch (baseRoute) {
     case 'plan':
       screen = (
         <Questionnaire
@@ -85,7 +108,9 @@ export default function App() {
       )
       break
     case 'results':
-      screen = <Results plan={plan} onShowExample={showExample} />
+      screen = (
+        <Results plan={plan} onShowExample={showExample} guideId={guideId} onOpenGuide={openGuide} onCloseGuide={closeGuide} />
+      )
       break
     case 'shop':
       screen = <ShopDiy plan={plan} />
@@ -99,8 +124,8 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header route={route} />
-      <main key={route} className="screen-enter">
+      <Header route={baseRoute} />
+      <main key={baseRoute} className="screen-enter">
         {screen}
       </main>
       <Footer />

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Scene from '../components/Scene.jsx'
 import ZoneExplorer from '../components/ZoneExplorer.jsx'
+import ActivityCard from '../components/ActivityCard.jsx'
+import ActivityGuide from '../components/ActivityGuide.jsx'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
 import { ageLabel } from '../lib/buildPlan.js'
 
@@ -28,7 +30,7 @@ const LABELS = {
 // Scroll within the page without touching the hash (the hash is the route).
 const jump = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
-export default function Results({ plan, onShowExample }) {
+export default function Results({ plan, onShowExample, guideId, onOpenGuide, onCloseGuide }) {
   const { theme, answers } = plan
   const pal = theme.palette
   const [done, setDone] = useState(() => new Set())
@@ -40,8 +42,20 @@ export default function Results({ plan, onShowExample }) {
       return n
     })
 
+  const openIndex = guideId ? plan.games.findIndex((g) => g.id === guideId) : -1
+  const openActivity = openIndex >= 0 ? plan.games[openIndex] : null
+
   return (
     <div className="results" style={{ '--accent': pal[0].hex, '--accent-2': pal[1].hex }}>
+      {openActivity && (
+        <ActivityGuide
+          activity={openActivity}
+          theme={theme}
+          index={openIndex}
+          playLabel={playLabel}
+          onClose={onCloseGuide}
+        />
+      )}
       {/* Plan hero */}
       <section className="plan-hero">
         <div className="container plan-hero__grid">
@@ -173,21 +187,9 @@ export default function Results({ plan, onShowExample }) {
                 : 'Alternating calm and active keeps little guests happy (and avoids meltdowns).'
             }
           />
-          <div className="card-grid">
-            {plan.games.map((g) => (
-              <article key={g.name} className={`card ${g.matches.length ? 'card--match' : ''}`}>
-                <div className="card__meta">
-                  <Tag tone={g.energy === 'Calm' ? 'sage' : 'blush'}>{g.energy}</Tag>
-                  <span>{g.time}</span>
-                </div>
-                <h3 className="display-3">{g.name}</h3>
-                <p>{g.description}</p>
-                {g.matches.length > 0 && (
-                  <p className="card__match">
-                    <Sparkle size={10} /> For their love of {listify(g.matches.map((k) => PLAY[k]))}
-                  </p>
-                )}
-              </article>
+          <div className="act-grid">
+            {plan.games.map((g, i) => (
+              <ActivityCard key={g.id} activity={g} theme={theme} index={i} playLabel={playLabel} onOpen={onOpenGuide} />
             ))}
           </div>
         </div>
@@ -289,3 +291,5 @@ function listify(items) {
   if (items.length <= 1) return items.join('')
   return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`
 }
+
+const playLabel = (keys) => listify(keys.map((k) => PLAY[k]))

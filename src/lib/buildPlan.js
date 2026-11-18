@@ -1,5 +1,8 @@
 import { fallbackPlanId } from '../data/birthday/plans/index.js'
 import { defaultBudget, buildChecklist } from '../data/birthday/plans/shared.js'
+import { guidesByTheme } from '../data/birthday/guides/index.js'
+import { activityImageUrl, activityImageAlt, slugify } from '../data/activityImages.js'
+import { normalizeGuide, personalizeGuide, minimalGuide } from './guides.js'
 
 const roundTo = (n, step = 5) => Math.round(n / step) * step
 
@@ -51,8 +54,33 @@ export function buildPlan(eventType, answers) {
 
   // Rank activities by how many of the child's play styles they match.
   const loves = answers.interests || []
+  // Guides are built here, once per plan — never when a card is opened.
+  const themeGuides = guidesByTheme[theme.id] || {}
+  const guideCtx = {
+    guests,
+    ageRange: answers.ageRange,
+    location: answers.location,
+    interests: loves,
+    theme: theme.id,
+    budget: total,
+  }
   const games = template.games
-    .map((g, i) => ({ ...g, matches: (g.kinds || []).filter((k) => loves.includes(k)), order: i }))
+    .map((g, i) => {
+      const id = g.id || slugify(g.name)
+      const authored = normalizeGuide(themeGuides[id])
+      const imageUrl = g.imageUrl || authored?.imageUrl || activityImageUrl(id)
+      const activity = {
+        ...g,
+        id,
+        imageUrl,
+        imageAlt: authored?.imageAlt || activityImageAlt[id] || g.name,
+        matches: (g.kinds || []).filter((k) => loves.includes(k)),
+        order: i,
+      }
+      activity.guide = personalizeGuide(authored || minimalGuide(activity), { ...guideCtx, activity })
+      activity.hasFullGuide = !!authored
+      return activity
+    })
     .sort((a, b) => b.matches.length - a.matches.length || a.order - b.order)
 
   const budget = (template.budget || defaultBudget).map((b) => ({ ...b, amount: roundTo(total * b.share) }))

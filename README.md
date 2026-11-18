@@ -31,6 +31,17 @@ Other scripts:
 
 Answers persist in `localStorage`. "See an example plan" loads the Fairy Garden example (age 6, 12 guests, $300).
 
+## Activity guides
+
+Every activity card on the plan opens a step-by-step guide. On desktop the guide is a large window; on a phone it's a full-screen sheet. It covers materials (with quantities for the party's guest count), preparation, setup, how to run it with lines to say aloud, safety notes, tips and variations, and cleanup.
+
+- **Content:** `src/data/birthday/guides/<theme>.js`, keyed by activity id. All nine Fairy Garden guides are written; activities without a guide open a short version.
+- **Schema and validation:** `src/lib/guides.js` exports `activityGuideSchema` (a JSON Schema, usable as structured output if guides are AI-generated later), `normalizeGuide()`, which fills defaults so missing data never breaks the UI, and `personalizeGuide()`, which adapts quantities, age notes and indoor/outdoor setup.
+- **When guides are built:** guides are attached to activities in `buildPlan()`, once per plan. Opening a card never regenerates anything.
+- **Images:** drop `<activity-id>.webp` (or `.jpg`/`.png`) into `src/assets/activities/`. See the README there. Missing images show an illustrated placeholder.
+- **Shopping:** a material can carry `products: [{ title, url, retailer, verified: true }]`. "Shop the supplies" only appears when verified products exist; none are included now.
+- **Navigation:** opening a guide sets `#guide-<activity-id>`, so Back closes it and the link can be shared. Escape, the close button and clicking outside the guide also close it. Focus is trapped inside the guide and returned to the card afterwards, and the plan keeps its scroll position.
+
 ## Architecture
 
 ```
@@ -48,7 +59,8 @@ src/
     buildPlan.js         # answers → personalized plan: scales quantities and budget,
                          # ranks activities by play style, builds the timeline
     router.js            # tiny hash router
-  components/            # Scene (photo + illustrated fallback), Layout, ui primitives
+  components/            # Scene (photo + illustrated fallback), Layout, ui primitives,
+                         # ZoneExplorer, ActivityCard, ActivityGuide
   screens/               # Home, Questionnaire, Results, ShopDiy, Premium
   styles/global.css      # design tokens + all styles
 ```

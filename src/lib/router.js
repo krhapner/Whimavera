@@ -1,22 +1,30 @@
 import { useEffect, useState } from 'react'
 
-// Minimal in-memory router with optional hash sync (#home, #plan, #results, #shop, #premium).
-// Route changes are driven by app state, so navigation works even inside sandboxed
-// previews where changing location.hash is blocked; the hash is updated when allowed
-// so deep links and the back button still work in a normal browser.
-// Swap for React Router when real URLs / nested routes are needed.
+// Minimal in-memory router with optional hash sync.
+// Screens: #home, #plan, #results, #shop, #premium.
+// Activity guides open over the results as #guide-<activity-id>, so the
+// browser Back button closes a guide. Route changes are driven by app
+// state, so navigation still works in sandboxed previews where history
+// can't be changed; the hash is updated when allowed.
 
 export const ROUTES = ['home', 'plan', 'results', 'shop', 'premium']
+const GUIDE = /^guide-[a-z0-9-]+$/
 const EVENT = 'whimavera:navigate'
+
+const valid = (r) => ROUTES.includes(r) || GUIDE.test(r)
 
 function readHash(fallback) {
   try {
     const h = (window.location.hash || '').replace(/^#/, '')
-    return ROUTES.includes(h) ? h : fallback
+    return valid(h) ? h : fallback
   } catch {
     return fallback
   }
 }
+
+export const isGuideRoute = (r) => GUIDE.test(r)
+export const guideIdFrom = (r) => (GUIDE.test(r) ? r.slice('guide-'.length) : null)
+export const baseRouteOf = (r) => (GUIDE.test(r) ? 'results' : r)
 
 export function useHashRoute(fallback = 'home') {
   const [route, setRoute] = useState(() => readHash(fallback))
@@ -28,28 +36,37 @@ export function useHashRoute(fallback = 'home') {
       const a = e.target.closest?.('a[href^="#"]')
       if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return
       const r = a.getAttribute('href').slice(1)
-      if (ROUTES.includes(r)) {
+      if (valid(r)) {
         e.preventDefault()
         navigate(r)
       }
     }
     window.addEventListener(EVENT, onNav)
     window.addEventListener('hashchange', onHash)
+    window.addEventListener('popstate', onHash)
     document.addEventListener('click', onClick)
     return () => {
       window.removeEventListener(EVENT, onNav)
       window.removeEventListener('hashchange', onHash)
+      window.removeEventListener('popstate', onHash)
       document.removeEventListener('click', onClick)
     }
   }, [fallback])
   return route
 }
 
-export function navigate(route) {
+/**
+ * Navigate to a route. Returns true when a browser history entry was added
+ * (so history.back() will return here), false when navigation is state-only.
+ */
+export function navigate(route, { replace = false } = {}) {
   window.dispatchEvent(new CustomEvent(EVENT, { detail: route }))
   try {
-    if (window.location.hash !== `#${route}`) history.pushState(null, '', `#${route}`)
+    if (window.location.hash === `#${route}`) return false
+    if (replace) history.replaceState(null, '', `#${route}`)
+    else history.pushState(null, '', `#${route}`)
+    return !replace
   } catch {
-    /* sandboxed — state-only navigation */
+    return false
   }
 }
