@@ -46,5 +46,6 @@ export const ownPhotos = {
   zoneCraftGlade: { alt: 'Craft table with star wands, ribbons and flower crowns', focus: '50% 50%' },
   zonePhotoNook: { alt: 'Sheer fabric and fairy lights draped from a tree, with wings and cushions', focus: '50% 50%' },
   zoneFavorTree: { alt: 'Kraft favor boxes tied with ribbon hanging from a potted tree', focus: '50% 40%' },
+  fairyDoor: { alt: 'A lavender popsicle-stick fairy door with a brass knob at the base of a tree, with a pebble path and moss', focus: '50% 60%' },
   fairyTreats: { alt: 'Rose cupcakes and a butterfly on a moss table runner', focus: '45% 65%' },
 }

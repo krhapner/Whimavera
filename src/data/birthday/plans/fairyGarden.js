@@ -247,6 +247,7 @@ const fairyGarden = {
     },
     {
       name: 'Fairy Door',
+      photo: 'fairyDoor',
       time: '1 hr',
       difficulty: 'Moderate',
       saves: 'A keepsake that becomes part of the garden',
