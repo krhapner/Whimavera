@@ -624,21 +624,10 @@ svg {
 }
 .feature__a {
   position: absolute;
-  inset: 0 22% 18% 0;
-  width: auto;
+  inset: 0;
+  width: 100%;
   height: auto;
   border-radius: var(--r-lg);
-  box-shadow: var(--shadow);
-}
-.feature__b {
-  position: absolute;
-  width: 48%;
-  height: auto;
-  aspect-ratio: 1;
-  right: 0;
-  bottom: 0;
-  border-radius: 50%;
-  border: 8px solid var(--ivory);
   box-shadow: var(--shadow);
 }
 .feature__list {
