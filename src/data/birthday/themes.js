@@ -7,7 +7,7 @@ export const birthdayThemes = [
     tagline: 'Moss, toadstools & twinkling lights',
     motif: 'mushroom',
     ages: ['3-5', '6-8'],
-    photos: { hero: 'partyHats', card: 'pinkTable', detail: 'pinkTable' },
+    photos: { card: 'fairyHero' },
     palette: [
       { name: 'Blush Petal', hex: '#E9C6C1' },
       { name: 'Sage Moss', hex: '#A9B79E' },
@@ -22,6 +22,7 @@ export const birthdayThemes = [
     tagline: 'Pearls, shells & seafoam blues',
     motif: 'shell',
     ages: ['3-5', '6-8'],
+    photos: { card: 'seaTable' },
     palette: [
       { name: 'Seafoam', hex: '#B7D6CF' },
       { name: 'Pearl', hex: '#F3EDE3' },
@@ -36,6 +37,7 @@ export const birthdayThemes = [
     tagline: 'Moons, constellations & soft gold',
     motif: 'star',
     ages: ['6-8', '9-12'],
+    photos: { card: 'starTable' },
     palette: [
       { name: 'Midnight', hex: '#3E4A6B' },
       { name: 'Dusk Lilac', hex: '#B8B1D3' },
@@ -50,6 +52,7 @@ export const birthdayThemes = [
     tagline: 'Teacups, ferns & honey cakes',
     motif: 'teacup',
     ages: ['3-5', '6-8', '9-12'],
+    photos: { card: 'teaTable' },
     palette: [
       { name: 'Fern', hex: '#9BAA8A' },
       { name: 'Honey', hex: '#E5C98F' },

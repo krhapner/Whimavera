@@ -27,7 +27,7 @@ Other scripts:
 | `#plan` | 8-step questionnaire |
 | `#results` | Personalized plan: inspiration board, palette, decor, budget, games, food, timeline, checklist |
 | `#shop` | Shop the list, DIY projects and budget swaps |
-| `#premium` | $29 Deluxe Printable Bundle (live name preview; checkout is a placeholder) |
+| `#premium` | $29 printable bundle tailored to the planned theme (only offered once a plan exists; checkout is a placeholder) |
 
 Answers persist in `localStorage`. "See an example plan" loads the Fairy Garden example (age 6, 12 guests, $300).
 
@@ -40,11 +40,13 @@ src/
     birthday/
       questions.js       # questionnaire definition (rendered generically)
       themes.js          # 6 themes, palettes, motifs, photo keys
-      plans.js           # plan templates (Fairy Garden is complete)
-    photos.js            # Unsplash photo ids
-    premium.js           # bundle definition
+      plans/             # one complete plan per theme + shared.js (budget, checklist)
+    photoList.js         # Unsplash photo ids and credits
+    photos.js            # resolves bundled vs. hot-linked photos
+    premium.js           # printable bundle per theme
   lib/
-    buildPlan.js         # pure function: answers → personalized plan (scales qty & budget)
+    buildPlan.js         # answers → personalized plan: scales quantities and budget,
+                         # ranks activities by play style, builds the timeline
     router.js            # tiny hash router
   components/            # Scene (photo + illustrated fallback), Layout, ui primitives
   screens/               # Home, Questionnaire, Results, ShopDiy, Premium

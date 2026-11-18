@@ -10,6 +10,7 @@ import ShopDiy from './screens/ShopDiy.jsx'
 import Premium from './screens/Premium.jsx'
 
 const STORAGE_KEY = 'whimavera.answers.v1'
+const PLANNED_KEY = 'whimavera.hasPlan.v1'
 
 function loadAnswers() {
   try {
@@ -24,6 +25,21 @@ function loadAnswers() {
 export default function App() {
   const route = useHashRoute('home')
   const [answers, setAnswers] = useState(loadAnswers)
+  const [hasPlan, setHasPlan] = useState(() => {
+    try {
+      return localStorage.getItem(PLANNED_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
+  const markPlanned = () => {
+    setHasPlan(true)
+    try {
+      localStorage.setItem(PLANNED_KEY, '1')
+    } catch {
+      /* ignore */
+    }
+  }
 
   useEffect(() => {
     try {
@@ -49,6 +65,7 @@ export default function App() {
   }
   const showExample = () => {
     setAnswers(liveEventType.defaultAnswers)
+    markPlanned()
     navigate('results')
   }
 
@@ -60,7 +77,10 @@ export default function App() {
           eventType={liveEventType}
           answers={answers}
           onChange={setAnswers}
-          onComplete={() => navigate('results')}
+          onComplete={() => {
+            markPlanned()
+            navigate('results')
+          }}
         />
       )
       break
@@ -71,7 +91,7 @@ export default function App() {
       screen = <ShopDiy plan={plan} />
       break
     case 'premium':
-      screen = <Premium plan={plan} />
+      screen = <Premium plan={plan} hasPlan={hasPlan} />
       break
     default:
       screen = <Home eventType={liveEventType} onPickTheme={startWithTheme} onShowExample={showExample} />

@@ -1,18 +1,20 @@
-// Plan library. Each plan is a template; lib/buildPlan.js personalizes it
-// (quantities scale with guest count, budget lines scale with total budget).
+// Fairy Garden plan.
 //
 // IMPORTANT: costs below are illustrative PLANNING ESTIMATES for generic items,
 // not prices from any real product or retailer. Links are placeholders.
 
 const fairyGarden = {
   themeId: 'fairy-garden',
+  headings: { decor: 'Five little zones of magic', food: 'A fairy feast' },
+  heroPhoto: 'fairyHero',
+  foodPhoto: 'cupcakes',
   title: 'A Fairy Garden Birthday',
   intro:
     'A soft, storybook afternoon among moss, toadstools and twinkling lights — where every guest becomes a garden fairy for the day.',
   moodWords: ['Whimsical', 'Botanical', 'Soft-lit', 'Hand-made'],
 
   board: [
-    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'pinkTable' },
+    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'fairyHero' },
     { kind: 'cake', caption: 'Sprinkles & birthday candles', photo: 'donutTower' },
     { kind: 'detail', caption: 'Toadstools & moss', photo: 'mossMushrooms' },
     { kind: 'balloons', caption: 'A ceiling of balloons', photo: 'brightBalloons' },
@@ -145,41 +147,23 @@ const fairyGarden = {
     { name: 'The cake', detail: 'Two-tier semi-naked vanilla cake with pressed edible blooms', tag: 'Showpiece' },
   ],
 
-  timeline: [
-    { time: '10:00', title: 'Set the scene', detail: 'Hang lights, arch and garland. Lay the feast table.' },
-    { time: '12:30', title: 'Food prep', detail: 'Assemble fruit wands, sandwiches and lemonade.' },
-    { time: '1:45', title: 'Final touches', detail: 'Lights on, music on, crowns laid out.' },
-    { time: '2:00', title: 'Fairies arrive', detail: 'Welcome with wings & wands at the arch.' },
-    { time: '2:15', title: 'Flower Crown Studio', detail: 'Calm craft while everyone settles in.' },
-    { time: '2:45', title: 'Fairy Treasure Hunt', detail: 'Gem pouches out — the garden awaits.' },
-    { time: '3:05', title: 'Fairy feast', detail: 'Grazing table and petal lemonade.' },
-    { time: '3:30', title: 'Cake & wishes', detail: 'Song, candles and wish jars.' },
-    { time: '3:45', title: 'Musical Toadstools', detail: 'One last wiggle.' },
-    { time: '4:00', title: 'Flutter home', detail: 'Favors from the favor tree.' },
-  ],
+  startHour: 14,
+  moments: {
+    setup: 'Hang lights, arch and garland. Lay the feast table.',
+    prep: 'Assemble fruit wands, sandwiches and lemonade.',
+    final: 'Lights on, music on, crowns and wings laid out.',
+    arrive: ['Fairies arrive', 'Welcome with wings & wands at the arch.'],
+    feast: ['Fairy feast', 'Grazing table and petal lemonade.'],
+    cake: ['Cake & wishes', 'Song, candles and wish jars.'],
+    goodbye: ['Flutter home', 'Favors from the favor tree.'],
+  },
 
-  checklist: [
-    {
-      when: '3 weeks before',
-      tasks: ['Set date, time and guest list', 'Send invitations', 'Decide DIY vs. ready-made for each item'],
-    },
-    {
-      when: '2 weeks before',
-      tasks: ['Order decor and tableware', 'Gather craft supplies', 'Plan the menu and cake'],
-    },
-    {
-      when: '1 week before',
-      tasks: ['Confirm RSVPs & allergies', 'Make toadstools and fairy door', 'Assemble favor bags'],
-    },
-    {
-      when: 'Day before',
-      tasks: ['Bake cake layers', 'Prep crown bases and gem pouches', 'Make a party playlist', 'Charge camera & lights'],
-    },
-    {
-      when: 'Party day',
-      tasks: ['Set up zones by 1:45', 'Assemble fresh food', 'Hide treasure hunt gems', 'Breathe — and enjoy it'],
-    },
-  ],
+  checklistExtras: {
+    '2 weeks before': ['Gather crown and wand supplies'],
+    '1 week before': ['Paint toadstools and make the fairy door'],
+    'Day before': ['Bake cake layers', 'Prep crown bases and gem pouches'],
+    'Party day': ['Hide the treasure-hunt gems'],
+  },
 
   // Shop list. qty: { fixed } or { perGuest, extra }. est: planning estimate per unit/pack.
   shop: [
@@ -290,9 +274,4 @@ const fairyGarden = {
   ],
 }
 
-export const birthdayPlans = {
-  'fairy-garden': fairyGarden,
-}
-
-// Themes without a full template yet preview with the Fairy Garden structure.
-export const fallbackPlanId = 'fairy-garden'
+export default fairyGarden

@@ -11,7 +11,8 @@ export { photos }
 const local = import.meta.glob('../assets/photos/*.jpg', { eager: true, query: '?url', import: 'default' })
 
 export const photoUrl = (key, w = 1200) => {
+  const bundled = local[`../assets/photos/${key}.jpg`]
+  if (bundled) return bundled
   const p = photos[key]
-  if (!p) return null
-  return local[`../assets/photos/${key}.jpg`] || `https://unsplash.com/photos/${p.id}/download?w=${w}`
+  return p ? `https://unsplash.com/photos/${p.id}/download?w=${w}` : null
 }

@@ -10,5 +10,21 @@ export const photos = {
   dinoParty: { id: 'eF_3z15RmWY', alt: 'Toy dinosaurs in party hats beside birthday cake', credit: 'Joyce Adams' },
   partyFlatlay: { id: 'MD_ha01Bk7c', alt: 'Party hats, plates and confetti on a colorful table', credit: 'Lidya Nada' },
   brightBalloons: { id: 'Hli3R6LKibo', alt: 'A ceiling of colorful party balloons', credit: 'Adi Goldstein' },
+  seaTable: { id: 'WjgT2nQ9LK0', alt: 'Dessert table with blue balloons and ferns', credit: 'Jonathan Borba' },
+  seaTreats: { id: 'pGM4sjt_BdQ', alt: 'Teal-frosted cupcakes with sprinkles' },
+  seaShells: { id: 'JEo8Mr1sSmA', alt: 'A pile of pearly seashells' },
+  starTreats: { id: 'Z4GQAHXer94', alt: 'Space-themed birthday cake and treats', credit: 'Jonathan Borba' },
+  starTable: { id: '0EaC1vSDuEw', alt: 'Rocket-ship cake with planets and stars', credit: 'Jonathan Borba' },
+  starLights: { id: '7Cb7ZVT4kf0', alt: 'Glowing star string lights' },
+  teaTable: { id: 'ljapyesEe3U', alt: 'A table set for a tea party with flowers' },
+  teaCups: { id: 'RbLjCVUk4zI', alt: 'Teapot, teacups and rose-print plates' },
+  dinoTreats: { id: 'PWfwzN2p70g', alt: 'A toy dinosaur in a party hat on a cake' },
+  dinoDecor: { id: 'Rs9ntEgZ8Sw', alt: 'Fruit tower and treats at a dinosaur party' },
+  dinoFossil: { id: 'ZhVKeFCb6NE', alt: 'A spiral shell fossil' },
+  rainbowTreats: { id: 'wnHeb_pRJBo', alt: 'Rainbow birthday cake with colorful candles' },
+  picnicBlanket: { id: 'EgaPIySkcnM', alt: 'A picnic laid out on a blanket in the grass' },
   mossMushrooms: { id: 'JbstCu7FYlA', alt: 'Tiny mushrooms growing on a mossy trunk', credit: 'Yume Photography' },
 }
+
+// Bundled photos (src/assets/photos/<key>.jpg) that aren't from Unsplash:
+// fairyHero.jpg — Whimavera's own Fairy Garden image.

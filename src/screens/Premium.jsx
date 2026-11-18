@@ -1,13 +1,32 @@
 import { useState } from 'react'
 import { Button, Eyebrow, Sparkle } from '../components/ui.jsx'
 import { Motif, mix } from '../components/Scene.jsx'
-import { deluxeBundle } from '../data/premium.js'
+import { bundleFor } from '../data/premium.js'
 
-export default function Premium({ plan }) {
+export default function Premium({ plan, hasPlan }) {
   const [open, setOpen] = useState(false)
+  const deluxeBundle = bundleFor(plan.theme)
   const [name, setName] = useState('Olivia')
   const pal = plan.theme.palette.map((p) => p.hex)
   const age = plan.answers.ageRange === '6-8' ? 'six' : ''
+
+  if (!hasPlan) {
+    return (
+      <section className="section container gate">
+        <Eyebrow>
+          <Sparkle size={10} /> Printables
+        </Eyebrow>
+        <h1 className="display-2">Printables are designed around your party</h1>
+        <p className="lede">
+          Plan your party first. We’ll match the invitations, signs, games and tags to your theme, colors and
+          activities.
+        </p>
+        <Button as="a" href="#plan" size="lg">
+          Plan Your Party
+        </Button>
+      </section>
+    )
+  }
 
   return (
     <div className="premium">
@@ -17,7 +36,7 @@ export default function Premium({ plan }) {
             <Sparkle size={10} /> Optional upgrade
           </Eyebrow>
           <h1 className="display-1">
-            The Deluxe <em>Printable</em> Party Bundle
+            The {plan.theme.name} <em>Printable</em> Bundle
           </h1>
           <p className="lede">{deluxeBundle.description}</p>
           <label className="name-field">

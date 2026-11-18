@@ -4,7 +4,7 @@
 // with the same shape — screens read from this registry, not from hard-coded data.
 import { birthdayQuestions, defaultBirthdayAnswers } from './birthday/questions.js'
 import { birthdayThemes } from './birthday/themes.js'
-import { birthdayPlans } from './birthday/plans.js'
+import { birthdayPlans } from './birthday/plans/index.js'
 
 export const eventTypes = {
   birthday: {

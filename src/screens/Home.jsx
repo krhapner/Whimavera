@@ -1,7 +1,6 @@
 import Scene from '../components/Scene.jsx'
 import { Button, Eyebrow, SectionHeading, Sparkle, Divider } from '../components/ui.jsx'
 import { eventTypes } from '../data/eventTypes.js'
-import { deluxeBundle } from '../data/premium.js'
 
 const STEPS = [
   { n: '01', title: 'Tell us about them', body: 'Eight gentle questions — age, loves, guests, budget, and how much time you really have.' },
@@ -42,9 +41,9 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
             <p className="hero__fine">No account needed · Takes about two minutes</p>
           </div>
           <figure className="hero__image">
-            <Scene kind="hero" photo="kidsCandles" palette={featured.palette} motif={featured.motif} alt="Children blowing out birthday candles" />
+            <Scene kind="hero" photo="fairyHero" palette={featured.palette} motif={featured.motif} alt="A fairy garden party table among flowers" />
             <figcaption className="photo-caption">
-              <span>Make a wish</span> Parties planned around the people they’re for
+              <span>Featured</span> The Fairy Garden, for a six-year-old’s afternoon
             </figcaption>
             <div className="hero__badge">
               <Sparkle size={12} />
@@ -95,7 +94,7 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
             {eventType.themes.map((t, i) => (
               <button key={t.id} className="theme-card" onClick={() => onPickTheme(t.id)}>
                 <div className="theme-card__img">
-                  <Scene kind={['tablescape', 'detail', 'cake', 'invite', 'balloons', 'crown'][i % 6]} photo={t.photos?.card} palette={t.palette} motif={t.motif} alt={`${t.name} inspiration`} />
+                  <Scene kind={['tablescape', 'detail', 'cake', 'invite', 'balloons', 'crown'][i % 6]} photo={t.photos?.card} palette={t.palette} motif={t.motif} label={t.name} alt={`${t.name} inspiration`} />
                 </div>
                 <div className="theme-card__body">
                   <div className="theme-card__dots">
@@ -144,13 +143,14 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
       <section className="section container">
         <div className="teaser">
           <div>
-            <Eyebrow>Optional upgrade</Eyebrow>
-            <h2 className="display-2">Every paper detail, matched to your theme</h2>
+            <Eyebrow>Made to match</Eyebrow>
+            <h2 className="display-2">Every paper detail, designed for your party</h2>
             <p className="lede">
-              Invitations, signs, games and favor tags — personalized with your child’s name.
+              Once your plan is ready, add matching invitations, signs, games and favor tags — in your theme’s
+              colors, personalized with your child’s name.
             </p>
-            <Button as="a" href="#premium" variant="secondary">
-              Explore the {deluxeBundle.price && `$${deluxeBundle.price}`} bundle
+            <Button as="a" href="#plan" variant="secondary">
+              Start your plan
             </Button>
           </div>
           <Scene kind="invite" palette={featured.palette} motif={featured.motif} className="teaser__img" alt="Printable invitation" />

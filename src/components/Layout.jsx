@@ -6,7 +6,6 @@ const NAV = [
   { route: 'plan', label: 'Plan a Party' },
   { route: 'results', label: 'Your Plan' },
   { route: 'shop', label: 'Shop & DIY' },
-  { route: 'premium', label: 'Printables' },
 ]
 
 export function Logo({ onClick }) {
@@ -68,7 +67,6 @@ export function Footer() {
           </div>
           <div>
             <h4>Whimavera</h4>
-            <a href="#premium">Printable bundles</a>
             <a href="#shop">Shop & DIY</a>
           </div>
         </div>

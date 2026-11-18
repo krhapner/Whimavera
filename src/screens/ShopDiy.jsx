@@ -64,7 +64,7 @@ export default function ShopDiy({ plan }) {
                   {c.items.map((item, i) => (
                     <article key={item.name} className="product">
                       <div className="product__img">
-                        <Scene kind={['detail', 'tablescape', 'balloons', 'crown', 'invite'][(i + c.category.length) % 5]} palette={pal} motif={plan.theme.motif} alt="" />
+                        <Scene kind={['detail', 'tablescape', 'balloons', 'crown', 'invite'][(i + c.category.length) % 5]} palette={pal} motif={plan.theme.motif} label={plan.theme.name} alt="" />
                         <span className="product__ph">Product photo</span>
                       </div>
                       <div className="product__body">
@@ -109,7 +109,7 @@ export default function ShopDiy({ plan }) {
               {plan.diy.map((d, i) => (
                 <article key={d.name} className="diy">
                   <div className="diy__img">
-                    <Scene kind={['detail', 'crown', 'invite', 'cake'][i % 4]} palette={pal} motif={plan.theme.motif} alt="" />
+                    <Scene kind={['detail', 'crown', 'invite', 'cake'][i % 4]} palette={pal} motif={plan.theme.motif} label={plan.theme.name} alt="" />
                   </div>
                   <div className="diy__body">
                     <div className="card__meta">
@@ -172,9 +172,9 @@ export default function ShopDiy({ plan }) {
         <div className="cta-band cta-band--slim">
           <div>
             <h2 className="display-3">Want the paper goods done for you?</h2>
-            <p>Invitations, signs, games and favor tags, personalized and ready to print.</p>
+            <p>Matching {plan.theme.name} invitations, signs, games and favor tags, personalized and ready to print.</p>
           </div>
-          <Button as="a" href="#premium">See the $29 bundle</Button>
+          <Button as="a" href="#premium">See the {plan.theme.name} bundle · $29</Button>
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ import { photos, photoUrl } from '../data/photos.js'
  * kinds: hero | tablescape | cake | detail | balloons | invite | crown
  * motifs: mushroom | shell | star | teacup | leaf | rainbow
  */
-export default function Scene({ kind = 'tablescape', palette, motif = 'mushroom', photo, src, alt = '', className = '' }) {
+export default function Scene({ kind = 'tablescape', palette, motif = 'mushroom', photo, src, label = 'Fairy Garden', alt = '', className = '' }) {
   const uid = useId().replace(/:/g, '')
   const [failed, setFailed] = useState(false)
   const c = (palette || DEFAULT).map((p) => (typeof p === 'string' ? p : p.hex))
@@ -67,7 +67,7 @@ export default function Scene({ kind = 'tablescape', palette, motif = 'mushroom'
       {kind === 'cake' && <CakeScene c={c} soft={`url(#soft${uid})`} />}
       {kind === 'detail' && <Detail c={c} motif={motif} soft={`url(#soft${uid})`} />}
       {kind === 'balloons' && <BalloonScene c={c} soft={`url(#soft${uid})`} />}
-      {kind === 'invite' && <InviteScene c={c} motif={motif} soft={`url(#soft${uid})`} />}
+      {kind === 'invite' && <InviteScene c={c} motif={motif} label={label} soft={`url(#soft${uid})`} />}
       {kind === 'crown' && <CrownScene c={c} soft={`url(#soft${uid})`} />}
 
       <rect width={W} height={H} filter={`url(#grain${uid})`} opacity="0.9" />
@@ -368,7 +368,7 @@ function BalloonScene({ c, soft }) {
   )
 }
 
-function InviteScene({ c, motif, soft }) {
+function InviteScene({ c, motif, label, soft }) {
   return (
     <g>
       <rect width="400" height="400" fill={tint(c[1], 0.35)} />
@@ -386,7 +386,7 @@ function InviteScene({ c, motif, soft }) {
         </text>
         <rect x="160" y="250" width="80" height="1" fill={c[4]} />
         <text x="200" y="276" textAnchor="middle" fontFamily="Jost, sans-serif" fontSize="10" letterSpacing="2" fill={shade(c[4], 0.4)}>
-          A FAIRY GARDEN PARTY
+          {`A ${label.toUpperCase()} PARTY`}
         </text>
       </g>
       <path d="M 40 360 C 120 330, 260 380, 380 340" stroke={c[0]} strokeWidth="6" fill="none" strokeLinecap="round" />

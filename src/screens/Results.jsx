@@ -64,7 +64,7 @@ export default function Results({ plan, onShowExample }) {
             </div>
           </div>
           <figure className="plan-hero__img">
-            <Scene kind="hero" photo={plan.isPreview ? undefined : theme.photos?.hero} palette={pal} motif={theme.motif} alt={`${theme.name} party scene`} />
+            <Scene kind="hero" photo={plan.heroPhoto} palette={pal} motif={theme.motif} alt={`${theme.name} party scene`} />
           </figure>
         </div>
         {plan.isPreview && (
@@ -99,7 +99,7 @@ export default function Results({ plan, onShowExample }) {
         <div className="board">
           {plan.board.map((b, i) => (
             <figure key={i} className={`board__item board__item--${i}`}>
-              <Scene kind={b.kind} photo={plan.isPreview ? undefined : b.photo} palette={pal} motif={theme.motif} alt={b.caption} />
+              <Scene kind={b.kind} photo={b.photo} palette={pal} motif={theme.motif} label={theme.name} alt={b.caption} />
               <figcaption>{b.caption}</figcaption>
             </figure>
           ))}
@@ -115,7 +115,7 @@ export default function Results({ plan, onShowExample }) {
         <div className="container">
           <SectionHeading
             eyebrow="02 · Decorations & setup"
-            title="Five little zones of magic"
+            title={plan.headings?.decor || 'Setting the scene'}
             intro={`Laid out for a ${LABELS.location[answers.location].toLowerCase()} party. Set up in this order and you’ll be done in about three hours.`}
           />
           <ol className="zones">
@@ -179,7 +179,7 @@ export default function Results({ plan, onShowExample }) {
             intro={
               (answers.interests || []).length
                 ? `Picked first for a child who loves ${listify((answers.interests || []).map((k) => PLAY[k]))}. Alternate calm and active to keep the energy happy.`
-                : 'Alternating calm and active keeps little fairies happy (and avoids meltdowns).'
+                : 'Alternating calm and active keeps little guests happy (and avoids meltdowns).'
             }
           />
           <div className="card-grid">
@@ -206,9 +206,9 @@ export default function Results({ plan, onShowExample }) {
       <section className="section container" id="food">
         <div className="split">
           <div>
-            <SectionHeading eyebrow="05 · Food & refreshments" title="A fairy feast" intro={`Quantities planned for ${plan.guests} children plus a few grown-ups.`} />
+            <SectionHeading eyebrow="05 · Food & refreshments" title={plan.headings?.food || 'The menu'} intro={`Quantities planned for ${plan.guests} children plus a few grown-ups.`} />
             <figure className="split__img">
-              <Scene kind="cake" photo={plan.isPreview ? undefined : 'cupcakes'} palette={pal} alt="Cake" />
+              <Scene kind="cake" photo={plan.foodPhoto} palette={pal} alt="Cake" />
             </figure>
           </div>
           <ul className="menu">
@@ -228,10 +228,10 @@ export default function Results({ plan, onShowExample }) {
       {/* Timeline */}
       <section className="section section--tinted" id="timeline">
         <div className="container">
-          <SectionHeading eyebrow="06 · Party-day timeline" title="The day, gently paced" intro="A two-hour party from 2:00 to 4:00 pm, with setup in the morning." />
+          <SectionHeading eyebrow="06 · Party-day timeline" title="The day, gently paced" intro={`A two-hour party from ${plan.timeline[3].time} to ${plan.timeline[9].time}, built around their favorite activities.`} />
           <ol className="timeline">
             {plan.timeline.map((t, i) => (
-              <li key={i} className={i < 3 ? 'is-prep' : ''}>
+              <li key={i} className={t.prep ? 'is-prep' : ''}>
                 <time>{t.time}</time>
                 <div>
                   <h3>{t.title}</h3>
@@ -286,7 +286,7 @@ export default function Results({ plan, onShowExample }) {
           </div>
           <div className="cta-band__actions">
             <Button as="a" href="#shop">Shop or DIY</Button>
-            <Button as="a" href="#premium" variant="secondary">Printable bundle · $29</Button>
+            <Button as="a" href="#premium" variant="secondary">{theme.name} printables · $29</Button>
           </div>
         </div>
       </section>
