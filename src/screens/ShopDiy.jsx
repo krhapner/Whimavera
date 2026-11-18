@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react'
 import { scaleRecipe, buildShoppingList } from '../lib/recipes.js'
 import Scene from '../components/Scene.jsx'
 import { Button, Eyebrow, SectionHeading, Tag, money } from '../components/ui.jsx'
+import { BudgetLine, PlanToggle, SectionView, rangeText } from '../components/PlanBar.jsx'
+import { itemCost } from '../lib/recommend.js'
+import { slugify } from '../data/activityImages.js'
 
 const TABS = [
   ['shop', 'Shop the list'],
@@ -10,13 +13,19 @@ const TABS = [
   ['swaps', 'Budget swaps'],
 ]
 
-export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
+export default function ShopDiy({ plan, initialTab, adults = 0, shopping, catalog, derived, planApi }) {
   const [tab, setTab] = useState(initialTab || (plan.answers.style === 'diy' ? 'diy' : 'shop'))
   const [cat, setCat] = useState('All')
+  const [diyView, setDiyView] = useState('rec')
   const pal = plan.theme.palette
-  const cats = ['All', ...plan.shop.map((c) => c.category)]
-  const visible = cat === 'All' ? plan.shop : plan.shop.filter((c) => c.category === cat)
-  const suppliesBudget = plan.budget.filter((b) => b.id !== 'food' && b.id !== 'buffer').reduce((s, b) => s + b.amount, 0)
+  const { sel, rec, ctx } = derived
+  // Only what's selected in the plan reaches the shopping list.
+  const supplies = derived.supplies
+  const cats = ['All', ...supplies.map((g) => g.title)]
+  const visible = cat === 'All' ? supplies : supplies.filter((g) => g.title === cat)
+  const diyAll = plan.diy.map((d) => ({ ...d, id: slugify(d.name) }))
+  const diyList = diyView === 'all' ? diyAll : diyAll.filter((d) => sel.diy.includes(d.id))
+  const foodInPlan = shopping.ids.filter((id) => sel.food.includes(id))
 
   return (
     <div className="shop">
@@ -31,12 +40,12 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
           </p>
         </div>
         <div className="estimate-card">
-          <span className="estimate-card__label">Estimated supplies</span>
+          <span className="estimate-card__label">Your plan, estimated</span>
           <span className="estimate-card__value">
-            {money(plan.shopTotal.low)}–{money(plan.shopTotal.high)}
+            {derived.estimate.range[1] ? rangeText(derived.estimate.range) : 'No estimate yet'}
           </span>
           <span className="estimate-card__sub">
-            vs. {money(suppliesBudget)} set aside for decor, tableware, games & favors
+            {derived.budget == null ? 'No budget limit set' : `Party budget ${money(derived.budget)}`} · only items in your plan are listed
           </span>
         </div>
       </section>
@@ -46,15 +55,16 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
           {TABS.map(([id, label]) => (
             <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)}>
               {label}
-              {id === 'food' && shopping?.ids.length > 0 && <span className="tabs__count">{shopping.ids.length}</span>}
+              {id === 'food' && foodInPlan.length > 0 && <span className="tabs__count">{foodInPlan.length}</span>}
             </button>
           ))}
         </div>
 
-        {tab === 'food' && <FoodList plan={plan} adults={adults} shopping={shopping} />}
+        {tab === 'food' && <FoodList plan={plan} adults={adults} shopping={shopping} inPlan={sel.food} />}
 
         {tab === 'shop' && (
           <section className="section section--flush">
+            <BudgetLine derived={derived} />
             <div className="chip-wrap chip-wrap--filters">
               {cats.map((c) => (
                 <button key={c} className={`chip ${cat === c ? 'is-selected' : ''}`} onClick={() => setCat(c)}>
@@ -62,43 +72,76 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
                 </button>
               ))}
             </div>
-            {visible.map((c) => (
-              <div key={c.category} className="shop-cat">
-                <h2 className="display-3 shop-cat__title">{c.category}</h2>
-                <div className="product-grid">
-                  {c.items.map((item, i) => (
-                    <article key={item.name} className="product">
-                      <div className="product__img">
-                        <Scene kind={['detail', 'tablescape', 'balloons', 'crown', 'invite'][(i + c.category.length) % 5]} palette={pal} motif={plan.theme.motif} label={plan.theme.name} alt="" />
-                        <span className="product__ph">Product photo</span>
+            {!supplies.length && <p className="fine">Nothing in your plan needs buying yet — add ideas from your results.</p>}
+            {visible.map((g, gi) => (
+              <div key={g.id} className="shop-cat">
+                <h2 className="display-3 shop-cat__title">{g.title}</h2>
+                {g.items && (
+                  <div className="product-grid">
+                    {g.items.map((item, i) => (
+                      <article key={item.name + i} className="product">
+                        <div className="product__img">
+                          <Scene kind={['detail', 'tablescape', 'balloons', 'crown', 'invite'][(i + gi) % 5]} palette={pal} motif={plan.theme.motif} label={plan.theme.name} alt="" />
+                          <span className="product__ph">Product photo</span>
+                        </div>
+                        <div className="product__body">
+                          <h3>{item.name}</h3>
+                          <dl className="product__meta">
+                            <div>
+                              <dt>Qty</dt>
+                              <dd>{item.quantity}</dd>
+                            </div>
+                            {item.estHigh != null && (
+                              <div>
+                                <dt>Est.</dt>
+                                <dd>
+                                  {money(item.estLow)}–{money(item.estHigh)}
+                                </dd>
+                              </div>
+                            )}
+                          </dl>
+                          {item.detail && <p className="product__alt">{item.detail}</p>}
+                          <a className="btn btn--secondary btn--sm product__link" href="#shop" onClick={(e) => e.preventDefault()} aria-disabled="true" title="Placeholder — retailer links coming later">
+                            View options <span className="ph-pill">placeholder</span>
+                          </a>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+                {g.activities && (
+                  <div className="supply-groups">
+                    {g.activities.map((a) => (
+                      <div key={a.id} className="supply-group">
+                        <h3>
+                          {a.name}
+                          {a.range && <span className="fine"> · {a.range[1] === 0 ? 'free' : rangeText(a.range)}</span>}
+                        </h3>
+                        <ul className="dot-list">
+                          {a.items.map((m) => (
+                            <li key={m.name}>
+                              {m.name} <span className="fine">— {m.quantity}{m.optional ? ' · optional' : ''}{m.reusable ? ' · reusable' : ''}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <div className="product__body">
-                        <h3>{item.name}</h3>
-                        <dl className="product__meta">
-                          <div>
-                            <dt>Qty</dt>
-                            <dd>
-                              {item.quantity} {item.unit}
-                              {item.quantity > 1 ? 's' : ''}
-                            </dd>
-                          </div>
-                          <div>
-                            <dt>Est.</dt>
-                            <dd>
-                              {money(item.estLow)}–{money(item.estHigh)}
-                            </dd>
-                          </div>
-                        </dl>
-                        <p className="product__alt">
-                          <span>Save:</span> {item.diyAlt}
-                        </p>
-                        <a className="btn btn--secondary btn--sm product__link" href={item.link} onClick={(e) => e.preventDefault()} aria-disabled="true" title="Placeholder — retailer links coming later">
-                          View options <span className="ph-pill">placeholder</span>
-                        </a>
+                    ))}
+                  </div>
+                )}
+                {g.diy && (
+                  <div className="supply-groups">
+                    {g.diy.map((d) => (
+                      <div key={d.name} className="supply-group">
+                        <h3>{d.name}</h3>
+                        <ul className="dot-list">
+                          {d.materials.map((m) => (
+                            <li key={m}>{m}</li>
+                          ))}
+                        </ul>
                       </div>
-                    </article>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
             <p className="fine">
@@ -110,8 +153,20 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
 
         {tab === 'diy' && (
           <section className="section section--flush">
+            <div className="section-head-row">
+              <p className="lede">
+                {sel.diy.length
+                  ? `${sel.diy.length} ${sel.diy.length === 1 ? 'project' : 'projects'} in your plan.`
+                  : 'No DIY projects in your plan yet.'}
+              </p>
+              <SectionView view={diyView} setView={setDiyView} count={diyAll.length} noun="projects" />
+            </div>
+            {!diyList.length && <p className="fine">Switch to “Explore everything” to browse all {diyAll.length} projects.</p>}
             <div className="diy-grid">
-              {plan.diy.map((d, i) => (
+              {diyList.map((d, i) => {
+                const inPlan = sel.diy.includes(d.id)
+                const cost = itemCost(catalog, 'diy', d.id, ctx)
+                return (
                 <article key={d.name} className="diy">
                   <div className="diy__img">
                     <Scene kind={['detail', 'crown', 'invite', 'cake'][i % 4]} photo={d.photo} palette={pal} motif={plan.theme.motif} label={plan.theme.name} alt="" />
@@ -123,6 +178,15 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
                     </div>
                     <h3 className="display-3">{d.name}</h3>
                     <p className="diy__saves">{d.saves}</p>
+                    {inPlan && rec.reasons[d.id]?.[0] && <p className="act-card__match">✦ {rec.reasons[d.id][0]}</p>}
+                    {!inPlan && rec.diy.includes(d.id) && <p className="act-card__match">✦ Recommended for you</p>}
+                    {(rec.notes[d.id] || []).map((n) => (
+                      <p key={n} className="act-card__note">{n}</p>
+                    ))}
+                    <div className="diy__plan">
+                      {cost && <span className="fine">Materials {rangeText(cost)}</span>}
+                      <PlanToggle inPlan={inPlan} onToggle={() => planApi.toggle('diy', d.id, !inPlan)} label={d.name} />
+                    </div>
                     <div className="diy__cols">
                       <div>
                         <h4>Materials</h4>
@@ -143,7 +207,8 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
                     </div>
                   </div>
                 </article>
-              ))}
+                )
+              })}
             </div>
           </section>
         )}
@@ -151,6 +216,23 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
         {tab === 'swaps' && (
           <section className="section section--flush">
             <SectionHeading title="Beautiful for less" intro="Our favorite substitutions that keep the look while protecting the budget." />
+            {derived.swaps.length > 0 && (
+              <ul className="swaps">
+                {derived.swaps.map((w) => (
+                  <li key={w.slotId}>
+                    <span className="swaps__from">{w.from}</span>
+                    <span className="swaps__arrow" aria-hidden="true">→</span>
+                    <span className="swaps__to">{w.to}</span>
+                    <span className="swaps__why">
+                      Saves about ${w.save}{' '}
+                      <button type="button" className="link-btn" onClick={() => planApi.swap(w.slotId, w.variantId)}>
+                        Make this swap
+                      </button>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <ul className="swaps">
               {plan.substitutions.map((s) => (
                 <li key={s.swap}>
@@ -187,15 +269,15 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
 }
 
 /** Consolidated grocery list built from the recipes added in the menu. */
-function FoodList({ plan, adults, shopping }) {
+function FoodList({ plan, adults, shopping, inPlan }) {
   const [have, setHave] = useState(() => new Set())
   const [copied, setCopied] = useState(false)
-  const recipes = plan.food.filter((f) => f.recipe && shopping.ids.includes(f.id))
+  const recipes = plan.food.filter((f) => f.recipe && shopping.ids.includes(f.id) && inPlan.includes(f.id))
   const names = Object.fromEntries(plan.food.map((f) => [f.id, f.recipe?.title || f.name]))
   const groups = useMemo(
     () => buildShoppingList(recipes.map((f) => scaleRecipe(f.recipe, { children: plan.guests, adults })), names),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [shopping.ids.join(','), plan.guests, adults, plan.theme.id],
+    [shopping.ids.join(','), inPlan.join(','), plan.guests, adults, plan.theme.id],
   )
   const total = groups.reduce((n, g) => n + g.items.length, 0)
   const toggle = (id) =>

@@ -13,8 +13,12 @@ export default function Questionnaire({ eventType, answers, onChange, onComplete
   const set = (v) => onChange((a) => ({ ...a, [q.id]: v }))
   const toggle = (v) => {
     const cur = value || []
-    set(cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v])
+    const exclusive = q.options.filter((o) => o.exclusive).map((o) => o.value)
+    if (cur.includes(v)) return set(cur.filter((x) => x !== v))
+    // "A bit of everything" / "No dietary needs" stand alone.
+    set(exclusive.includes(v) ? [v] : [...cur.filter((x) => !exclusive.includes(x)), v])
   }
+  const allMode = q.allowAll && answers[q.allowAll.key] === 'all'
   const next = () => (isLast ? onComplete() : setStep((s) => s + 1))
   const back = () => setStep((s) => Math.max(0, s - 1))
   const theme = eventType.themes.find((t) => t.id === answers.theme) || eventType.themes[0]
@@ -89,15 +93,18 @@ export default function Questionnaire({ eventType, answers, onChange, onComplete
           )}
 
           {q.type === 'range' && (
-            <div className="range">
-              <output className="range__value">{q.format(value)}</output>
+            <div className={`range ${allMode ? 'is-off' : ''}`}>
+              <output className="range__value">{allMode ? 'No limit' : q.format(value)}</output>
               <input
                 type="range"
                 min={q.min}
                 max={q.max}
                 step={q.step}
                 value={value}
-                onChange={(e) => set(Number(e.target.value))}
+                onChange={(e) => {
+                  set(Number(e.target.value))
+                  if (allMode) onChange((a) => ({ ...a, [q.allowAll.key]: 'limit', [q.id]: Number(e.target.value) }))
+                }}
                 style={{ '--pct': `${((value - q.min) / (q.max - q.min)) * 100}%` }}
                 aria-label={q.title}
               />
@@ -105,6 +112,17 @@ export default function Questionnaire({ eventType, answers, onChange, onComplete
                 <span>{q.format(q.min)}</span>
                 <span>{q.format(q.max)}+</span>
               </div>
+              {q.allowAll && (
+                <label className={`check range__all ${allMode ? 'is-on' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={allMode}
+                    onChange={(e) => onChange((a) => ({ ...a, [q.allowAll.key]: e.target.checked ? 'all' : 'limit' }))}
+                  />
+                  <span className="check__box" aria-hidden="true" />
+                  <span>{q.allowAll.label}</span>
+                </label>
+              )}
             </div>
           )}
 
@@ -128,7 +146,7 @@ export default function Questionnaire({ eventType, answers, onChange, onComplete
         <dl className="summary-list">
           <div><dt>Age</dt><dd>{answers.ageRange}</dd></div>
           <div><dt>Guests</dt><dd>{answers.guestCount}</dd></div>
-          <div><dt>Budget</dt><dd>${answers.budget}</dd></div>
+          <div><dt>Budget</dt><dd>{answers.budgetMode === 'all' ? 'Show everything' : `$${answers.budget}`}</dd></div>
           <div><dt>Play style</dt><dd>{(answers.interests || []).length} picked</dd></div>
         </dl>
       </aside>

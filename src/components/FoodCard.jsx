@@ -1,5 +1,6 @@
 import Scene from './Scene.jsx'
 import { Tag } from './ui.jsx'
+import { PlanToggle } from './PlanBar.jsx'
 
 const PLACEHOLDER_KINDS = ['cake', 'tablescape', 'balloons', 'crown']
 const TONE = { Sweet: 'blush', Showpiece: 'blush', Fresh: 'sage', Savory: 'neutral', Drink: 'sage' }
@@ -26,31 +27,47 @@ export function MenuImage({ item, theme, index = 0, eager = false }) {
 
 export const tagTone = (tag) => TONE[tag] || 'neutral'
 
-export default function FoodCard({ item, theme, index = 0, onOpen, inList }) {
+export default function FoodCard({ item, theme, index = 0, onOpen, inList, inPlan, onToggle, reason, notes = [], costLabel }) {
   const isCake = !!item.recipe?.bakery
   return (
-    <button
-      type="button"
-      className="act-card food-card"
-      data-recipe={item.id}
-      onClick={() => onOpen(item.id)}
-      aria-label={`${item.recipe?.title || item.name} — view recipe`}
-    >
-      <div className="act-card__media food-card__media">
-        <MenuImage item={item} theme={theme} index={index} />
-        {inList && <span className="food-card__flag">On your list</span>}
-      </div>
-      <div className="act-card__body">
-        <div className="card__meta">
-          <Tag tone={tagTone(item.tag)}>{item.tag}</Tag>
-          {item.recipe?.prepTime && <span>{item.recipe.prepTime} prep</span>}
+    <article className={`act-card food-card ${inPlan ? 'act-card--in' : inPlan === false ? 'act-card--out' : ''}`}>
+      <button
+        type="button"
+        className="act-card__open"
+        data-recipe={item.id}
+        onClick={() => onOpen(item.id)}
+        aria-label={`${item.recipe?.title || item.name} — view recipe`}
+      >
+        <div className="act-card__media food-card__media">
+          <MenuImage item={item} theme={theme} index={index} />
+          {inList && <span className="food-card__flag">On your shopping list</span>}
         </div>
-        <h3 className="display-3">{item.recipe?.title || item.name}</h3>
-        <p className="act-card__desc">{item.detail}</p>
-        <span className="act-card__cta">
-          {item.recipe ? (isCake ? 'Recipe or bakery brief' : 'View recipe') : 'View details'} <span aria-hidden="true">→</span>
-        </span>
-      </div>
-    </button>
+        <div className="act-card__body">
+          <div className="card__meta">
+            <Tag tone={tagTone(item.tag)}>{item.tag}</Tag>
+            <span>
+              {item.recipe?.prepTime ? `${item.recipe.prepTime} prep` : ''}
+              {costLabel ? ` · ${costLabel}` : ''}
+            </span>
+          </div>
+          <h3 className="display-3">{item.recipe?.title || item.name}</h3>
+          <p className="act-card__desc">{item.detail}</p>
+          {reason && <p className="act-card__match">✦ {reason}</p>}
+          {notes.map((n) => (
+            <p key={n} className="act-card__note">
+              {n}
+            </p>
+          ))}
+          <span className="act-card__cta">
+            {item.recipe ? (isCake ? 'Recipe or bakery brief' : 'View recipe') : 'View details'} <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </button>
+      {onToggle && (
+        <div className="act-card__foot">
+          <PlanToggle inPlan={inPlan} onToggle={onToggle} label={item.recipe?.title || item.name} />
+        </div>
+      )}
+    </article>
   )
 }

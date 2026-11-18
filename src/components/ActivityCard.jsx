@@ -1,5 +1,6 @@
 import Scene from './Scene.jsx'
 import { Tag, Sparkle } from './ui.jsx'
+import { PlanToggle } from './PlanBar.jsx'
 
 const PLACEHOLDER_KINDS = ['crown', 'balloons', 'tablescape', 'cake']
 
@@ -28,34 +29,54 @@ export function ActivityImage({ activity, theme, index = 0, eager = false, class
   )
 }
 
-export default function ActivityCard({ activity, theme, index, playLabel, onOpen }) {
+/**
+ * Activity card. The card opens the guide; the footer adds/removes the
+ * activity from the plan. `reason` explains why it's recommended, `notes`
+ * flag suitability (age, space, budget) without hiding anything.
+ */
+export default function ActivityCard({ activity, theme, index, onOpen, inPlan, onToggle, reason, notes = [], costLabel }) {
   return (
-    <button
-      type="button"
-      className={`act-card ${activity.matches.length ? 'act-card--match' : ''}`}
-      data-activity={activity.id}
-      onClick={() => onOpen(activity.id)}
-      aria-label={`${activity.name} — view activity guide`}
-    >
-      <div className="act-card__media">
-        <ActivityImage activity={activity} theme={theme} index={index} />
-      </div>
-      <div className="act-card__body">
-        <div className="card__meta">
-          <Tag tone={activity.energy === 'Calm' ? 'sage' : 'blush'}>{activity.energy}</Tag>
-          <span>{activity.time}</span>
+    <article className={`act-card ${inPlan ? 'act-card--in' : inPlan === false ? 'act-card--out' : ''}`}>
+      <button
+        type="button"
+        className="act-card__open"
+        data-activity={activity.id}
+        onClick={() => onOpen(activity.id)}
+        aria-label={`${activity.name} — view activity guide`}
+      >
+        <div className="act-card__media">
+          <ActivityImage activity={activity} theme={theme} index={index} />
         </div>
-        <h3 className="display-3">{activity.name}</h3>
-        <p className="act-card__desc">{activity.description}</p>
-        {activity.matches.length > 0 && (
-          <p className="act-card__match">
-            <Sparkle size={10} /> For their love of {playLabel(activity.matches)}
-          </p>
-        )}
-        <span className="act-card__cta">
-          {activity.hasFullGuide ? 'View activity guide' : 'View activity'} <span aria-hidden="true">→</span>
-        </span>
-      </div>
-    </button>
+        <div className="act-card__body">
+          <div className="card__meta">
+            <Tag tone={activity.energy === 'Calm' ? 'sage' : 'blush'}>{activity.energy}</Tag>
+            <span>
+              {activity.time}
+              {costLabel ? ` · ${costLabel}` : ''}
+            </span>
+          </div>
+          <h3 className="display-3">{activity.name}</h3>
+          <p className="act-card__desc">{activity.description}</p>
+          {reason && (
+            <p className="act-card__match">
+              <Sparkle size={10} /> {reason}
+            </p>
+          )}
+          {notes.map((n) => (
+            <p key={n} className="act-card__note">
+              {n}
+            </p>
+          ))}
+          <span className="act-card__cta">
+            {activity.hasFullGuide ? 'View activity guide' : 'View activity'} <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </button>
+      {onToggle && (
+        <div className="act-card__foot">
+          <PlanToggle inPlan={inPlan} onToggle={onToggle} label={activity.name} />
+        </div>
+      )}
+    </article>
   )
 }

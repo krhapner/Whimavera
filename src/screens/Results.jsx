@@ -6,6 +6,8 @@ import ActivityGuide from '../components/ActivityGuide.jsx'
 import FoodCard from '../components/FoodCard.jsx'
 import RecipeGuide from '../components/RecipeGuide.jsx'
 import Stepper from '../components/Stepper.jsx'
+import PlanBar, { BudgetLine, SectionView, rangeText } from '../components/PlanBar.jsx'
+import { itemCost, overBudgetBy, lovesOf } from '../lib/recommend.js'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
 import { ageLabel } from '../lib/buildPlan.js'
 
@@ -44,11 +46,72 @@ export default function Results({
   adults,
   setAdults,
   shopping,
+  catalog,
+  derived,
+  planApi,
+  answers: quizAnswers,
+  setAnswers,
 }) {
   const { theme, answers } = plan
   const pal = theme.palette
+  const { rec, sel, ctx } = derived
+  const [views, setViews] = useState({ decor: 'rec', games: 'rec', food: 'rec' })
+  const globalView = Object.values(views).every((v) => v === 'all') ? 'all' : 'rec'
+  const setAllViews = (v) => setViews({ decor: v, games: v, food: v })
+
   const [done, setDone] = useState(() => new Set())
-  const totalTasks = plan.checklist.reduce((n, g) => n + g.tasks.length, 0)
+  const checklist = derived.checklist
+  const totalTasks = checklist.reduce((n, g) => n + g.tasks.length, 0)
+  const doneCount = checklist.reduce((n, g) => n + g.tasks.filter((t) => done.has(`${g.when}:${t}`)).length, 0)
+
+  // Why something is (or isn't) in the plan — every recommendation has a reason.
+  const recIds = { activities: rec.activities, food: rec.food }
+  const reasonFor = (section, id, inPlan) => {
+    if (inPlan) return rec.reasons[id]?.[0] || 'Added by you'
+    if (recIds[section]?.includes(id)) return 'Recommended for you'
+    return null
+  }
+  const notesFor = (id, inPlan, cost) => {
+    const out = [...(rec.notes[id] || [])]
+    if (!inPlan) {
+      const over = overBudgetBy(derived, cost)
+      if (over) out.push(`Adding this may take you about $${over} over budget`)
+    }
+    return out
+  }
+  const orderBy = (all, ids) => [...ids.map((id) => all.find((x) => x.id === id)).filter(Boolean), ...all.filter((x) => !ids.includes(x.id))]
+  const gameList = views.games === 'all' ? orderBy(plan.games, sel.activities) : orderBy(plan.games, sel.activities).filter((g) => sel.activities.includes(g.id))
+  const foodList = views.food === 'all' ? orderBy(plan.food, sel.food) : orderBy(plan.food, sel.food).filter((f) => sel.food.includes(f.id))
+  const listCount = shopping.ids.filter((id) => sel.food.includes(id)).length
+
+  const zoneModels = catalog.decor
+    .map((slot) => {
+      const inPlan = !!sel.slots[slot.id]
+      const variantId = sel.slots[slot.id] || rec.slots[slot.id] || (slot.variants.find((v) => v.tier === 'classic') || slot.variants[0]).id
+      const up = rec.upgrades.find((u) => u.slotId === slot.id && u.variantId !== variantId)
+      const upV = up && slot.variants.find((v) => v.id === up.variantId)
+      return {
+        id: slot.id,
+        zone: slot.zone,
+        photo: slot.info?.photo,
+        inPlan,
+        variantId,
+        reason: rec.reasons[slot.id]?.[0] || (inPlan ? 'Added by you' : null),
+        upgrade: upV ? `${upV.name} (${rangeText(itemCost(catalog, 'decor', slot.id, ctx, upV.id))})` : null,
+        variants: slot.variants.map((v) => ({ ...v, costLabel: v.cost ? rangeText(itemCost(catalog, 'decor', slot.id, ctx, v.id)) : null })),
+      }
+    })
+    .filter((z) => views.decor === 'all' || z.inPlan)
+
+  const loves = lovesOf(answers)
+  const gamesIntro = (answers.interests || []).includes('everything')
+    ? 'A balanced mix of calm and active play, picked for a child who loves a bit of everything.'
+    : loves.length
+      ? `Picked for a child who loves ${listify(loves.map((k) => PLAY[k]))}, with calm and active moments balanced.`
+      : 'Alternating calm and active keeps little guests happy (and avoids meltdowns).'
+  const lengthLabel = { 90: '1½-hour', 120: '2-hour', 180: '3-hour' }[Number(answers.duration) || 120]
+  const dietList = (answers.diet || []).filter((d) => d !== 'none')
+  const dietText = dietList.length ? ` and suited to ${listify(dietList)} guests` : ''
   const toggle = (key) =>
     setDone((s) => {
       const n = new Set(s)
@@ -94,14 +157,14 @@ export default function Results({
             <ul className="fact-chips">
               <li>{ageLabel(answers.ageRange)}</li>
               <li>{plan.guests} guests</li>
-              <li>{money(plan.total)} budget</li>
+              <li>{answers.budgetMode === 'all' ? 'No budget limit' : `${money(plan.total)} budget`}</li>
               <li>{LABELS.location[answers.location]}</li>
               <li>{LABELS.style[answers.style]}</li>
               <li>{LABELS.prepTime[answers.prepTime]}</li>
             </ul>
             <div className="hero__actions">
               <Button as="a" href="#shop">Shop or DIY this plan</Button>
-              <Button as="a" href="#plan" variant="ghost">Edit answers</Button>
+              <Button as="a" href="#plan" variant="ghost">Retake the quiz</Button>
             </div>
           </div>
           <figure className="plan-hero__img">
@@ -118,6 +181,15 @@ export default function Results({
           </div>
         )}
       </section>
+
+      <PlanBar
+        derived={derived}
+        answers={quizAnswers}
+        setAnswers={setAnswers}
+        view={globalView}
+        setView={setAllViews}
+        onSwap={(slotId, variantId) => planApi.swap(slotId, variantId)}
+      />
 
       <nav className="section-nav" aria-label="Plan sections">
         <div className="container section-nav__inner">
@@ -154,109 +226,152 @@ export default function Results({
       {/* Decor & setup */}
       <section className="section section--tinted" id="decor">
         <div className="container">
-          <SectionHeading
-            eyebrow="02 · Decorations & setup"
-            title={plan.headings?.decor || 'Setting the scene'}
-            intro={`Laid out for a ${LABELS.location[answers.location].toLowerCase()} party. Tap each zone to see it — set up in this order and you’ll be done in about three hours.`}
+          <div className="section-head-row">
+            <SectionHeading
+              eyebrow="02 · Decorations & setup"
+              title={plan.headings?.decor || 'Setting the scene'}
+              intro={`Laid out for a ${LABELS.location[answers.location].toLowerCase()} party. Tap each zone to see it, choose the version that suits you, and set up in this order.`}
+            />
+            <SectionView view={views.decor} setView={(v) => setViews((x) => ({ ...x, decor: v }))} count={catalog.decor.length} noun="setup ideas" />
+          </div>
+          <ZoneExplorer
+            zones={zoneModels}
+            theme={theme}
+            onToggle={(id, on) => planApi.toggle('decor', id, on)}
+            onSwap={(slotId, variantId) => planApi.swap(slotId, variantId)}
           />
-          <ZoneExplorer zones={plan.setup} theme={theme} />
         </div>
       </section>
 
       {/* Budget */}
       <section className="section container" id="budget">
         <SectionHeading
-          eyebrow="03 · Budget breakdown"
-          title={`How ${money(plan.total)} comes together`}
-          intro="A suggested split — move money between categories to suit what matters most to you."
+          eyebrow="03 · Budget"
+          title={derived.budget == null ? 'What it could cost' : `Planning within ${money(derived.budget)}`}
+          intro="Estimates are ranges for everything currently in your plan. They update as you add, remove or swap ideas."
         />
         <div className="budget">
-          <div className="budget__bar" role="img" aria-label="Budget split">
-            {plan.budget.map((b, i) => (
-              <span key={b.id} style={{ flex: b.share, background: pal[i % pal.length].hex }} title={`${b.label}: ${money(b.amount)}`} />
-            ))}
-          </div>
-          <ul className="budget__rows">
-            {plan.budget.map((b, i) => (
-              <li key={b.id}>
+          <BudgetLine derived={derived} />
+          <ul className="budget__rows budget__rows--est">
+            {derived.estimate.categories.map((c, i) => (
+              <li key={c.id}>
                 <span className="budget__dot" style={{ background: pal[i % pal.length].hex }} />
                 <div className="budget__label">
-                  <strong>{b.label}</strong>
-                  <span>{b.note}</span>
+                  <strong>{c.label}</strong>
+                  <span>{c.items.map((it) => it.name).join(' · ')}</span>
                 </div>
-                <span className="budget__pct">{Math.round(b.share * 100)}%</span>
-                <span className="budget__amt">{money(b.amount)}</span>
+                <span className="budget__amt">{rangeText(c.range)}</span>
               </li>
             ))}
             <li className="budget__total">
               <span />
               <div className="budget__label">
-                <strong>Total</strong>
+                <strong>Estimated total</strong>
+                {derived.estimate.upgrades[1] > 0 && <span>Includes optional upgrades of {rangeText(derived.estimate.upgrades)}</span>}
               </div>
-              <span />
-              <span className="budget__amt">{money(plan.budget.reduce((s, b) => s + b.amount, 0))}</span>
+              <span className="budget__amt">
+                {rangeText(derived.estimate.range)}
+                {derived.estimate.incomplete ? '+' : ''}
+              </span>
             </li>
           </ul>
-          <p className="fine">Per guest: about {money(plan.total / plan.guests)}. Amounts are planning targets, not quotes.</p>
+          <p className="fine">
+            Ranges are planning estimates for generic items, not quotes.
+            {derived.estimate.incomplete > 0 && ` ${derived.estimate.incomplete} item${derived.estimate.incomplete === 1 ? ' has' : 's have'} no estimate yet, so the total may be higher.`}
+          </p>
         </div>
       </section>
 
       {/* Games */}
       <section className="section section--tinted" id="games">
         <div className="container">
-          <SectionHeading
-            eyebrow="04 · Games & activities"
-            title={`Made for ${ageLabel(answers.ageRange)}`}
-            intro={
-              (answers.interests || []).length
-                ? `Picked first for a child who loves ${listify((answers.interests || []).map((k) => PLAY[k]))}. Alternate calm and active to keep the energy happy.`
-                : 'Alternating calm and active keeps little guests happy (and avoids meltdowns).'
-            }
-          />
-          <div className="act-grid">
-            {plan.games.map((g, i) => (
-              <ActivityCard key={g.id} activity={g} theme={theme} index={i} playLabel={playLabel} onOpen={onOpenGuide} />
-            ))}
+          <div className="section-head-row">
+            <SectionHeading
+              eyebrow="04 · Games & activities"
+              title={`Made for ${ageLabel(answers.ageRange)}`}
+              intro={gamesIntro}
+            />
+            <SectionView view={views.games} setView={(v) => setViews((x) => ({ ...x, games: v }))} count={plan.games.length} noun="activities" />
           </div>
+          <div className="act-grid">
+            {gameList.map((g, i) => {
+              const inPlan = sel.activities.includes(g.id)
+              const cost = itemCost(catalog, 'activities', g.id, ctx)
+              return (
+                <ActivityCard
+                  key={g.id}
+                  activity={g}
+                  theme={theme}
+                  index={i}
+                  onOpen={onOpenGuide}
+                  inPlan={inPlan}
+                  onToggle={() => planApi.toggle('activities', g.id, !inPlan)}
+                  reason={reasonFor('activities', g.id, inPlan)}
+                  notes={notesFor(g.id, inPlan, cost)}
+                  costLabel={cost ? (cost[1] === 0 ? 'free' : rangeText(cost)) : null}
+                />
+              )
+            })}
+          </div>
+          {views.games === 'rec' && <p className="fine section-foot">Planned for a {lengthLabel} party — explore all activities to add more.</p>}
         </div>
       </section>
 
       {/* Food */}
       <section className="section container" id="food">
-        <SectionHeading
-          eyebrow="05 · Food & refreshments"
-          title={plan.headings?.food || 'The menu'}
-          intro={`Recipes are scaled for ${plan.guests} children. Add grown-ups if they’ll be eating too — tap any dish for the full recipe.`}
-        />
+        <div className="section-head-row">
+          <SectionHeading
+            eyebrow="05 · Food & refreshments"
+            title={plan.headings?.food || 'The menu'}
+            intro={`Recipes are scaled for ${plan.guests} children${dietText}. Add grown-ups if they’ll be eating too — tap any dish for the full recipe.`}
+          />
+          <SectionView view={views.food} setView={(v) => setViews((x) => ({ ...x, food: v }))} count={plan.food.length} noun="dishes" />
+        </div>
         <div className="menu-bar">
           <Stepper label="Adults eating too" value={adults} onChange={setAdults} />
-          <a href="#shopping" className={`menu-bar__list ${shopping.ids.length ? 'has-items' : ''}`}>
-            {shopping.ids.length
-              ? `Shopping list · ${shopping.ids.length} ${shopping.ids.length === 1 ? 'recipe' : 'recipes'}`
-              : 'Your shopping list is empty'}
+          <a href="#shopping" className={`menu-bar__list ${listCount ? 'has-items' : ''}`}>
+            {listCount ? `Shopping list · ${listCount} ${listCount === 1 ? 'recipe' : 'recipes'}` : 'Your shopping list is empty'}
             <span aria-hidden="true"> →</span>
           </a>
         </div>
         <div className="food-grid">
-          {plan.food.map((f, i) => (
-            <FoodCard
-              key={f.id}
-              index={i}
-              item={f}
-              theme={theme}
-              onOpen={onOpenRecipe}
-              inList={shopping.ids.includes(f.id)}
-            />
-          ))}
+          {foodList.map((f, i) => {
+            const inPlan = sel.food.includes(f.id)
+            const cost = itemCost(catalog, 'food', f.id, ctx)
+            return (
+              <FoodCard
+                key={f.id}
+                index={i}
+                item={f}
+                theme={theme}
+                onOpen={onOpenRecipe}
+                inList={inPlan && shopping.ids.includes(f.id)}
+                inPlan={inPlan}
+                onToggle={() => planApi.toggle('food', f.id, !inPlan)}
+                reason={reasonFor('food', f.id, inPlan)}
+                notes={notesFor(f.id, inPlan, cost)}
+                costLabel={cost ? rangeText(cost) : null}
+              />
+            )
+          })}
         </div>
       </section>
 
       {/* Timeline */}
       <section className="section section--tinted" id="timeline">
         <div className="container">
-          <SectionHeading eyebrow="06 · Party-day timeline" title="The day, gently paced" intro={`A two-hour party from ${plan.timeline[3].time} to ${plan.timeline[9].time}, built around their favorite activities.`} />
+          <SectionHeading
+            eyebrow="06 · Party-day timeline"
+            title="The day, gently paced"
+            intro={`From ${derived.timeline.start} to ${derived.timeline.end}, built around the activities in your plan.`}
+          />
+          {derived.timeline.over > 0 && (
+            <p className="notice notice--soft">
+              This runs about {derived.timeline.over} minutes longer than your {lengthLabel} party. Remove an activity, or allow a little extra time.
+            </p>
+          )}
           <ol className="timeline">
-            {plan.timeline.map((t, i) => (
+            {derived.timeline.rows.map((t, i) => (
               <li key={i} className={t.prep ? 'is-prep' : ''}>
                 <time>{t.time}</time>
                 <div>
@@ -271,17 +386,17 @@ export default function Results({
 
       {/* Checklist */}
       <section className="section container" id="checklist">
-        <SectionHeading eyebrow="07 · Preparation checklist" title="Three weeks to wonderful" />
+        <SectionHeading eyebrow="07 · Preparation checklist" title="Three weeks to wonderful" intro="Tasks for exactly what’s in your plan." />
         <div className="progress">
           <div className="progress__bar">
-            <span style={{ width: `${(done.size / totalTasks) * 100}%` }} />
+            <span style={{ width: `${(doneCount / totalTasks) * 100}%` }} />
           </div>
           <span>
-            {done.size} of {totalTasks} done
+            {doneCount} of {totalTasks} done
           </span>
         </div>
         <div className="checklist">
-          {plan.checklist.map((g) => (
+          {checklist.map((g) => (
             <div key={g.when} className="checklist__group">
               <h3 className="display-3">{g.when}</h3>
               <ul>

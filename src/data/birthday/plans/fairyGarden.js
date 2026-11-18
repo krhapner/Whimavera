@@ -98,7 +98,7 @@ const fairyGarden = {
       description:
         'Butterfly-pea tea turns from blue to pink with a squeeze of lemon. Little scientists mix "potions" in clear cups and name their spells.',
       energy: 'Calm',
-      kinds: ['science', 'cooking', 'pretend'],
+      kinds: ['pretend', 'science', 'cooking'],
     },
     {
       name: 'Musical Toadstools',
@@ -106,7 +106,7 @@ const fairyGarden = {
       description:
         'Musical chairs, gently: non-slip toadstool mats on the grass and nobody is "out" — remove a toadstool and everyone shares.',
       energy: 'Active',
-      kinds: ['music', 'active'],
+      kinds: ['active', 'music'],
     },
     {
       name: 'Freeze, Fairy!',
@@ -114,7 +114,7 @@ const fairyGarden = {
       description:
         'Flutter while the music plays; freeze in your best fairy pose when it stops. Perfect between activities.',
       energy: 'Active',
-      kinds: ['music', 'active', 'pretend'],
+      kinds: ['active', 'music', 'pretend'],
     },
     {
       name: 'Bug & Bloom Safari',
@@ -122,7 +122,7 @@ const fairyGarden = {
       description:
         'Magnifying glasses and a picture checklist: a ladybug, a feather, something purple, a heart-shaped leaf.',
       energy: 'Active',
-      kinds: ['outdoors', 'science', 'hunts'],
+      kinds: ['hunts', 'outdoors', 'science'],
     },
     {
       name: 'Fairy Storytime',
@@ -163,11 +163,10 @@ const fairyGarden = {
     goodbye: ['Flutter home', 'Favors from the favor tree.'],
   },
 
+  // Item-specific prep (crowns, gems, cake…) is added by the catalog for
+  // whatever the parent selects; these are the general Fairy Garden tasks.
   checklistExtras: {
-    '2 weeks before': ['Gather crown and wand supplies'],
-    '1 week before': ['Paint toadstools and make the fairy door'],
-    'Day before': ['Bake cake layers', 'Prep crown bases and gem pouches'],
-    'Party day': ['Hide the treasure-hunt gems'],
+    'Day before': ['Chill drinks and fruit; set out serving platters'],
   },
 
   // Shop list. qty: { fixed } or { perGuest, extra }. est: planning estimate per unit/pack.
@@ -205,7 +204,6 @@ const fairyGarden = {
       items: [
         { name: 'Kraft favor bags & ribbon', qty: { perGuest: 1, extra: 2 }, unit: 'bag', est: [0.3, 0.6], diyAlt: 'Lunch bags + washi tape' },
         { name: 'Wildflower seed packets', qty: { perGuest: 1, extra: 0 }, unit: 'packet', est: [0.8, 1.5], diyAlt: 'Seed paper you make together' },
-        { name: 'Mini fairy wings', qty: { perGuest: 1, extra: 0 }, unit: 'pair', est: [1.2, 2], diyAlt: 'Cellophane + wire hanger wings' },
       ],
     },
   ],

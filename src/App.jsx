@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Header, Footer } from './components/Layout.jsx'
 import { liveEventType } from './data/eventTypes.js'
 import { buildPlan } from './lib/buildPlan.js'
+import { buildCatalog, derivePlan, emptySelections, toggleSelection, swapVariant } from './lib/recommend.js'
+import { catalogMetaByTheme } from './data/birthday/catalog/index.js'
 import { useHashRoute, navigate, baseRouteOf, guideIdFrom, recipeIdFrom } from './lib/router.js'
 import Home from './screens/Home.jsx'
 import Questionnaire from './screens/Questionnaire.jsx'
@@ -115,6 +117,32 @@ export default function App() {
 
   const plan = useMemo(() => buildPlan(liveEventType, answers), [answers])
 
+  // Quiz answers and the parent's own choices are stored separately. Choices
+  // are kept per theme as additions/removals/swaps on top of recommendations,
+  // so recalculating recommendations never overwrites them.
+  const [allSelections, setAllSelections] = usePersisted('whimavera.selections.v1', {})
+  const selections = allSelections[plan.theme.id] || emptySelections()
+  const catalog = useMemo(() => buildCatalog(plan, catalogMetaByTheme[plan.theme.id]), [plan])
+  const derived = useMemo(
+    () => derivePlan(plan, catalog, answers, selections, { adults }),
+    [plan, catalog, answers, selections, adults],
+  )
+  const updateSelections = useCallback(
+    (fn) => setAllSelections((all) => ({ ...all, [plan.theme.id]: fn(all[plan.theme.id] || emptySelections()) })),
+    [plan.theme.id, setAllSelections],
+  )
+  const recIds = {
+    activities: derived.rec.activities,
+    food: derived.rec.food,
+    diy: derived.rec.diy,
+    decor: Object.keys(derived.rec.slots),
+  }
+  const planApi = {
+    toggle: (section, id, on) => updateSelections((s) => toggleSelection(s, section, id, on, recIds[section])),
+    swap: (slotId, variantId) => updateSelections((s) => swapVariant(s, slotId, variantId)),
+    reset: () => updateSelections(() => emptySelections()),
+  }
+
   const startWithTheme = (themeId) => {
     setAnswers((a) => ({ ...a, theme: themeId }))
     navigate('plan')
@@ -153,6 +181,11 @@ export default function App() {
           adults={adults}
           setAdults={setAdults}
           shopping={shopping}
+          catalog={catalog}
+          derived={derived}
+          planApi={planApi}
+          answers={answers}
+          setAnswers={setAnswers}
         />
       )
       break
@@ -164,6 +197,9 @@ export default function App() {
           initialTab={baseRoute === 'shopping' ? 'food' : undefined}
           adults={adults}
           shopping={shopping}
+          catalog={catalog}
+          derived={derived}
+          planApi={planApi}
         />
       )
       break

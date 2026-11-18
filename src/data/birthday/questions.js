@@ -29,6 +29,7 @@ export const birthdayQuestions = [
       { value: 'science', label: 'Science & experiments' },
       { value: 'outdoors', label: 'Exploring outdoors' },
       { value: 'quiet', label: 'Stories & quiet play' },
+      { value: 'everything', label: 'A bit of everything', exclusive: true },
     ],
   },
   {
@@ -58,11 +59,23 @@ export const birthdayQuestions = [
     max: 1000,
     step: 25,
     format: (v) => `$${v}`,
+    allowAll: { key: 'budgetMode', label: 'Show me everything, regardless of budget' },
+  },
+  {
+    id: 'duration',
+    type: 'single',
+    eyebrow: 'Step six',
+    title: 'How long will the party be?',
+    options: [
+      { value: 90, label: 'About 1½ hours', note: 'Lovely for little ones' },
+      { value: 120, label: 'About 2 hours', note: 'The sweet spot' },
+      { value: 180, label: 'About 3 hours', note: 'Room for everything' },
+    ],
   },
   {
     id: 'location',
     type: 'single',
-    eyebrow: 'Step six',
+    eyebrow: 'Step seven',
     title: 'Where will you celebrate?',
     options: [
       { value: 'backyard', label: 'Backyard or garden' },
@@ -72,9 +85,24 @@ export const birthdayQuestions = [
     ],
   },
   {
+    id: 'diet',
+    type: 'multi',
+    eyebrow: 'Step eight',
+    title: 'Any dietary needs among the guests?',
+    hint: 'We’ll only recommend dishes that work, and point out the swaps.',
+    options: [
+      { value: 'none', label: 'No dietary needs', exclusive: true },
+      { value: 'nut-free', label: 'Nut-free' },
+      { value: 'gluten-free', label: 'Gluten-free' },
+      { value: 'dairy-free', label: 'Dairy-free' },
+      { value: 'egg-free', label: 'Egg-free' },
+      { value: 'vegetarian', label: 'Vegetarian' },
+    ],
+  },
+  {
     id: 'style',
     type: 'single',
-    eyebrow: 'Step seven',
+    eyebrow: 'Step nine',
     title: 'Do you prefer to make or to buy?',
     options: [
       { value: 'diy', label: 'Mostly DIY', note: 'I love a project' },
@@ -102,7 +130,10 @@ export const defaultBirthdayAnswers = {
   theme: 'fairy-garden',
   guestCount: 12,
   budget: 300,
+  budgetMode: 'limit',
+  duration: 120,
   location: 'backyard',
+  diet: ['none'],
   style: 'mix',
   prepTime: 'weekend',
 }
