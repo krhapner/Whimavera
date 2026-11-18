@@ -35,26 +35,31 @@ const fairyGarden = {
   setup: [
     {
       zone: 'Welcome arch',
+      photo: 'zoneWelcomeArch',
       description:
         'Frame the entry with a half-arch of blush, sage and lavender balloons woven with faux ivy. A hand-lettered "Fairies Welcome" sign leans on a small easel.',
     },
     {
       zone: 'The fairy feast table',
+      photo: 'zoneFeastTable',
       description:
         'A low table (or a coffee table with floor cushions) dressed with a moss runner, mismatched bud vases, paper toadstools and warm string lights down the center.',
     },
     {
       zone: 'Craft glade',
+      photo: 'zoneCraftGlade',
       description:
         'A side table for wands and flower crowns. Pre-sort supplies into small baskets so little hands can help themselves.',
     },
     {
       zone: 'Photo nook',
+      photo: 'zonePhotoNook',
       description:
         'Drape sheer fabric from a branch or curtain rod, add a basket of wings and wands, and string fairy lights behind for a dreamy glow.',
     },
     {
       zone: 'Favor tree',
+      photo: 'zoneFavorTree',
       description:
         'Hang kraft favor bags with ribbon from a potted branch or tree limb near the exit — the last bit of magic on the way out.',
     },

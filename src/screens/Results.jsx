@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Scene from '../components/Scene.jsx'
+import ZoneExplorer from '../components/ZoneExplorer.jsx'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
 import { ageLabel } from '../lib/buildPlan.js'
 
@@ -116,19 +117,9 @@ export default function Results({ plan, onShowExample }) {
           <SectionHeading
             eyebrow="02 · Decorations & setup"
             title={plan.headings?.decor || 'Setting the scene'}
-            intro={`Laid out for a ${LABELS.location[answers.location].toLowerCase()} party. Set up in this order and you’ll be done in about three hours.`}
+            intro={`Laid out for a ${LABELS.location[answers.location].toLowerCase()} party. Tap each zone to see it — set up in this order and you’ll be done in about three hours.`}
           />
-          <ol className="zones">
-            {plan.setup.map((z, i) => (
-              <li key={z.zone} className="zone">
-                <span className="zone__n">{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <h3 className="display-3">{z.zone}</h3>
-                  <p>{z.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <ZoneExplorer zones={plan.setup} theme={theme} />
         </div>
       </section>
 

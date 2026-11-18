@@ -41,5 +41,10 @@ export const ownPhotos = {
   balloonArch: { alt: 'Blush, peach and sage balloon arch with paper butterflies and toadstools', focus: '50% 40%' },
   fairyInvite: { alt: 'Deckled-edge watercolor fairy invitation with a pink envelope', focus: '50% 45%' },
   crownStation: { alt: 'A flower crown station with ribbons and baskets of blooms', focus: '50% 55%' },
+  zoneWelcomeArch: { alt: 'Balloon arch with ivy, toadstools and a "Fairies Welcome" sign', focus: '50% 50%' },
+  zoneFeastTable: { alt: 'Low feast table with a moss runner, pink plates and floor cushions', focus: '50% 50%' },
+  zoneCraftGlade: { alt: 'Craft table with star wands, ribbons and flower crowns', focus: '50% 50%' },
+  zonePhotoNook: { alt: 'Sheer fabric and fairy lights draped from a tree, with wings and cushions', focus: '50% 50%' },
+  zoneFavorTree: { alt: 'Kraft favor boxes tied with ribbon hanging from a potted tree', focus: '50% 40%' },
   fairyTreats: { alt: 'Rose cupcakes and a butterfly on a moss table runner', focus: '45% 65%' },
 }
