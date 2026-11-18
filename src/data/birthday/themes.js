@@ -1,0 +1,92 @@
+// Theme catalog. `motif` drives the illustrated photography placeholders;
+// `photos` keys point to data/photos.js; themes without them use illustrations.
+export const birthdayThemes = [
+  {
+    id: 'fairy-garden',
+    name: 'Fairy Garden',
+    tagline: 'Moss, toadstools & twinkling lights',
+    motif: 'mushroom',
+    ages: ['3-5', '6-8'],
+    photos: { hero: 'blushCake', card: 'redMushroom', detail: 'mossMushrooms' },
+    palette: [
+      { name: 'Blush Petal', hex: '#E9C6C1' },
+      { name: 'Sage Moss', hex: '#A9B79E' },
+      { name: 'Lavender Mist', hex: '#CBC2DD' },
+      { name: 'Buttercup', hex: '#F1E2B2' },
+      { name: 'Antique Gold', hex: '#B89A5E' },
+    ],
+  },
+  {
+    id: 'under-the-sea',
+    name: 'Under the Sea',
+    tagline: 'Pearls, shells & seafoam blues',
+    motif: 'shell',
+    ages: ['3-5', '6-8'],
+    palette: [
+      { name: 'Seafoam', hex: '#B7D6CF' },
+      { name: 'Pearl', hex: '#F3EDE3' },
+      { name: 'Coral Blush', hex: '#EBB9A6' },
+      { name: 'Tide Blue', hex: '#8FB1C4' },
+      { name: 'Sand', hex: '#DCCBA8' },
+    ],
+  },
+  {
+    id: 'starry-night',
+    name: 'Starry Night',
+    tagline: 'Moons, constellations & soft gold',
+    motif: 'star',
+    ages: ['6-8', '9-12'],
+    palette: [
+      { name: 'Midnight', hex: '#3E4A6B' },
+      { name: 'Dusk Lilac', hex: '#B8B1D3' },
+      { name: 'Moonbeam', hex: '#F2ECDD' },
+      { name: 'Star Gold', hex: '#D2B26C' },
+      { name: 'Cloud', hex: '#DCE1EA' },
+    ],
+  },
+  {
+    id: 'woodland-tea',
+    name: 'Woodland Tea Party',
+    tagline: 'Teacups, ferns & honey cakes',
+    motif: 'teacup',
+    ages: ['3-5', '6-8', '9-12'],
+    palette: [
+      { name: 'Fern', hex: '#9BAA8A' },
+      { name: 'Honey', hex: '#E5C98F' },
+      { name: 'Rosewater', hex: '#E6C3C3' },
+      { name: 'Oat', hex: '#EFE6D6' },
+      { name: 'Bark', hex: '#8C735A' },
+    ],
+  },
+  {
+    id: 'dino-dig',
+    name: 'Dino Dig',
+    tagline: 'Fossils, ferns & desert sunsets',
+    motif: 'leaf',
+    ages: ['3-5', '6-8'],
+    palette: [
+      { name: 'Terracotta', hex: '#D8A386' },
+      { name: 'Olive', hex: '#A3A57E' },
+      { name: 'Dune', hex: '#EAD9BB' },
+      { name: 'Clay', hex: '#BC8C6E' },
+      { name: 'Sky', hex: '#C9DCE0' },
+    ],
+  },
+  {
+    id: 'rainbow-picnic',
+    name: 'Rainbow Picnic',
+    tagline: 'Gingham, berries & sunny pastels',
+    motif: 'rainbow',
+    ages: ['1-2', '3-5'],
+    photos: { card: 'pastelSetup' },
+    palette: [
+      { name: 'Strawberry', hex: '#EDB3B0' },
+      { name: 'Apricot', hex: '#F2CDA3' },
+      { name: 'Lemon', hex: '#F3E6A9' },
+      { name: 'Mint', hex: '#BFDCC5' },
+      { name: 'Periwinkle', hex: '#BFC6E6' },
+    ],
+  },
+]
+
+export const themeById = (id) => birthdayThemes.find((t) => t.id === id) || birthdayThemes[0]
