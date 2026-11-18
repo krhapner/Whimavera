@@ -10,6 +10,7 @@ Requires Node 18+.
 
 ```bash
 npm install
+npm run photos       # one-time: download the stock photos into the project
 npm run dev          # open http://localhost:5173
 ```
 
@@ -58,5 +59,5 @@ To add a new celebration type such as weddings, register it in `eventTypes.js` w
 
 - **Costs** are illustrative planning estimates for generic items, not real product or retailer prices.
 - **Product links** are placeholders (`#`).
-- **Photography** comes from free Unsplash photos, hot-linked by id. If a photo can't load, the matching illustrated scene shows instead. Themes without photos use their illustrations. Before launch, download the chosen photos into `/public/photos` and point `photoUrl()` at them.
+- **Photography** comes from free Unsplash photos, listed in `src/data/photos.js`. `npm run photos` downloads them into `src/assets/photos/` so they're bundled into every build, including the single-file preview. If a photo isn't downloaded it's hot-linked instead, and if it can't load at all the matching illustrated scene shows. Themes without photos use their illustrations.
 - No payments, accounts, AI calls or retailer integrations.
