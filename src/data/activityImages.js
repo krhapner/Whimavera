@@ -23,7 +23,7 @@ export const activityImageAlt = {
   'bug-bloom-safari': 'Pastel magnifying glasses, picture checklists and clipboards on a garden table',
   'wish-jars': 'Jars of pastel sand, confetti, funnels and wish scrolls on a craft table',
   'musical-toadstools': 'Red-and-white toadstool mats in a circle on the lawn',
-  'fairy-storytime': 'Children on blankets listening to a story in the garden',
+  'fairy-storytime': 'Children in fairy wings on pastel cushions and blankets under a tree, with a basket of picture books',
 }
 
 export const slugify = (s) =>
