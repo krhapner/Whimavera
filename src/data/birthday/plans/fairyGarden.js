@@ -104,7 +104,7 @@ const fairyGarden = {
       name: 'Musical Toadstools',
       time: '10 min',
       description:
-        'Musical chairs, gently: paper toadstool mats on the grass and nobody is "out" — remove a toadstool and everyone shares.',
+        'Musical chairs, gently: non-slip toadstool mats on the grass and nobody is "out" — remove a toadstool and everyone shares.',
       energy: 'Active',
       kinds: ['music', 'active'],
     },

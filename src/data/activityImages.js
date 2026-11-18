@@ -16,13 +16,13 @@ for (const [path, url] of Object.entries(files)) {
 /** Descriptive alt text per activity image (used when the image exists). */
 export const activityImageAlt = {
   'flower-crown-studio': 'Children’s flower crowns made from faux blooms and ribbon on a craft table',
-  'fairy-treasure-hunt': 'Fairy gems and drawstring pouches hidden among garden flowers',
-  'toadstool-cupcake-bar': 'Cupcakes decorated as red-and-white spotted toadstools',
-  'fairy-potion-lab': 'Clear cups of blue butterfly-pea tea turning purple with lemon',
-  'freeze-fairy': 'Children in fairy wings dancing on the lawn',
-  'bug-bloom-safari': 'A child looking at a flower through a magnifying glass',
-  'wish-jars': 'Small jars layered with pastel sand and rolled wish scrolls',
-  'musical-toadstools': 'Toadstool mats arranged in a circle on the grass',
+  'fairy-treasure-hunt': 'A basket of large fairy gems, drawstring pouches and picture clue cards on a garden bench',
+  'toadstool-cupcake-bar': 'A cupcake decorating table with pink and red frosting, white candy spots and finished toadstool cupcakes',
+  'fairy-potion-lab': 'Cups of blue butterfly-pea tea turning purple and pink beside lemon wedges and droppers',
+  'freeze-fairy': 'A speaker and a basket of fairy wings and ribbon wands on the lawn by pastel balloons',
+  'bug-bloom-safari': 'Pastel magnifying glasses, picture checklists and clipboards on a garden table',
+  'wish-jars': 'Jars of pastel sand, confetti, funnels and wish scrolls on a craft table',
+  'musical-toadstools': 'Red-and-white toadstool mats in a circle on the lawn',
   'fairy-storytime': 'Children on blankets listening to a story in the garden',
 }
 
