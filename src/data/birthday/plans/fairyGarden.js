@@ -14,12 +14,12 @@ const fairyGarden = {
   moodWords: ['Whimsical', 'Botanical', 'Soft-lit', 'Hand-made'],
 
   board: [
-    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'fairyTable' },
-    { kind: 'cake', caption: 'Butterflies at golden hour', photo: 'fairyCupcake' },
-    { kind: 'detail', caption: 'Wings & flower crowns', photo: 'fairyPortrait' },
-    { kind: 'balloons', caption: 'Rose cupcakes', photo: 'fairyTreats' },
-    { kind: 'invite', caption: 'Moss runner & wild roses', photo: 'fairyHero' },
-    { kind: 'crown', caption: 'Toadstools & moss', photo: 'fairyToadstools' },
+    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'feastTable' },
+    { kind: 'cake', caption: 'Semi-naked cake with pressed blooms', photo: 'fairyCake' },
+    { kind: 'detail', caption: 'Toadstool place cards', photo: 'toadstoolCards' },
+    { kind: 'balloons', caption: 'Blush & sage balloon arch', photo: 'balloonArch' },
+    { kind: 'invite', caption: 'Deckled-edge invitation', photo: 'fairyInvite' },
+    { kind: 'crown', caption: 'Flower crown station', photo: 'crownStation' },
   ],
 
   // Budget split as shares of the total budget.
@@ -228,6 +228,7 @@ const fairyGarden = {
     },
     {
       name: 'Flower Crown Bases',
+      photo: 'crownStation',
       time: '45 min',
       difficulty: 'Easy',
       saves: 'Lets crowns cost a fraction of pre-made ones',
@@ -254,6 +255,7 @@ const fairyGarden = {
     },
     {
       name: 'Pressed-Bloom Cake Topping',
+      photo: 'fairyCake',
       time: '30 min',
       difficulty: 'Easy',
       saves: 'Bakery look on a homemade cake',

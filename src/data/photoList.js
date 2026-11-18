@@ -35,5 +35,11 @@ export const ownPhotos = {
   fairyPortrait: { alt: 'A smiling girl in fairy wings and a flower crown', focus: '50% 35%' },
   fairyCupcake: { alt: 'A cupcake with a butterfly on a mossy table at golden hour', focus: '50% 60%' },
   fairyToadstools: { alt: 'Red-and-white painted toadstools on a moss runner with balloons', focus: '40% 55%' },
+  feastTable: { alt: 'A child-height feast table with scalloped plates, wildflowers and fairy houses', focus: '50% 55%' },
+  fairyCake: { alt: 'Two-tier cake with pressed flowers and a butterfly topper', focus: '50% 45%' },
+  toadstoolCards: { alt: 'Toadstool place-card holders on moss', focus: '50% 50%' },
+  balloonArch: { alt: 'Blush, peach and sage balloon arch with paper butterflies and toadstools', focus: '50% 40%' },
+  fairyInvite: { alt: 'Deckled-edge watercolor fairy invitation with a pink envelope', focus: '50% 45%' },
+  crownStation: { alt: 'A flower crown station with ribbons and baskets of blooms', focus: '50% 55%' },
   fairyTreats: { alt: 'Rose cupcakes and a butterfly on a moss table runner', focus: '45% 65%' },
 }
