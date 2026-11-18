@@ -115,7 +115,7 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
       {/* Editorial feature */}
       <section className="section container feature">
         <div className="feature__images">
-          <Scene kind="cake" photo="donutTower" palette={featured.palette} className="feature__a" alt="Fairy garden cake" />
+          <Scene kind="cake" photo="fairyPortrait" palette={featured.palette} className="feature__a" alt="A smiling girl in fairy wings" />
           <Scene kind="crown" palette={featured.palette} className="feature__b" alt="Flower crown" />
         </div>
         <div className="feature__copy">

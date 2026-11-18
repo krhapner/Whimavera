@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { photos, photoUrl } from '../data/photos.js'
+import { photos, ownPhotos, photoUrl } from '../data/photos.js'
 
 /**
  * Scene — an illustrated, photo-styled placeholder for editorial imagery.
@@ -19,7 +19,8 @@ export default function Scene({ kind = 'tablescape', palette, motif = 'mushroom'
       <img
         className={`scene scene--photo ${className}`}
         src={imgSrc}
-        alt={alt || photos[photo]?.alt || ''}
+        alt={alt || photos[photo]?.alt || ownPhotos[photo]?.alt || ''}
+        style={ownPhotos[photo]?.focus ? { objectPosition: ownPhotos[photo].focus } : undefined}
         onError={() => setFailed(true)}
       />
     )

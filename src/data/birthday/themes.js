@@ -7,7 +7,7 @@ export const birthdayThemes = [
     tagline: 'Moss, toadstools & twinkling lights',
     motif: 'mushroom',
     ages: ['3-5', '6-8'],
-    photos: { card: 'fairyHero' },
+    photos: { card: 'fairyTable', detail: 'fairyCupcake' },
     palette: [
       { name: 'Blush Petal', hex: '#E9C6C1' },
       { name: 'Sage Moss', hex: '#A9B79E' },

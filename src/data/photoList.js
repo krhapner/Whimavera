@@ -26,5 +26,13 @@ export const photos = {
   mossMushrooms: { id: 'JbstCu7FYlA', alt: 'Tiny mushrooms growing on a mossy trunk', credit: 'Yume Photography' },
 }
 
-// Bundled photos (src/assets/photos/<key>.jpg) that aren't from Unsplash:
-// fairyHero.jpg — Whimavera's own Fairy Garden image.
+// Whimavera's own images, bundled in src/assets/photos/<key>.jpg.
+// `focus` is the CSS object-position used when the frame crops the image.
+export const ownPhotos = {
+  fairyHero: { alt: 'A fairy garden party table among flowers', focus: '45% 50%' },
+  fairyTable: { alt: 'A long fairy garden table with moss, roses and a naked cake', focus: '50% 50%' },
+  fairyGirlTable: { alt: 'A girl at a flower-filled fairy garden table', focus: '72% 40%' },
+  fairyPortrait: { alt: 'A smiling girl in fairy wings and a flower crown', focus: '50% 35%' },
+  fairyCupcake: { alt: 'A cupcake with a butterfly on a mossy table at golden hour', focus: '50% 60%' },
+  fairyTreats: { alt: 'Rose cupcakes and a butterfly on a moss table runner', focus: '45% 65%' },
+}

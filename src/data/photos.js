@@ -3,8 +3,8 @@
 // blocks remote images), <Scene> falls back to its illustrated version automatically.
 // Run `npm run photos` to download them into the project so they're bundled.
 
-import { photos } from './photoList.js'
-export { photos }
+import { photos, ownPhotos } from './photoList.js'
+export { photos, ownPhotos }
 
 // Photos downloaded by `npm run photos` live in src/assets/photos/<key>.jpg and
 // are bundled by Vite. Anything not downloaded is hot-linked from Unsplash instead.

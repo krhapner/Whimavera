@@ -6,20 +6,20 @@
 const fairyGarden = {
   themeId: 'fairy-garden',
   headings: { decor: 'Five little zones of magic', food: 'A fairy feast' },
-  heroPhoto: 'fairyHero',
-  foodPhoto: 'cupcakes',
+  heroPhoto: 'fairyGirlTable',
+  foodPhoto: 'fairyTreats',
   title: 'A Fairy Garden Birthday',
   intro:
     'A soft, storybook afternoon among moss, toadstools and twinkling lights — where every guest becomes a garden fairy for the day.',
   moodWords: ['Whimsical', 'Botanical', 'Soft-lit', 'Hand-made'],
 
   board: [
-    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'fairyHero' },
-    { kind: 'cake', caption: 'Sprinkles & birthday candles', photo: 'donutTower' },
-    { kind: 'detail', caption: 'Toadstools & moss', photo: 'mossMushrooms' },
-    { kind: 'balloons', caption: 'A ceiling of balloons', photo: 'brightBalloons' },
-    { kind: 'invite', caption: 'Deckled-edge invitation' },
-    { kind: 'crown', caption: 'Flower crown station' },
+    { kind: 'tablescape', caption: 'The fairy feast table', photo: 'fairyTable' },
+    { kind: 'cake', caption: 'Butterflies at golden hour', photo: 'fairyCupcake' },
+    { kind: 'detail', caption: 'Wings & flower crowns', photo: 'fairyPortrait' },
+    { kind: 'balloons', caption: 'Rose cupcakes', photo: 'fairyTreats' },
+    { kind: 'invite', caption: 'Moss runner & wild roses', photo: 'fairyHero' },
+    { kind: 'crown', caption: 'Toadstools & moss', photo: 'mossMushrooms' },
   ],
 
   // Budget split as shares of the total budget.
