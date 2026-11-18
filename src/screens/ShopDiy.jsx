@@ -109,7 +109,7 @@ export default function ShopDiy({ plan }) {
               {plan.diy.map((d, i) => (
                 <article key={d.name} className="diy">
                   <div className="diy__img">
-                    <Scene kind={['detail', 'crown', 'invite', 'cake'][i % 4]} palette={pal} motif={plan.theme.motif} label={plan.theme.name} alt="" />
+                    <Scene kind={['detail', 'crown', 'invite', 'cake'][i % 4]} photo={d.photo} palette={pal} motif={plan.theme.motif} label={plan.theme.name} alt="" />
                   </div>
                   <div className="diy__body">
                     <div className="card__meta">

@@ -19,7 +19,7 @@ const fairyGarden = {
     { kind: 'detail', caption: 'Wings & flower crowns', photo: 'fairyPortrait' },
     { kind: 'balloons', caption: 'Rose cupcakes', photo: 'fairyTreats' },
     { kind: 'invite', caption: 'Moss runner & wild roses', photo: 'fairyHero' },
-    { kind: 'crown', caption: 'Toadstools & moss', photo: 'mossMushrooms' },
+    { kind: 'crown', caption: 'Toadstools & moss', photo: 'fairyToadstools' },
   ],
 
   // Budget split as shares of the total budget.
@@ -208,6 +208,7 @@ const fairyGarden = {
   diy: [
     {
       name: 'Painted Toadstools',
+      photo: 'fairyToadstools',
       time: '2 hrs + drying',
       difficulty: 'Easy',
       saves: 'Replaces store-bought toadstool decor',

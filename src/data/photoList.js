@@ -34,5 +34,6 @@ export const ownPhotos = {
   fairyGirlTable: { alt: 'A girl at a flower-filled fairy garden table', focus: '72% 40%' },
   fairyPortrait: { alt: 'A smiling girl in fairy wings and a flower crown', focus: '50% 35%' },
   fairyCupcake: { alt: 'A cupcake with a butterfly on a mossy table at golden hour', focus: '50% 60%' },
+  fairyToadstools: { alt: 'Red-and-white painted toadstools on a moss runner with balloons', focus: '40% 55%' },
   fairyTreats: { alt: 'Rose cupcakes and a butterfly on a moss table runner', focus: '45% 65%' },
 }
