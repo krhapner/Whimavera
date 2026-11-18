@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react'
 
 // Minimal in-memory router with optional hash sync.
 // Screens: #home, #plan, #results, #shop, #premium.
-// Activity guides open over the results as #guide-<activity-id>, so the
-// browser Back button closes a guide. Route changes are driven by app
+// Activity guides and recipes open over the results as #guide-<id> and
+// #recipe-<id>, so the browser Back button closes them. #shopping opens
+// Shop & DIY on the food shopping list. Route changes are driven by app
 // state, so navigation still works in sandboxed previews where history
 // can't be changed; the hash is updated when allowed.
 
-export const ROUTES = ['home', 'plan', 'results', 'shop', 'premium']
-const GUIDE = /^guide-[a-z0-9-]+$/
+export const ROUTES = ['home', 'plan', 'results', 'shop', 'shopping', 'premium']
+const GUIDE = /^(guide|recipe)-[a-z0-9-]+$/
 const EVENT = 'whimavera:navigate'
 
 const valid = (r) => ROUTES.includes(r) || GUIDE.test(r)
@@ -23,7 +24,8 @@ function readHash(fallback) {
 }
 
 export const isGuideRoute = (r) => GUIDE.test(r)
-export const guideIdFrom = (r) => (GUIDE.test(r) ? r.slice('guide-'.length) : null)
+export const guideIdFrom = (r) => (/^guide-/.test(r) ? r.slice('guide-'.length) : null)
+export const recipeIdFrom = (r) => (/^recipe-/.test(r) ? r.slice('recipe-'.length) : null)
 export const baseRouteOf = (r) => (GUIDE.test(r) ? 'results' : r)
 
 export function useHashRoute(fallback = 'home') {

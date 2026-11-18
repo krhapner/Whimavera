@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { useState } from 'react'
+import GuideShell from './GuideShell.jsx'
 import { ActivityImage } from './ActivityCard.jsx'
 import { Tag, Sparkle } from './ui.jsx'
 
@@ -11,49 +11,13 @@ const TIP_GROUPS = [
   ['troubleshooting', 'If something goes wrong'],
 ]
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
-
 /**
  * Activity guide dialog. Large modal on desktop, full-screen sheet on mobile.
  * Escape closes, focus is trapped while open and returned to the card after.
  */
 export default function ActivityGuide({ activity, theme, index, playLabel, onClose }) {
-  const panel = useRef(null)
-  const closeBtn = useRef(null)
   const [have, setHave] = useState(() => new Set())
   const g = activity.guide
-
-  // Lock page scroll without moving it, focus the dialog, restore on close.
-  useEffect(() => {
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    closeBtn.current?.focus({ preventScroll: true })
-    return () => {
-      document.body.style.overflow = prevOverflow
-      const card = document.querySelector(`[data-activity="${activity.id}"]`)
-      card?.focus({ preventScroll: true })
-    }
-  }, [activity.id])
-
-  const onKeyDown = (e) => {
-    if (e.key === 'Escape') {
-      e.stopPropagation()
-      onClose()
-      return
-    }
-    if (e.key !== 'Tab') return
-    const items = [...panel.current.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null)
-    if (!items.length) return
-    const first = items[0]
-    const last = items[items.length - 1]
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault()
-      last.focus()
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault()
-      first.focus()
-    }
-  }
 
   const toggle = (key) =>
     setHave((s) => {
@@ -66,23 +30,13 @@ export default function ActivityGuide({ activity, theme, index, playLabel, onClo
   const tipGroups = TIP_GROUPS.filter(([k]) => g.tips[k].length)
   const titleId = `guide-title-${activity.id}`
 
-  return createPortal(
-    <div className="guide-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div
-        ref={panel}
-        className="guide"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        onKeyDown={onKeyDown}
-      >
-        <div className="guide__bar">
-          <span className="guide__crumb">Activity guide · {theme.name}</span>
-          <button ref={closeBtn} className="guide__close" onClick={onClose} aria-label="Close guide">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-
+  return (
+    <GuideShell
+      crumb={`Activity guide · ${theme.name}`}
+      titleId={titleId}
+      returnFocusSelector={`[data-activity="${activity.id}"]`}
+      onClose={onClose}
+    >
         <header className="guide__hero">
           <div className="guide__hero-img">
             <ActivityImage activity={activity} theme={theme} index={index} eager />
@@ -266,13 +220,6 @@ export default function ActivityGuide({ activity, theme, index, playLabel, onClo
           </section>
         )}
 
-        <div className="guide__foot">
-          <button className="btn btn--secondary" onClick={onClose}>
-            Back to your plan
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body,
+    </GuideShell>
   )
 }

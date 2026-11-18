@@ -143,13 +143,13 @@ const fairyGarden = {
   ],
 
   food: [
-    { name: 'Toadstool cupcakes', detail: 'Red-capped with white candy dots', tag: 'Sweet' },
-    { name: 'Fairy bread', detail: 'Buttered triangles with pastel sprinkles', tag: 'Sweet' },
-    { name: 'Rainbow fruit wands', detail: 'Berries, melon and grapes on skewers', tag: 'Fresh' },
-    { name: 'Garden veggie cups', detail: 'Cucumber, carrot and snap peas over hummus', tag: 'Fresh' },
-    { name: 'Honey pinwheel sandwiches', detail: 'Cream cheese & honey or turkey & cheese', tag: 'Savory' },
-    { name: 'Petal pink lemonade', detail: '"Fairy nectar" with edible flowers frozen in ice', tag: 'Drink' },
-    { name: 'The cake', detail: 'Two-tier semi-naked vanilla cake with pressed edible blooms', tag: 'Showpiece' },
+    { id: 'toadstool-cupcakes', name: 'Toadstool cupcakes', detail: 'Red-capped with white candy dots', tag: 'Sweet' },
+    { id: 'fairy-treats', name: 'Fairy Treats', detail: 'Star-shaped Rice Krispies treats decorated with pastel pink, lavender, and white candy drizzle, colorful sprinkles, and a little edible sparkle.', tag: 'Sweet' },
+    { id: 'rainbow-fruit-wands', name: 'Rainbow fruit wands', detail: 'Berries, melon and grapes on skewers', tag: 'Fresh' },
+    { id: 'garden-veggie-cups', name: 'Garden veggie cups', detail: 'Cucumber, carrot and snap peas over hummus', tag: 'Fresh' },
+    { id: 'honey-pinwheel-sandwiches', name: 'Honey pinwheel sandwiches', detail: 'Cream cheese & honey or turkey & cheese', tag: 'Savory' },
+    { id: 'petal-pink-lemonade', name: 'Petal pink lemonade', detail: '"Fairy nectar" with edible flowers frozen in ice', tag: 'Drink' },
+    { id: 'fairy-cake', name: 'The cake', detail: 'Two-tier semi-naked vanilla cake with pressed edible blooms', tag: 'Showpiece' },
   ],
 
   startHour: 14,

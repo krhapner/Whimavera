@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Header, Footer } from './components/Layout.jsx'
 import { liveEventType } from './data/eventTypes.js'
 import { buildPlan } from './lib/buildPlan.js'
-import { useHashRoute, navigate, baseRouteOf, guideIdFrom } from './lib/router.js'
+import { useHashRoute, navigate, baseRouteOf, guideIdFrom, recipeIdFrom } from './lib/router.js'
 import Home from './screens/Home.jsx'
 import Questionnaire from './screens/Questionnaire.jsx'
 import Results from './screens/Results.jsx'
@@ -22,10 +22,40 @@ function loadAnswers() {
   return liveEventType.defaultAnswers
 }
 
+// Small persisted state for one viewer's conveniences (adult count,
+// shopping list). Falls back to memory when storage is unavailable.
+function usePersisted(key, initial) {
+  const [value, setValue] = useState(() => {
+    try {
+      const raw = localStorage.getItem(key)
+      return raw != null ? JSON.parse(raw) : initial
+    } catch {
+      return initial
+    }
+  })
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value))
+    } catch {
+      /* ignore */
+    }
+  }, [key, value])
+  return [value, setValue]
+}
+
 export default function App() {
   const route = useHashRoute('home')
   const baseRoute = baseRouteOf(route)
   const guideId = guideIdFrom(route)
+  const recipeId = recipeIdFrom(route)
+  // Adults are never assumed — the host adds them if they'll eat too.
+  const [adults, setAdults] = usePersisted('whimavera.adults.v1', 0)
+  // Shopping list stores recipe ids only, so adding twice is a no-op and the
+  // consolidated list always reflects current guest numbers.
+  const [shoppingIds, setShoppingIds] = usePersisted('whimavera.shopping.v1', [])
+  const addToList = useCallback((id) => setShoppingIds((ids) => (ids.includes(id) ? ids : [...ids, id])), [setShoppingIds])
+  const removeFromList = useCallback((id) => setShoppingIds((ids) => ids.filter((x) => x !== id)), [setShoppingIds])
+  const shopping = { ids: shoppingIds, add: addToList, remove: removeFromList, clear: () => setShoppingIds([]) }
   const [answers, setAnswers] = useState(loadAnswers)
   const [hasPlan, setHasPlan] = useState(() => {
     try {
@@ -66,6 +96,9 @@ export default function App() {
   const guidePushed = useRef(false)
   const openGuide = useCallback((id) => {
     guidePushed.current = navigate(`guide-${id}`)
+  }, [])
+  const openRecipe = useCallback((id) => {
+    guidePushed.current = navigate(`recipe-${id}`)
   }, [])
   const closeGuide = useCallback(() => {
     if (guidePushed.current) {
@@ -109,11 +142,30 @@ export default function App() {
       break
     case 'results':
       screen = (
-        <Results plan={plan} onShowExample={showExample} guideId={guideId} onOpenGuide={openGuide} onCloseGuide={closeGuide} />
+        <Results
+          plan={plan}
+          onShowExample={showExample}
+          guideId={guideId}
+          recipeId={recipeId}
+          onOpenGuide={openGuide}
+          onOpenRecipe={openRecipe}
+          onCloseGuide={closeGuide}
+          adults={adults}
+          setAdults={setAdults}
+          shopping={shopping}
+        />
       )
       break
     case 'shop':
-      screen = <ShopDiy plan={plan} />
+    case 'shopping':
+      screen = (
+        <ShopDiy
+          plan={plan}
+          initialTab={baseRoute === 'shopping' ? 'food' : undefined}
+          adults={adults}
+          shopping={shopping}
+        />
+      )
       break
     case 'premium':
       screen = <Premium plan={plan} hasPlan={hasPlan} />
@@ -124,7 +176,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header route={baseRoute} />
+      <Header route={baseRoute === 'shopping' ? 'shop' : baseRoute} />
       <main key={baseRoute} className="screen-enter">
         {screen}
       </main>

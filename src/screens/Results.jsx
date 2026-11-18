@@ -3,6 +3,9 @@ import Scene from '../components/Scene.jsx'
 import ZoneExplorer from '../components/ZoneExplorer.jsx'
 import ActivityCard from '../components/ActivityCard.jsx'
 import ActivityGuide from '../components/ActivityGuide.jsx'
+import FoodCard from '../components/FoodCard.jsx'
+import RecipeGuide from '../components/RecipeGuide.jsx'
+import Stepper from '../components/Stepper.jsx'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
 import { ageLabel } from '../lib/buildPlan.js'
 
@@ -30,7 +33,18 @@ const LABELS = {
 // Scroll within the page without touching the hash (the hash is the route).
 const jump = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
-export default function Results({ plan, onShowExample, guideId, onOpenGuide, onCloseGuide }) {
+export default function Results({
+  plan,
+  onShowExample,
+  guideId,
+  recipeId,
+  onOpenGuide,
+  onOpenRecipe,
+  onCloseGuide,
+  adults,
+  setAdults,
+  shopping,
+}) {
   const { theme, answers } = plan
   const pal = theme.palette
   const [done, setDone] = useState(() => new Set())
@@ -44,9 +58,21 @@ export default function Results({ plan, onShowExample, guideId, onOpenGuide, onC
 
   const openIndex = guideId ? plan.games.findIndex((g) => g.id === guideId) : -1
   const openActivity = openIndex >= 0 ? plan.games[openIndex] : null
+  const openFood = recipeId ? plan.food.find((f) => f.id === recipeId) : null
 
   return (
     <div className="results" style={{ '--accent': pal[0].hex, '--accent-2': pal[1].hex }}>
+      {openFood && (
+        <RecipeGuide
+          item={openFood}
+          theme={theme}
+          childCount={plan.guests}
+          adults={adults}
+          setAdults={setAdults}
+          shopping={shopping}
+          onClose={onCloseGuide}
+        />
+      )}
       {openActivity && (
         <ActivityGuide
           activity={openActivity}
@@ -197,24 +223,31 @@ export default function Results({ plan, onShowExample, guideId, onOpenGuide, onC
 
       {/* Food */}
       <section className="section container" id="food">
-        <div className="split">
-          <div>
-            <SectionHeading eyebrow="05 · Food & refreshments" title={plan.headings?.food || 'The menu'} intro={`Quantities planned for ${plan.guests} children plus a few grown-ups.`} />
-            <figure className="split__img">
-              <Scene kind="cake" photo={plan.foodPhoto} palette={pal} alt="Cake" />
-            </figure>
-          </div>
-          <ul className="menu">
-            {plan.food.map((f) => (
-              <li key={f.name}>
-                <div>
-                  <h3>{f.name}</h3>
-                  <p>{f.detail}</p>
-                </div>
-                <Tag>{f.tag}</Tag>
-              </li>
-            ))}
-          </ul>
+        <SectionHeading
+          eyebrow="05 · Food & refreshments"
+          title={plan.headings?.food || 'The menu'}
+          intro={`Recipes are scaled for ${plan.guests} children. Add grown-ups if they’ll be eating too — tap any dish for the full recipe.`}
+        />
+        <div className="menu-bar">
+          <Stepper label="Adults eating too" value={adults} onChange={setAdults} />
+          <a href="#shopping" className={`menu-bar__list ${shopping.ids.length ? 'has-items' : ''}`}>
+            {shopping.ids.length
+              ? `Shopping list · ${shopping.ids.length} ${shopping.ids.length === 1 ? 'recipe' : 'recipes'}`
+              : 'Your shopping list is empty'}
+            <span aria-hidden="true"> →</span>
+          </a>
+        </div>
+        <div className="food-grid">
+          {plan.food.map((f, i) => (
+            <FoodCard
+              key={f.id}
+              index={i}
+              item={f}
+              theme={theme}
+              onOpen={onOpenRecipe}
+              inList={shopping.ids.includes(f.id)}
+            />
+          ))}
         </div>
       </section>
 

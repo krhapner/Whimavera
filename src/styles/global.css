@@ -2600,3 +2600,340 @@ svg {
     padding: 28px 20px calc(28px + env(safe-area-inset-bottom));
   }
 }
+
+/* ============ Menu (food cards) ============ */
+.menu-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px 32px;
+  flex-wrap: wrap;
+  margin: -16px 0 32px;
+  padding: 14px 0;
+  border-block: 1px solid var(--line);
+}
+.menu-bar__list {
+  font-size: 14px;
+  color: var(--ink-faint);
+  text-decoration: none;
+}
+.menu-bar__list.has-items {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--blush);
+  text-underline-offset: 4px;
+}
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.food-card .food-card__media {
+  aspect-ratio: 4 / 4.2;
+  position: relative;
+}
+.food-card__flag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.92);
+  color: var(--sage-deep);
+}
+/* The showpiece (cake) gets a wide editorial card */
+.food-card:last-child:nth-child(3n + 1) {
+  grid-column: 1 / -1;
+  flex-direction: row;
+}
+.food-card:last-child:nth-child(3n + 1) .food-card__media {
+  flex: 0 0 52%;
+  aspect-ratio: 16 / 10;
+}
+.food-card:last-child:nth-child(3n + 1) .act-card__body {
+  padding: clamp(24px, 4vw, 48px);
+  justify-content: center;
+}
+.food-card:last-child:nth-child(3n + 1) h3 {
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+/* ============ Stepper ============ */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.stepper__label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+.stepper__hint {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.stepper__ctl {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+}
+.stepper__ctl button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: none;
+  font-size: 18px;
+  color: var(--ink);
+  border-radius: 50%;
+}
+.stepper__ctl button:disabled {
+  color: var(--line);
+  cursor: default;
+}
+.stepper__ctl output {
+  min-width: 26px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 20px;
+}
+
+/* ============ Recipe guide ============ */
+.serves {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px 28px;
+  flex-wrap: wrap;
+  padding: 18px 22px;
+  border-radius: var(--r-md);
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.serves__count {
+  display: flex;
+  flex-direction: column;
+}
+.serves__label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sage-deep);
+}
+.serves__num {
+  font-family: var(--serif);
+  font-size: 24px;
+}
+.serves__make {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.serves__warn {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: #9a6b2f;
+}
+.seg {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--ivory-2);
+  border: 1px solid var(--line);
+}
+.seg button {
+  border: 0;
+  background: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  transition: all 0.25s var(--ease);
+}
+.seg button.is-active {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 2px 8px -2px rgba(60, 45, 35, 0.18);
+}
+.guide__sub {
+  margin: 20px 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.ingr {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ingr li {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.ingr__qty {
+  font-family: var(--serif);
+  font-size: 18px;
+}
+.ingr__name {
+  display: flex;
+  flex-direction: column;
+}
+.ingr__name em {
+  font-style: normal;
+  color: var(--ink-faint);
+  font-size: 13px;
+}
+.list-action {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 22px 0 6px;
+}
+.list-action__done {
+  color: var(--sage-deep);
+  font-weight: 400;
+}
+.list-action__remove {
+  color: var(--ink-faint);
+  font-size: 14px;
+}
+
+/* ============ Food shopping list ============ */
+.tabs__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--blush);
+  color: var(--ink);
+  font-size: 11px;
+}
+.food-list__empty {
+  text-align: center;
+  max-width: 520px;
+  margin: 24px auto 40px;
+}
+.food-list__empty p {
+  color: var(--ink-soft);
+  margin: 10px 0 24px;
+}
+.food-list__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.food-list__head .fine {
+  margin-top: 6px;
+}
+.food-list__recipes {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.food-list__recipes li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-size: 14px;
+}
+.food-list__recipes button {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ivory-2);
+  font-size: 14px;
+  line-height: 1;
+}
+.food-list__aisles {
+  columns: 2;
+  column-gap: 48px;
+}
+.aisle {
+  break-inside: avoid;
+  margin-bottom: 28px;
+}
+.aisle__title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ink);
+  margin: 0 0 4px;
+}
+.aisle ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.aisle li {
+  border-bottom: 1px dashed var(--line);
+}
+.aisle .check {
+  padding: 10px 0;
+}
+
+@media (max-width: 960px) {
+  .food-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .food-card:last-child:nth-child(3n + 1) {
+    grid-column: auto;
+    flex-direction: column;
+  }
+  .food-card:last-child:nth-child(3n + 1) .food-card__media {
+    flex: none;
+    aspect-ratio: 4 / 4.2;
+  }
+  .food-card:last-child:nth-child(2n + 1) {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 760px) {
+  .food-grid {
+    grid-template-columns: 1fr;
+  }
+  .food-card .food-card__media {
+    aspect-ratio: 4 / 3.4;
+  }
+  .ingr li {
+    grid-template-columns: 96px 1fr;
+    gap: 12px;
+  }
+  .food-list__aisles {
+    columns: 1;
+  }
+  .serves {
+    padding: 16px;
+  }
+}
+
+.guide__chips {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+.guide__chips span {
+  white-space: nowrap;
+}

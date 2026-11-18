@@ -42,6 +42,16 @@ Every activity card on the plan opens a step-by-step guide. On desktop the guide
 - **Shopping:** a material can carry `products: [{ title, url, retailer, verified: true }]`. "Shop the supplies" only appears when verified products exist; none are included now.
 - **Navigation:** opening a guide sets `#guide-<activity-id>`, so Back closes it and the link can be shared. Escape, the close button and clicking outside the guide also close it. Focus is trapped inside the guide and returned to the card afterwards, and the plan keeps its scroll position.
 
+## Menu & recipes
+
+The plan's "Food & refreshments" section is a grid of photo cards. Each card opens a recipe in the same guide frame as the activity guides (`#recipe-<id>`, so Back closes it). A recipe covers ingredients scaled to the party, servings, prep and total time, method, make-ahead and storage, presentation, allergens and swaps, and food-safety notes for young children.
+
+- **Content:** `src/data/birthday/recipes/<theme>.js`, keyed by menu item id. All seven Fairy Garden recipes are written. The cake also has an "Order from a bakery" brief, with no listings or prices.
+- **Scaling (`src/lib/recipes.js`, `src/lib/units.js`):** recipes scale to the plan's children plus an "Adults eating too" count, which starts at 0 so adults are never assumed. Recipes scale in sensible steps (cupcakes by the dozen, for example), counted items round up and measures round up to the nearest ¼. The tiered cake doesn't scale; it warns you if it's too small for the guest count.
+- **Shopping list:** "Add ingredients to shopping list" stores only recipe ids, so adding twice does nothing. Shop & DIY → **Food shopping list** (`#shopping`) adds up shared ingredients across recipes using consistent units (volume in tsp, weight in oz, counted items by unit), groups them by aisle and shows which recipes use each one.
+- **Images:** drop `<item-id>.webp` into `src/assets/menu/` (see the README there). Missing images show an illustrated placeholder.
+- `recipeSchema` is a JSON Schema for future AI-generated recipes; `normalizeRecipe()` checks and fills defaults.
+
 ## Architecture
 
 ```
@@ -60,7 +70,8 @@ src/
                          # ranks activities by play style, builds the timeline
     router.js            # tiny hash router
   components/            # Scene (photo + illustrated fallback), Layout, ui primitives,
-                         # ZoneExplorer, ActivityCard, ActivityGuide
+                         # ZoneExplorer, ActivityCard, ActivityGuide, GuideShell
+                         # (shared dialog frame), FoodCard, RecipeGuide, Stepper
   screens/               # Home, Questionnaire, Results, ShopDiy, Premium
   styles/global.css      # design tokens + all styles
 ```

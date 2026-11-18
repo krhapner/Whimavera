@@ -1,15 +1,17 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { scaleRecipe, buildShoppingList } from '../lib/recipes.js'
 import Scene from '../components/Scene.jsx'
 import { Button, Eyebrow, SectionHeading, Tag, money } from '../components/ui.jsx'
 
 const TABS = [
   ['shop', 'Shop the list'],
+  ['food', 'Food shopping list'],
   ['diy', 'Make it yourself'],
   ['swaps', 'Budget swaps'],
 ]
 
-export default function ShopDiy({ plan }) {
-  const [tab, setTab] = useState(plan.answers.style === 'diy' ? 'diy' : 'shop')
+export default function ShopDiy({ plan, initialTab, adults = 0, shopping }) {
+  const [tab, setTab] = useState(initialTab || (plan.answers.style === 'diy' ? 'diy' : 'shop'))
   const [cat, setCat] = useState('All')
   const pal = plan.theme.palette
   const cats = ['All', ...plan.shop.map((c) => c.category)]
@@ -44,9 +46,12 @@ export default function ShopDiy({ plan }) {
           {TABS.map(([id, label]) => (
             <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'is-active' : ''} onClick={() => setTab(id)}>
               {label}
+              {id === 'food' && shopping?.ids.length > 0 && <span className="tabs__count">{shopping.ids.length}</span>}
             </button>
           ))}
         </div>
+
+        {tab === 'food' && <FoodList plan={plan} adults={adults} shopping={shopping} />}
 
         {tab === 'shop' && (
           <section className="section section--flush">
@@ -178,5 +183,108 @@ export default function ShopDiy({ plan }) {
         </div>
       </div>
     </div>
+  )
+}
+
+/** Consolidated grocery list built from the recipes added in the menu. */
+function FoodList({ plan, adults, shopping }) {
+  const [have, setHave] = useState(() => new Set())
+  const [copied, setCopied] = useState(false)
+  const recipes = plan.food.filter((f) => f.recipe && shopping.ids.includes(f.id))
+  const names = Object.fromEntries(plan.food.map((f) => [f.id, f.recipe?.title || f.name]))
+  const groups = useMemo(
+    () => buildShoppingList(recipes.map((f) => scaleRecipe(f.recipe, { children: plan.guests, adults })), names),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [shopping.ids.join(','), plan.guests, adults, plan.theme.id],
+  )
+  const total = groups.reduce((n, g) => n + g.items.length, 0)
+  const toggle = (id) =>
+    setHave((s) => {
+      const n = new Set(s)
+      n.has(id) ? n.delete(id) : n.add(id)
+      return n
+    })
+  const copy = async () => {
+    const text = groups.map((g) => `${g.aisle}\n${g.items.map((i) => `- ${i.display} ${i.name}`).join('\n')}`).join('\n\n')
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  if (!recipes.length) {
+    return (
+      <section className="section section--flush food-list">
+        <div className="food-list__empty">
+          <h2 className="display-3">Your food shopping list is empty</h2>
+          <p>Open any dish in your plan’s menu and choose “Add ingredients to shopping list”. Shared ingredients are combined here automatically.</p>
+          <a href="#results" className="btn btn--secondary">
+            Go to the menu
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="section section--flush food-list">
+      <div className="food-list__head">
+        <div>
+          <h2 className="display-3">Groceries for {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}</h2>
+          <p className="fine">
+            Scaled for {plan.guests} children{adults ? ` and ${adults} ${adults === 1 ? 'adult' : 'adults'}` : ''} · {total} items ·
+            amounts rounded up
+          </p>
+        </div>
+        <div className="food-list__actions">
+          <button type="button" className="btn btn--secondary btn--sm" onClick={copy}>
+            {copied ? 'Copied ✓' : 'Copy list'}
+          </button>
+        </div>
+      </div>
+      <ul className="food-list__recipes">
+        {recipes.map((f) => (
+          <li key={f.id}>
+            {names[f.id]}
+            <button type="button" onClick={() => shopping.remove(f.id)} aria-label={`Remove ${names[f.id]} from shopping list`}>
+              ×
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="food-list__aisles">
+        {groups.map((g) => (
+          <div key={g.aisle} className="aisle">
+            <h3 className="aisle__title">{g.aisle}</h3>
+            <ul>
+              {g.items.map((i) => {
+                const on = have.has(i.id)
+                return (
+                  <li key={i.id}>
+                    <label className={`check ${on ? 'is-on' : ''}`}>
+                      <input type="checkbox" checked={on} onChange={() => toggle(i.id)} />
+                      <span className="check__box" aria-hidden="true" />
+                      <span className="mat">
+                        <span className="mat__top">
+                          <span className="mat__name">{i.name}</span>
+                          <span className="mat__qty">{i.display}</span>
+                        </span>
+                        <span className="mat__note">
+                          {i.sources.join(', ')}
+                          {i.optional ? ' · optional' : ''}
+                        </span>
+                      </span>
+                    </label>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }

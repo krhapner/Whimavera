@@ -3,6 +3,9 @@ import { defaultBudget, buildChecklist } from '../data/birthday/plans/shared.js'
 import { guidesByTheme } from '../data/birthday/guides/index.js'
 import { activityImageUrl, activityImageAlt, slugify } from '../data/activityImages.js'
 import { normalizeGuide, personalizeGuide, minimalGuide } from './guides.js'
+import { recipesByTheme } from '../data/birthday/recipes/index.js'
+import { menuImageUrl, menuImageAlt } from '../data/menuImages.js'
+import { normalizeRecipe } from './recipes.js'
 
 const roundTo = (n, step = 5) => Math.round(n / step) * step
 
@@ -83,6 +86,21 @@ export function buildPlan(eventType, answers) {
     })
     .sort((a, b) => b.matches.length - a.matches.length || a.order - b.order)
 
+  // Menu items carry their recipe (normalized once); scaling happens on render
+  // from the guest count and the host's adult count.
+  const themeRecipes = recipesByTheme[theme.id] || {}
+  const food = template.food.map((f) => {
+    const id = f.id || slugify(f.name)
+    const recipe = normalizeRecipe(themeRecipes[id])
+    return {
+      ...f,
+      id,
+      imageUrl: f.imageUrl || recipe?.imageUrl || menuImageUrl(id),
+      imageAlt: menuImageAlt[id] || f.name,
+      recipe,
+    }
+  })
+
   const budget = (template.budget || defaultBudget).map((b) => ({ ...b, amount: roundTo(total * b.share) }))
 
   const shop = template.shop.map((cat) => ({
@@ -119,6 +137,7 @@ export function buildPlan(eventType, answers) {
     total,
     budget,
     games,
+    food,
     timeline: buildTimeline(template, games),
     checklist: buildChecklist(template.checklistExtras),
     shop,
