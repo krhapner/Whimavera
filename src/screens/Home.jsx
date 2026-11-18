@@ -19,7 +19,7 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
         <div className="container hero__grid">
           <div className="hero__copy">
             <Eyebrow>
-              <Sparkle size={10} /> Children’s birthday planner · Free
+              <Sparkle size={10} /> Children’s birthday planner
             </Eyebrow>
             <h1 className="display-1">
               Beautifully imagined.
