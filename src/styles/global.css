@@ -669,7 +669,9 @@ svg {
 }
 .teaser__img {
   border-radius: var(--r-md);
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  object-fit: cover;
   height: auto;
 }
 

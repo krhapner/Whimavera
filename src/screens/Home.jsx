@@ -144,7 +144,7 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
               Start your plan
             </Button>
           </div>
-          <Scene kind="invite" palette={featured.palette} motif={featured.motif} className="teaser__img" alt="Printable invitation" />
+          <Scene kind="invite" photo="paperSuite" palette={featured.palette} motif={featured.motif} className="teaser__img" alt="Matching fairy garden invitation, note card, place card and favor tag" />
         </div>
       </section>
 
