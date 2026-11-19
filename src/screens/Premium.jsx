@@ -1,18 +1,16 @@
 import { Button, Eyebrow, Sparkle } from '../components/ui.jsx'
 import MadeToMatch from '../components/printables/MadeToMatch.jsx'
-import { bundleFor } from '../data/premium.js'
 import { collectionForTheme } from '../printables/collections/index.js'
-import { getEntitlements } from '../printables/entitlements.js'
+import { getEntitlements, PRICES } from '../printables/entitlements.js'
 
 /**
  * Printables page: the theme's Made to Match collection, personalized from
- * the plan. Checkout isn't built yet — the bundle price is shown for
+ * the plan. Parents buy single designs or the whole collection; checkout isn't connected yet, so the price is shown for
  * reference and nothing is charged.
  */
 export default function Premium({ plan, hasPlan, sel }) {
-  const bundle = bundleFor(plan.theme)
   const collection = collectionForTheme(plan.theme.id)
-  const ent = getEntitlements()
+  const ent = getEntitlements(plan.theme.id)
 
   if (!hasPlan) {
     return (
@@ -49,9 +47,9 @@ export default function Premium({ plan, hasPlan, sel }) {
             <span className="price-card__theme">Complete collection</span>
             <span className="price-card__price">
               <sup>$</sup>
-              {bundle.price}
+              {PRICES.bundle}
             </span>
-            <span className="price-card__once">one-time · all eight designs</span>
+            <span className="price-card__once">one-time · all eight designs · or ${PRICES.single} per design</span>
             <ul>
               {['Personalized with your details', 'Signs and labels for your plan', 'US Letter print sheets', 'Print-shop files with bleed'].map((p) => (
                 <li key={p}>
@@ -61,7 +59,7 @@ export default function Premium({ plan, hasPlan, sel }) {
             </ul>
             <span className="price-card__fine">
               {ent.checkoutAvailable ? '' : 'Checkout isn’t open yet — no payment is taken. '}
-              {ent.unlocked ? 'During preview every design downloads in full.' : 'Free designs and watermarked proofs are available now.'}
+              {ent.unlocked ? 'Every design is unlocked.' : 'Previews show a “Preview” mark until a design is bought.'}
             </span>
           </div>
         )}

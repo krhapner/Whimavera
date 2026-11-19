@@ -1,8 +1,10 @@
 // Premium printable bundle — one design per theme, offered after a plan exists.
 // `art` picks the preview illustration; names and details are theme-specific.
 
+import { PRICES } from '../printables/entitlements.js'
+
 const BASE = {
-  price: 29,
+  price: PRICES.bundle,
   currency: 'USD',
   perks: ['Instant digital download', 'Personalized name & age', 'Letter and A4 sizes', 'Unlimited home printing'],
 }

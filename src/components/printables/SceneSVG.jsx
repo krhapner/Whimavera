@@ -1,11 +1,12 @@
 import { useId } from 'react'
+import { watermarkTiles, WATERMARK_TEXT, WATERMARK_OPACITY } from '../../printables/watermark.js'
 
 /**
  * Draws a composed scene (printables/compose.js) as SVG — the same positions,
  * fonts and sizes the PDF uses. Units are points; the viewBox is the trim.
  * `showMissing` outlines artwork slots that haven't been supplied yet.
  */
-export default function SceneSVG({ scene, showMissing = true, className = '', title }) {
+export default function SceneSVG({ scene, showMissing = true, className = '', title, watermark = false }) {
   const uid = useId().replace(/:/g, '')
   const { w, h } = scene
   const circle = scene.shape === 'circle'
@@ -68,7 +69,29 @@ export default function SceneSVG({ scene, showMissing = true, className = '', ti
             )
           return null
         })}
+        {watermark && <Watermark w={w} h={h} />}
       </g>
     </svg>
+  )
+}
+
+/** Tiled "Preview" mark drawn into the design itself, so screenshots carry it. */
+function Watermark({ w, h }) {
+  const { tiles, cx, cy, angle } = watermarkTiles(w, h)
+  return (
+    <g className="scene-watermark" transform={`rotate(${angle} ${cx} ${cy})`} pointerEvents="none" aria-hidden="true">
+      {[
+        ['#fff', WATERMARK_OPACITY * 1.6, 0.6],
+        ['rgb(107,82,82)', WATERMARK_OPACITY, 0],
+      ].map(([fill, opacity, dy]) => (
+        <g key={fill} fill={fill} opacity={opacity} fontFamily="'Jost', 'Helvetica Neue', Arial, sans-serif" fontWeight={500}>
+          {tiles.map((t, i) => (
+            <text key={i} x={t.x} y={t.y + dy} fontSize={t.size} letterSpacing={t.size * 0.12}>
+              {WATERMARK_TEXT}
+            </text>
+          ))}
+        </g>
+      ))}
+    </g>
   )
 }

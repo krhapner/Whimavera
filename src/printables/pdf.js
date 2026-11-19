@@ -12,6 +12,7 @@ import { PDFDocument, rgb, degrees, pushGraphicsState, popGraphicsState, concatT
 import fontkit from '@pdf-lib/fontkit'
 import { IN } from './text.js'
 import { LETTER } from './products.js'
+import { watermarkTiles, WATERMARK_TEXT, WATERMARK_COLOR, WATERMARK_OPACITY } from './watermark.js'
 
 const hex = (h) => {
   const n = parseInt(String(h).replace('#', ''), 16)
@@ -51,9 +52,9 @@ export async function buildPdf(jobs, o) {
         const page = doc.addPage(size)
         const ox = (size[0] - W) / 2
         const oy = (size[1] - H) / 2
-        await drawScene(page, scene, ox, oy, { bleed, font, image, watermark: o.watermark })
+        await drawScene(page, scene, ox, oy, { bleed, font, image, watermark: job.watermark ?? o.watermark })
         if (o.cropMarks) cropMarks(page, ox, oy, W, H, bleed)
-        footer(page, job.title, draft, o.watermark)
+        footer(page, job.title, draft, job.watermark ?? o.watermark)
       }
     } else {
       const fold = !!p.print.fold
@@ -78,11 +79,11 @@ export async function buildPdf(jobs, o) {
           if (fold) {
             // Bottom half reads normally; top half is upside down so the
             // folded card reads from both sides.
-            await drawScene(page, scene, ox, oy, { bleed, font, image, watermark: o.watermark, rotate: true, clipBleed: { top: true } })
-            await drawScene(page, scene, ox, oy + H, { bleed, font, image, watermark: o.watermark, clipBleed: { bottom: true } })
+            await drawScene(page, scene, ox, oy, { bleed, font, image, watermark: job.watermark ?? o.watermark, rotate: true, clipBleed: { top: true } })
+            await drawScene(page, scene, ox, oy + H, { bleed, font, image, watermark: job.watermark ?? o.watermark, clipBleed: { bottom: true } })
             foldMarks(page, ox, oy + H, W, bleed)
           } else {
-            await drawScene(page, scene, ox, oy, { bleed, font, image, watermark: o.watermark })
+            await drawScene(page, scene, ox, oy, { bleed, font, image, watermark: job.watermark ?? o.watermark })
             if (p.shape === 'circle') cutCircle(page, ox + W / 2, oy + H / 2, W / 2)
           }
         }
@@ -95,7 +96,7 @@ export async function buildPdf(jobs, o) {
           const ys = Array.from({ length: usedRows }, (_, r) => [y0 + r * (cellH + gap), y0 + r * (cellH + gap) + cellH]).flat()
           gridMarks(page, xs, ys, bleed)
         }
-        footer(page, job.title, draft, o.watermark)
+        footer(page, job.title, draft, job.watermark ?? o.watermark)
       }
     }
   }
@@ -174,20 +175,25 @@ async function drawScene(page, s, ox, oy, { bleed, font, image, watermark, rotat
   }
 
   if (watermark) {
+    // Tiled diagonal rows, clipped to the card so nothing spills onto the sheet.
     const f = await font('bodyMedium')
-    const text = 'PREVIEW · WHIMAVERA'
-    const size = Math.min(s.w, s.h) / 9
-    const tw = f.widthOfTextAtSize(text, size)
-    const ang = Math.atan2(s.h, s.w)
-    page.drawText(text, {
-      x: X(s.w / 2) - (Math.cos(ang) * tw) / 2,
-      y: Y(s.h / 2) - (Math.sin(ang) * tw) / 2,
-      size,
-      font: f,
-      color: rgb(0.55, 0.45, 0.45),
-      opacity: 0.22,
-      rotate: degrees((ang * 180) / Math.PI),
-    })
+    const { tiles, cx, cy, angle } = watermarkTiles(s.w, s.h)
+    const a = (angle * Math.PI) / 180
+    page.pushOperators(pushGraphicsState(), rectangle(X(-bleed), Y(s.h + bb), s.w + 2 * bleed, s.h + bt + bb), clip(), endPath())
+    for (const t of tiles) {
+      const dx = t.x - cx
+      const dy = t.y - cy
+      page.drawText(WATERMARK_TEXT, {
+        x: X(cx + dx * Math.cos(a) - dy * Math.sin(a)),
+        y: Y(cy + dx * Math.sin(a) + dy * Math.cos(a)),
+        size: t.size,
+        font: f,
+        color: rgb(WATERMARK_COLOR.r, WATERMARK_COLOR.g, WATERMARK_COLOR.b),
+        opacity: WATERMARK_OPACITY,
+        rotate: degrees(-angle),
+      })
+    }
+    page.pushOperators(popGraphicsState())
   }
   page.pushOperators(popGraphicsState())
 }

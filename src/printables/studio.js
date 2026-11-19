@@ -12,6 +12,7 @@ import { artFile, loadArt } from './assets.js'
 import { PRODUCTS, productById, instancesFor, copiesFor } from './products.js'
 import { formatDetails, emptyDetails } from './details.js'
 import { downloadLevel, getEntitlements } from './entitlements.js'
+import { watermarkTiles, WATERMARK_TEXT, WATERMARK_COLOR, WATERMARK_OPACITY } from './watermark.js'
 import { IN } from './text.js'
 
 export const emptyStudio = () => ({ details: emptyDetails(), variant: null, overrides: {}, chosen: {}, showAll: {} })
@@ -95,9 +96,10 @@ export function issuesFor(scenes) {
 /** Build a PDF for one product or the whole collection. */
 export async function makePdf(productIds, ctx, { printShop = false } = {}) {
   const { buildPdf } = await import('./pdf.js') // loaded on first download
-  const ent = getEntitlements()
-  const jobs = jobsFor(productIds, ctx)
-  const watermark = jobs.some((j) => downloadLevel(j.product, ent) === 'proof')
+  const ent = getEntitlements(ctx.plan?.theme?.id)
+  // Each design is marked on its own: owned and free designs print clean.
+  const jobs = jobsFor(productIds, ctx).map((j) => ({ ...j, watermark: downloadLevel(j.product, ent) === 'proof' }))
+  const watermark = jobs.some((j) => j.watermark)
   const draft = jobs.some((j) => j.scenes.some((s) => s.missingArt.length))
   const bytes = await buildPdf(jobs, {
     paper: printShop ? 'trim' : 'letter',
@@ -142,7 +144,7 @@ const b64 = (bytes) => {
  * Render a scene to a PNG at `dpi`. Fonts and artwork are embedded in a
  * standalone SVG so the canvas draws exactly what the preview shows.
  */
-export async function sceneToPng(scene, fonts, { dpi = 300 } = {}) {
+export async function sceneToPng(scene, fonts, { dpi = 300, watermark = false } = {}) {
   const used = [...new Set(scene.els.filter((e) => e.type === 'text' && !e.placeholder).map((e) => e.font))]
   const faces = used.map((id) => `@font-face{font-family:'${fonts[id].family}';src:url(data:font/woff;base64,${b64(fonts[id].bytes)}) format('woff');}`).join('')
   const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -160,6 +162,15 @@ export async function sceneToPng(scene, fonts, { dpi = 300 } = {}) {
       for (const ln of e.lines)
         parts.push(`<text x="${ln.x}" y="${ln.y}" font-family="'${fonts[e.font].family}'" font-size="${e.size}" fill="${e.color}"${e.tracking ? ` letter-spacing="${(e.tracking / 1000) * e.size}"` : ''}>${esc(ln.text)}</text>`)
   })
+  if (watermark) {
+    const { tiles, cx, cy, angle } = watermarkTiles(scene.w, scene.h)
+    const c = WATERMARK_COLOR
+    parts.push(
+      `<g transform="rotate(${angle} ${cx} ${cy})" font-family="Helvetica, Arial, sans-serif" font-weight="500" fill="rgb(${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)})" fill-opacity="${WATERMARK_OPACITY}">` +
+        tiles.map((t) => `<text x="${t.x}" y="${t.y}" font-size="${t.size}" letter-spacing="${t.size * 0.12}">${esc(WATERMARK_TEXT)}</text>`).join('') +
+        '</g>',
+    )
+  }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${scene.w}" height="${scene.h}" viewBox="0 0 ${scene.w} ${scene.h}"><style>${faces}</style>${parts.join('')}</svg>`
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
   try {
