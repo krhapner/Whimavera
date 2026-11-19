@@ -7,8 +7,8 @@ import FoodCard from '../components/FoodCard.jsx'
 import RecipeGuide from '../components/RecipeGuide.jsx'
 import Stepper from '../components/Stepper.jsx'
 import MadeToMatch from '../components/printables/MadeToMatch.jsx'
-import PlanBar, { BudgetLine, SectionView, rangeText } from '../components/PlanBar.jsx'
-import { itemCost, overBudgetBy, lovesOf } from '../lib/recommend.js'
+import PlanBar, { BudgetLine, BudgetMini, rangeText } from '../components/PlanBar.jsx'
+import { itemCost, lovesOf, fitFor, FIT_ORDER } from '../lib/recommend.js'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
 import { ageLabel } from '../lib/buildPlan.js'
 
@@ -58,9 +58,9 @@ export default function Results({
   const { theme, answers } = plan
   const pal = theme.palette
   const { rec, sel, ctx } = derived
-  const [views, setViews] = useState({ decor: 'rec', games: 'rec', food: 'rec' })
-  const globalView = Object.values(views).every((v) => v === 'all') ? 'all' : 'rec'
-  const setAllViews = (v) => setViews({ decor: v, games: v, food: v })
+  // Budget preview while hovering "Add to plan": { name, fit }.
+  const [peek, setPeek] = useState(null)
+  const peekFor = (name, fit) => (on) => setPeek(on && fit?.total ? { name, fit } : null)
 
   const [done, setDone] = useState(() => new Set())
   const checklist = derived.checklist
@@ -74,17 +74,15 @@ export default function Results({
     if (recIds[section]?.includes(id)) return 'Recommended for you'
     return null
   }
-  const notesFor = (id, inPlan, cost) => {
-    const out = [...(rec.notes[id] || [])]
-    if (!inPlan) {
-      const over = overBudgetBy(derived, cost)
-      if (over) out.push(`Adding this may take you about $${over} over budget`)
-    }
-    return out
-  }
-  const orderBy = (all, ids) => [...ids.map((id) => all.find((x) => x.id === id)).filter(Boolean), ...all.filter((x) => !ids.includes(x.id))]
-  const gameList = views.games === 'all' ? orderBy(plan.games, sel.activities) : orderBy(plan.games, sel.activities).filter((g) => sel.activities.includes(g.id))
-  const foodList = views.food === 'all' ? orderBy(plan.food, sel.food) : orderBy(plan.food, sel.food).filter((f) => sel.food.includes(f.id))
+  const notesFor = (id) => rec.notes[id] || []
+  // Every option is shown: in your plan, then what fits, then what would run
+  // over, then what doesn't suit this party — each labelled.
+  const byFit = (items, section, selIds) =>
+    items
+      .map((x) => ({ x, fit: fitFor(derived, catalog, section, x.id, { inPlan: selIds.includes(x.id) }) }))
+      .sort((a, b) => FIT_ORDER[a.fit.kind] - FIT_ORDER[b.fit.kind] || (a.fit.kind === 'in' ? selIds.indexOf(a.x.id) - selIds.indexOf(b.x.id) : 0))
+  const gameList = byFit(plan.games, 'activities', sel.activities)
+  const foodList = byFit(plan.food, 'food', sel.food)
   const listCount = shopping.ids.filter((id) => sel.food.includes(id)).length
 
   const zoneModels = catalog.decor
@@ -93,18 +91,19 @@ export default function Results({
       const variantId = sel.slots[slot.id] || rec.slots[slot.id] || (slot.variants.find((v) => v.tier === 'classic') || slot.variants[0]).id
       const up = rec.upgrades.find((u) => u.slotId === slot.id && u.variantId !== variantId)
       const upV = up && slot.variants.find((v) => v.id === up.variantId)
+      const fitOfVariant = (v) => fitFor(derived, catalog, 'decor', slot.id, { variantId: v.id, inPlan: inPlan && v.id === variantId })
       return {
         id: slot.id,
         zone: slot.zone,
         photo: slot.info?.photo,
         inPlan,
         variantId,
+        fit: fitFor(derived, catalog, 'decor', slot.id, { variantId, inPlan }),
         reason: rec.reasons[slot.id]?.[0] || (inPlan ? 'Added by you' : null),
         upgrade: upV ? `${upV.name} (${rangeText(itemCost(catalog, 'decor', slot.id, ctx, upV.id))})` : null,
-        variants: slot.variants.map((v) => ({ ...v, costLabel: v.cost ? rangeText(itemCost(catalog, 'decor', slot.id, ctx, v.id)) : null })),
+        variants: slot.variants.map((v) => ({ ...v, costLabel: v.cost ? rangeText(itemCost(catalog, 'decor', slot.id, ctx, v.id)) : null, fit: fitOfVariant(v) })),
       }
     })
-    .filter((z) => views.decor === 'all' || z.inPlan)
 
   const loves = lovesOf(answers)
   const gamesIntro = (answers.interests || []).includes('everything')
@@ -189,18 +188,20 @@ export default function Results({
         derived={derived}
         answers={quizAnswers}
         setAnswers={setAnswers}
-        view={globalView}
-        setView={setAllViews}
+        peek={peek}
         onSwap={(slotId, variantId) => planApi.swap(slotId, variantId)}
       />
 
       <nav className="section-nav" aria-label="Plan sections">
-        <div className="container section-nav__inner">
-          {SECTIONS.map(([id, label]) => (
-            <button key={id} onClick={() => jump(id)}>
-              {label}
-            </button>
-          ))}
+        <div className="container section-nav__row">
+          <div className="section-nav__inner">
+            {SECTIONS.map(([id, label]) => (
+              <button key={id} onClick={() => jump(id)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <BudgetMini derived={derived} peek={peek} />
         </div>
       </nav>
 
@@ -233,15 +234,15 @@ export default function Results({
             <SectionHeading
               eyebrow="02 · Decorations & setup"
               title={plan.headings?.decor || 'Setting the scene'}
-              intro={`Laid out for a ${LABELS.location[answers.location].toLowerCase()} party. Tap each zone to see it, choose the version that suits you, and set up in this order.`}
+              intro={`Laid out for a party ${{ backyard: 'in the backyard', home: 'at home', park: 'at the park', venue: 'at a venue' }[answers.location] || ''}. Every zone comes in Budget, Classic and Premium — see what each costs and how it fits your budget, then set up in this order.`}
             />
-            <SectionView view={views.decor} setView={(v) => setViews((x) => ({ ...x, decor: v }))} count={catalog.decor.length} noun="setup ideas" />
           </div>
           <ZoneExplorer
             zones={zoneModels}
             theme={theme}
             onToggle={(id, on) => planApi.toggle('decor', id, on)}
             onSwap={(slotId, variantId) => planApi.swap(slotId, variantId)}
+            onPeek={(z) => peekFor(z.zone, z.fit)}
           />
         </div>
       </section>
@@ -312,10 +313,9 @@ export default function Results({
               title={`Made for ${ageLabel(answers.ageRange)}`}
               intro={gamesIntro}
             />
-            <SectionView view={views.games} setView={(v) => setViews((x) => ({ ...x, games: v }))} count={plan.games.length} noun="activities" />
           </div>
           <div className="act-grid">
-            {gameList.map((g, i) => {
+            {gameList.map(({ x: g, fit }, i) => {
               const inPlan = sel.activities.includes(g.id)
               const cost = itemCost(catalog, 'activities', g.id, ctx)
               return (
@@ -328,13 +328,15 @@ export default function Results({
                   inPlan={inPlan}
                   onToggle={() => planApi.toggle('activities', g.id, !inPlan)}
                   reason={reasonFor('activities', g.id, inPlan)}
-                  notes={notesFor(g.id, inPlan, cost)}
+                  notes={notesFor(g.id)}
                   costLabel={cost ? (cost[1] === 0 ? 'free' : rangeText(cost)) : null}
+                  fit={fit}
+                  onPeek={peekFor(g.name, fit)}
                 />
               )
             })}
           </div>
-          {views.games === 'rec' && <p className="fine section-foot">Planned for a {lengthLabel} party — explore all activities to add more.</p>}
+          <p className="fine section-foot">Your plan’s activities come first, planned for a {lengthLabel} party. Everything else is here too — add anything you love.</p>
         </div>
       </section>
 
@@ -346,7 +348,6 @@ export default function Results({
             title={plan.headings?.food || 'The menu'}
             intro={`Recipes are scaled for ${plan.guests} children${dietText}. Add grown-ups if they’ll be eating too — tap any dish for the full recipe.`}
           />
-          <SectionView view={views.food} setView={(v) => setViews((x) => ({ ...x, food: v }))} count={plan.food.length} noun="dishes" />
         </div>
         <div className="menu-bar">
           <Stepper label="Adults eating too" value={adults} onChange={setAdults} />
@@ -356,7 +357,7 @@ export default function Results({
           </a>
         </div>
         <div className="food-grid">
-          {foodList.map((f, i) => {
+          {foodList.map(({ x: f, fit }, i) => {
             const inPlan = sel.food.includes(f.id)
             const cost = itemCost(catalog, 'food', f.id, ctx)
             return (
@@ -370,8 +371,10 @@ export default function Results({
                 inPlan={inPlan}
                 onToggle={() => planApi.toggle('food', f.id, !inPlan)}
                 reason={reasonFor('food', f.id, inPlan)}
-                notes={notesFor(f.id, inPlan, cost)}
+                notes={notesFor(f.id)}
                 costLabel={cost ? rangeText(cost) : null}
+                fit={fit}
+                onPeek={peekFor(f.recipe?.title || f.name, fit)}
               />
             )
           })}

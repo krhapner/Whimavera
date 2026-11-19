@@ -35,12 +35,27 @@ const tagOk = (href) => new URL(href).searchParams.getAll('tag').join() === 'whi
 
 const root = createRoot($('#root'))
 await act(async () => root.render(React.createElement(App)))
-ok(text().includes('Recommended for you'), 'results render with view toggle')
+ok($('#games .act-card') && !$('.plan-bar .seg'), 'results render without a hide/show toggle')
+ok($$('#games .act-card').length === 9, 'every activity is shown, in plan or not')
+ok($$('#food .food-card').length === 7, 'every dish is shown')
+ok($$('#decor .zx__item').length === 5, 'every setup zone is shown')
+ok($$('#games .act-card .fit').length >= 1, 'options outside the plan carry a fit label')
+ok($$('#decor .tier-pick').length >= 1 && $('#decor .tier-pick__opt[data-tier="premium"]'), 'decor shows tiers side by side')
+const cards = $$('#games .act-card')
+const firstOut = cards.findIndex((c) => !c.classList.contains('act-card--in'))
+ok(firstOut > 0 && cards.slice(0, firstOut).every((c) => c.classList.contains('act-card--in')), 'plan activities listed first')
+const ranks = { 'is-fit-fits': 1, 'is-fit-open': 1, 'is-fit-unknown': 1, 'is-fit-over': 2, 'is-fit-unsuited': 3 }
+const r = cards.slice(firstOut).map((c) => ranks[[...c.classList].find((k) => k.startsWith('is-fit-'))])
+ok(r.every((x, i) => i === 0 || x >= r[i - 1]), 'then fits, over budget, unsuited')
+const addBtn = $$('#games .act-card:not(.act-card--in) .plan-toggle')[0]
+await act(async () => addBtn.dispatchEvent(new window.MouseEvent('mouseover', { bubbles: true })))
+ok($('.plan-bar .budget-line__peek'), 'hovering Add previews the budget')
+await act(async () => addBtn.dispatchEvent(new window.MouseEvent('mouseout', { bubbles: true })))
+ok(!$('.plan-bar .budget-line__peek'), 'preview clears on leave')
 
 // 1. Shop from an UNSELECTED activity preview
 const potionShop = $('[data-shop="activity-fairy-potion-lab"]')
-ok(!potionShop, 'unselected activity hidden in Recommended view')
-await click($$('.plan-bar .seg button').find((b) => b.textContent.includes('Explore')))
+ok(potionShop, 'unselected activity is visible')
 const before = JSON.stringify(sel())
 await click($('[data-shop="activity-fairy-potion-lab"]'))
 ok($('.guide-overlay, [role="dialog"]'), 'shopping panel opened')
@@ -83,7 +98,6 @@ ok(!names().includes('Clear PET jars with lids, 4–8 oz'), 'wish jars supplies 
 const ribbonQty = () => $$('.party-list .supply').find((li) => li.querySelector('.supply__name').textContent.startsWith('Satin ribbon'))?.querySelector('.supply__qty').textContent
 const r0 = ribbonQty()
 await act(async () => navigate('results'))
-await click($$('.plan-bar .seg button').find((b) => b.textContent.includes('Explore')))
 const wishCard = $('[data-activity="wish-jars"]').closest('article')
 await click(wishCard.querySelector('.plan-toggle'))
 await act(async () => navigate('shop'))
@@ -93,7 +107,6 @@ ok(r1 !== r0 && r1.includes('+'), `shared ribbon consolidated (${r0} → ${r1})`
 const ribbonRow = $$('.party-list .supply').find((li) => li.querySelector('.supply__name').textContent.startsWith('Satin ribbon'))
 ok(ribbonRow.textContent.includes('Wish Jars') && ribbonRow.textContent.includes('Flower Crown Studio'), 'ribbon lists both sources')
 await act(async () => navigate('results'))
-await click($$('.plan-bar .seg button').find((b) => b.textContent.includes('Explore')))
 await click($('[data-activity="wish-jars"]').closest('article').querySelector('.plan-toggle'))
 await act(async () => navigate('shop'))
 ok(!names().includes('Clear PET jars with lids, 4–8 oz'), 'removing wish jars removes its supplies')

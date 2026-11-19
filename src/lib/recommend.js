@@ -123,14 +123,19 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
   const why = (id, r) => (reasons[id] ||= []).push(r)
   const notes = {}
   const note = (id, r) => (notes[id] ||= []).push(r)
+  // Why an item doesn't suit this party (age, space, diet) — shown, never hidden.
+  const unsuited = {}
+  const unsuit = (id, r) => {
+    unsuited[id] ||= r
+  }
 
   // ---- Activities: suitability, interest score, time budget, balance
   const scored = catalog.activities.map((a) => {
     const ageOk = !a.ages || (ageHi >= a.ages.min && ageLo <= a.ages.max)
     const spaceOk = !a.space || SPACE_RANK[a.space] <= SPACE_RANK[space]
     const matches = a.kinds.filter((k) => loves.includes(k))
-    if (!ageOk) note(a.id, `Best for ages ${a.ages.min}–${a.ages.max}`)
-    if (!spaceOk) note(a.id, `Needs ${SPACE_LABEL[a.space]}`)
+    if (!ageOk) unsuit(a.id, `Best for ages ${a.ages.min}–${a.ages.max}`)
+    if (!spaceOk) unsuit(a.id, `Needs ${SPACE_LABEL[a.space]}`)
     return { a, ageOk, spaceOk, matches, cost: costRange(a.cost, ctx) }
   })
   const suitable = scored
@@ -190,7 +195,7 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
     const swaps = diets.filter((x) => d && d[x] === 'swap')
     const unknown = diets.length && !d
     foodOk[f.id] = !bad.length
-    if (bad.length) note(f.id, `Not suitable for ${bad.join(', ')} as written`)
+    if (bad.length) unsuit(f.id, `Not suitable for ${bad.join(', ')} guests`)
     if (swaps.length) note(f.id, f.recipe ? `Use the ${swaps.join(' & ')} swap in the recipe` : `Choose a ${swaps.join(' & ')} version`)
     if (unknown) note(f.id, 'Check the recipe for your dietary needs')
   }
@@ -296,7 +301,6 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
         minutesLeft = spare
         delete reasons[costly]
       } else break
-      note(costly, `Left out to stay within $${budget}`)
       // Drop food and prep that were only there for the removed activity.
       const stillNeeds = (fid) => sel.activities.some((id) => byId(catalog.activities, id)?.requires?.food?.includes(fid))
       for (const fid of out.requires?.food || []) {
@@ -426,6 +430,7 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
     upgrades,
     reasons,
     notes,
+    unsuited,
     foodOk,
     budget,
   }
@@ -748,3 +753,35 @@ export function overBudgetBy(derived, range) {
   const over = derived.estimate.range[1] + range[1] - derived.budget
   return over > 0 ? Math.round(over) : 0
 }
+
+/**
+ * How an item would fit the party, for labelling every option:
+ *   in        — already in the plan
+ *   unsuited  — not right for this age / space / diet (reason given)
+ *   fits      — adding it keeps the high estimate within budget
+ *   over      — adding it would run over (by ~$)
+ *   open      — no budget set; just the added cost
+ *   unknown   — no estimate for this item
+ * `add` is the item's cost range; `total` is the plan's range with it added.
+ * For a decor version, pass `variantId`: the change from the current version
+ * is what's added.
+ */
+export function fitFor(derived, catalog, section, id, { variantId, inPlan } = {}) {
+  const { rec, estimate, budget, ctx, sel } = derived
+  if (inPlan) return { kind: 'in' }
+  const reason = rec.unsuited?.[id]
+  if (reason) return { kind: 'unsuited', reason }
+  let add = itemCost(catalog, section, id, ctx, variantId)
+  if (section === 'decor' && sel.slots[id] && add) {
+    const cur = itemCost(catalog, 'decor', id, ctx, sel.slots[id])
+    if (cur) add = [add[0] - cur[0], add[1] - cur[1]]
+  }
+  if (!add) return { kind: 'unknown' }
+  const total = [estimate.range[0] + add[0], estimate.range[1] + add[1]]
+  if (budget == null) return { kind: 'open', add, total }
+  if (total[1] <= budget) return { kind: 'fits', add, total }
+  return { kind: 'over', add, total, by: Math.round(total[1] - budget) }
+}
+
+/** Sort order for showing every option: plan, fits, over, unsuited. */
+export const FIT_ORDER = { in: 0, fits: 1, open: 1, unknown: 1, over: 2, unsuited: 3 }

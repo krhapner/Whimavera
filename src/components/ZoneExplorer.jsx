@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Scene from './Scene.jsx'
-import { PlanToggle } from './PlanBar.jsx'
+import { PlanToggle, FitBadge } from './PlanBar.jsx'
 import { ShopSuppliesButton } from './Shopping.jsx'
 
 const FALLBACK_KINDS = ['balloons', 'tablescape', 'crown', 'detail', 'invite']
@@ -14,12 +14,12 @@ const TIER_LABEL = { budget: 'Budget', classic: 'Classic', premium: 'Premium' }
  *
  * zones: [{ id, zone, photo, inPlan, variantId, variants:[{id,name,tier,description,costLabel,costNote}], reason, upgrade }]
  */
-export default function ZoneExplorer({ zones, theme, onToggle, onSwap }) {
+export default function ZoneExplorer({ zones, theme, onToggle, onSwap, onPeek }) {
   const [active, setActive] = useState(0)
   useEffect(() => {
     if (active >= zones.length) setActive(0)
   }, [zones.length, active])
-  if (!zones.length) return <p className="fine">No setup zones in your plan yet — explore everything to add some.</p>
+  if (!zones.length) return null
   const zone = zones[Math.min(active, zones.length - 1)]
   const variantOf = (z) => z.variants.find((v) => v.id === z.variantId) || z.variants[0]
 
@@ -46,7 +46,11 @@ export default function ZoneExplorer({ zones, theme, onToggle, onSwap }) {
                 <span className="zx__n">{String(i + 1).padStart(2, '0')}</span>
                 <span className="zx__title">
                   {z.zone}
-                  {!z.inPlan && <span className="zx__out">Not in your plan</span>}
+                  {!z.inPlan && (
+                    <span className={`zx__out is-${z.fit?.kind}`}>
+                      {z.fit?.kind === 'fits' ? 'Fits your budget' : z.fit?.kind === 'over' ? `Over budget by ~$${z.fit.by}` : 'Not in your plan'}
+                    </span>
+                  )}
                 </span>
                 <span className="zx__chev" aria-hidden="true" />
               </button>
@@ -63,25 +67,43 @@ export default function ZoneExplorer({ zones, theme, onToggle, onSwap }) {
                     {z.reason && z.inPlan && <p className="act-card__match">✦ {z.reason}</p>}
                     {z.upgrade && <p className="act-card__match">✦ Recommended upgrade: {z.upgrade}</p>}
                     {z.variants.length > 1 && (
-                      <div className="variant-pick" role="radiogroup" aria-label={`${z.zone} version`}>
-                        {z.variants.map((x) => (
-                          <button
-                            key={x.id}
-                            type="button"
-                            role="radio"
-                            aria-checked={x.id === v.id}
-                            className={`chip chip--sm ${x.id === v.id ? 'is-selected' : ''}`}
-                            onClick={() => onSwap?.(z.id, x.id)}
-                          >
-                            {TIER_LABEL[x.tier] || x.name}
-                            {x.costLabel && <span className="variant-pick__cost"> {x.costLabel}</span>}
-                          </button>
-                        ))}
+                      <div className="tier-pick" role="radiogroup" aria-label={`${z.zone} version`}>
+                        {z.variants.map((x) => {
+                          const chosen = x.id === v.id
+                          const f = x.fit
+                          return (
+                            <button
+                              key={x.id}
+                              type="button"
+                              role="radio"
+                              aria-checked={chosen}
+                              className={`tier-pick__opt ${chosen ? 'is-selected' : ''} is-${f?.kind || 'unknown'}`}
+                              onClick={() => onSwap?.(z.id, x.id)}
+                              data-tier={x.tier}
+                            >
+                              <span className="tier-pick__tier">{TIER_LABEL[x.tier] || x.name}</span>
+                              <span className="tier-pick__name">{x.name}</span>
+                              {x.costLabel && <span className="tier-pick__cost">{x.costLabel}</span>}
+                              <span className="tier-pick__fit">
+                                {chosen && z.inPlan
+                                  ? 'In your plan'
+                                  : f?.kind === 'fits'
+                                    ? '✓ Fits your budget'
+                                    : f?.kind === 'over'
+                                      ? `~$${f.by} over budget`
+                                      : chosen
+                                        ? 'Selected'
+                                        : ''}
+                              </span>
+                            </button>
+                          )
+                        })}
                       </div>
                     )}
+                    {!z.inPlan && <FitBadge fit={z.fit} />}
                     <div className="zx__actions">
                       {v.supplies?.length > 0 && <ShopSuppliesButton kind="decor" id={z.id} variantId={v.id} title={`${z.zone} · ${v.name}`} label="Shop this look" />}
-                      {onToggle && <PlanToggle inPlan={z.inPlan} onToggle={() => onToggle(z.id, !z.inPlan)} label={z.zone} />}
+                      {onToggle && <PlanToggle inPlan={z.inPlan} onToggle={() => onToggle(z.id, !z.inPlan)} label={z.zone} onPeek={onPeek?.(z)} />}
                     </div>
                   </div>
                 </div>

@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import { scaleRecipe, buildShoppingList } from '../lib/recipes.js'
 import Scene from '../components/Scene.jsx'
 import { Button, Eyebrow, SectionHeading, Tag, money } from '../components/ui.jsx'
-import { BudgetLine, PlanToggle, SectionView, rangeText } from '../components/PlanBar.jsx'
-import { itemCost } from '../lib/recommend.js'
+import { BudgetLine, PlanToggle, FitBadge, rangeText } from '../components/PlanBar.jsx'
+import { itemCost, fitFor, FIT_ORDER } from '../lib/recommend.js'
 import { buildPartyShopping, typicalTotal } from '../lib/shopping.js'
 import { SupplyRow, KitList, AffiliateDisclosure, ShopSuppliesButton, useShop } from '../components/Shopping.jsx'
 import { slugify } from '../data/activityImages.js'
@@ -18,13 +18,13 @@ const TABS = [
 export default function ShopDiy({ plan, initialTab, adults = 0, shopping, catalog, derived, planApi }) {
   const [tab, setTab] = useState(initialTab || (plan.answers.style === 'diy' ? 'diy' : 'shop'))
   const [cat, setCat] = useState('All')
-  const [diyView, setDiyView] = useState('rec')
   const pal = plan.theme.palette
   const { sel, rec, ctx } = derived
   // Only what's selected in the plan reaches the shopping list.
   const party = useMemo(() => buildPartyShopping(plan, catalog, sel, { adults }), [plan, catalog, sel, adults])
   const diyAll = plan.diy.map((d) => ({ ...d, id: slugify(d.name) }))
-  const diyList = diyView === 'all' ? diyAll : diyAll.filter((d) => sel.diy.includes(d.id))
+  const diyFit = (d) => fitFor(derived, catalog, 'diy', d.id, { inPlan: sel.diy.includes(d.id) })
+  const diyList = [...diyAll].sort((a, b) => FIT_ORDER[diyFit(a).kind] - FIT_ORDER[diyFit(b).kind])
   const foodInPlan = shopping.ids.filter((id) => sel.food.includes(id))
 
   return (
@@ -72,9 +72,7 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping, catalo
                   ? `${sel.diy.length} ${sel.diy.length === 1 ? 'project' : 'projects'} in your plan.`
                   : 'No DIY projects in your plan yet.'}
               </p>
-              <SectionView view={diyView} setView={setDiyView} count={diyAll.length} noun="projects" />
             </div>
-            {!diyList.length && <p className="fine">Switch to “Explore everything” to browse all {diyAll.length} projects.</p>}
             <div className="diy-grid">
               {diyList.map((d, i) => {
                 const inPlan = sel.diy.includes(d.id)
@@ -93,9 +91,7 @@ export default function ShopDiy({ plan, initialTab, adults = 0, shopping, catalo
                     <p className="diy__saves">{d.saves}</p>
                     {inPlan && rec.reasons[d.id]?.[0] && <p className="act-card__match">✦ {rec.reasons[d.id][0]}</p>}
                     {!inPlan && rec.diy.includes(d.id) && <p className="act-card__match">✦ Recommended for you</p>}
-                    {(rec.notes[d.id] || []).map((n) => (
-                      <p key={n} className="act-card__note">{n}</p>
-                    ))}
+                    <FitBadge fit={diyFit(d)} />
                     <div className="diy__plan">
                       {cost && <span className="fine">Materials {rangeText(cost)}</span>}
                       <ShopSuppliesButton kind="diy" id={d.id} title={d.name} label="Shop materials" />

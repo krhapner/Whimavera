@@ -1,6 +1,6 @@
 import Scene from './Scene.jsx'
 import { Tag, Sparkle } from './ui.jsx'
-import { PlanToggle } from './PlanBar.jsx'
+import { PlanToggle, FitBadge } from './PlanBar.jsx'
 import { ShopSuppliesButton } from './Shopping.jsx'
 
 const PLACEHOLDER_KINDS = ['crown', 'balloons', 'tablescape', 'cake']
@@ -35,9 +35,9 @@ export function ActivityImage({ activity, theme, index = 0, eager = false, class
  * activity from the plan. `reason` explains why it's recommended, `notes`
  * flag suitability (age, space, budget) without hiding anything.
  */
-export default function ActivityCard({ activity, theme, index, onOpen, inPlan, onToggle, reason, notes = [], costLabel }) {
+export default function ActivityCard({ activity, theme, index, onOpen, inPlan, onToggle, reason, notes = [], costLabel, fit, onPeek }) {
   return (
-    <article className={`act-card ${inPlan ? 'act-card--in' : inPlan === false ? 'act-card--out' : ''}`}>
+    <article className={`act-card ${inPlan ? 'act-card--in' : inPlan === false ? 'act-card--out' : ''} ${fit ? `is-fit-${fit.kind}` : ''}`}>
       <button
         type="button"
         className="act-card__open"
@@ -63,6 +63,7 @@ export default function ActivityCard({ activity, theme, index, onOpen, inPlan, o
               <Sparkle size={10} /> {reason}
             </p>
           )}
+          <FitBadge fit={fit} />
           {notes.map((n) => (
             <p key={n} className="act-card__note">
               {n}
@@ -75,7 +76,7 @@ export default function ActivityCard({ activity, theme, index, onOpen, inPlan, o
       </button>
       <div className="act-card__foot">
         <ShopSuppliesButton kind="activity" id={activity.id} title={activity.name} label="Shop supplies" />
-        {onToggle && <PlanToggle inPlan={inPlan} onToggle={onToggle} label={activity.name} />}
+        {onToggle && <PlanToggle inPlan={inPlan} onToggle={onToggle} label={activity.name} onPeek={onPeek} />}
       </div>
     </article>
   )

@@ -18,8 +18,50 @@ const LENGTHS = [
   [180, '3 hours'],
 ]
 
+const signed = (r) => (r[1] < 0 ? `−${rangeText([-r[1], -r[0]])}` : `+${rangeText(r)}`)
+
+/** How an option fits the budget — shown on every card, nothing hidden. */
+export function FitBadge({ fit, compact = false }) {
+  if (!fit || fit.kind === 'in' || fit.kind === 'unknown') return null
+  if (fit.kind === 'unsuited') return <p className="fit fit--unsuited">{fit.reason}</p>
+  const free = fit.add[1] === 0 && fit.add[0] === 0
+  const cost = free ? 'Free' : signed(fit.add)
+  if (fit.kind === 'open') return <p className="fit fit--open">{cost}</p>
+  if (fit.kind === 'fits')
+    return (
+      <p className="fit fit--fits">
+        <span aria-hidden="true">✓</span> {compact ? 'Fits' : 'Fits your budget'} · {cost}
+      </p>
+    )
+  return (
+    <p className="fit fit--over">
+      {compact ? `Over by ~$${fit.by}` : `Over budget by ~$${fit.by}`} · {cost}
+    </p>
+  )
+}
+
+/** Compact budget readout for the sticky section menu, with the add preview. */
+export function BudgetMini({ derived, peek }) {
+  const { estimate, budget, status } = derived
+  const p = peek?.fit?.total ? peek : null
+  const range = p ? p.fit.total : estimate.range
+  const kind = p ? p.fit.kind : status.kind
+  const left = budget != null ? [budget - range[1], budget - range[0]] : null
+  return (
+    <div className={`budget-mini is-${kind}`} aria-live="polite" data-budget-mini>
+      {p && <span className="budget-mini__peek">With {p.name}:</span>}
+      <span className="budget-mini__est">{estimate.incomplete && !p ? 'Est. —' : rangeText(range)}</span>
+      {budget != null && (
+        <span className="budget-mini__left">
+          {left[0] >= 0 ? `of ${rangeText([budget, budget])} · ${rangeText([Math.max(0, left[0]), left[1]])} left` : `of ${rangeText([budget, budget])} · ~$${Math.round(-left[0])} over`}
+        </span>
+      )}
+    </div>
+  )
+}
+
 /** One honest sentence about the estimate vs. the budget. */
-export function BudgetLine({ derived }) {
+export function BudgetLine({ derived, peek }) {
   const { estimate, budget, status } = derived
   const est = rangeText(estimate.range)
   return (
@@ -40,6 +82,13 @@ export function BudgetLine({ derived }) {
         {status.kind === 'tight' && `fits at the low end; could run up to ${$(status.upTo)} over`}
         {status.kind === 'over' && `by about ${rangeText(status.by)}`}
       </span>
+      {peek?.fit?.total && (
+        <span className={`budget-line__item budget-line__peek is-${peek.fit.kind}`}>
+          <small>With {peek.name}</small>
+          {rangeText(peek.fit.total)}
+          {peek.fit.kind === 'over' ? ` · ~$${peek.fit.by} over` : peek.fit.kind === 'fits' ? ' · still fits' : ''}
+        </span>
+      )}
     </div>
   )
 }
@@ -48,7 +97,7 @@ export function BudgetLine({ derived }) {
  * Sticky-feeling plan bar under the hero: the budget at a glance, a view
  * switch (Recommended / Explore everything) and a gentle "Edit party details".
  */
-export default function PlanBar({ derived, answers, setAnswers, view, setView, onSwap }) {
+export default function PlanBar({ derived, answers, setAnswers, onSwap, peek }) {
   const [open, setOpen] = useState(false)
   const set = (patch) => setAnswers((a) => ({ ...a, ...patch }))
   const loves = answers.interests || []
@@ -65,16 +114,8 @@ export default function PlanBar({ derived, answers, setAnswers, view, setView, o
     <section className="plan-bar">
       <div className="container">
         <div className="plan-bar__row">
-          <BudgetLine derived={derived} />
+          <BudgetLine derived={derived} peek={peek} />
           <div className="plan-bar__actions">
-            <div className="seg seg--sm" role="tablist" aria-label="What to show">
-              <button role="tab" aria-selected={view === 'rec'} className={view === 'rec' ? 'is-active' : ''} onClick={() => setView('rec')}>
-                Recommended for you
-              </button>
-              <button role="tab" aria-selected={view === 'all'} className={view === 'all' ? 'is-active' : ''} onClick={() => setView('all')}>
-                Explore everything
-              </button>
-            </div>
             <button type="button" className="text-link plan-bar__edit" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
               {open ? 'Done' : 'Edit party details'}
             </button>
@@ -173,13 +214,18 @@ export default function PlanBar({ derived, answers, setAnswers, view, setView, o
   )
 }
 
-/** Small add/remove control used on cards and zones. */
-export function PlanToggle({ inPlan, onToggle, label }) {
+/** Small add/remove control used on cards and zones. `onPeek` previews the budget before adding. */
+export function PlanToggle({ inPlan, onToggle, label, onPeek }) {
+  const peekProps = onPeek && !inPlan ? { onMouseEnter: () => onPeek(true), onMouseLeave: () => onPeek(false), onFocus: () => onPeek(true), onBlur: () => onPeek(false) } : {}
   return (
     <button
       type="button"
       className={`plan-toggle ${inPlan ? 'is-in' : ''}`}
-      onClick={onToggle}
+      onClick={() => {
+        onPeek?.(false)
+        onToggle()
+      }}
+      {...peekProps}
       aria-pressed={inPlan}
       aria-label={`${inPlan ? 'Remove' : 'Add'} ${label} ${inPlan ? 'from' : 'to'} your plan`}
     >
@@ -191,15 +237,6 @@ export function PlanToggle({ inPlan, onToggle, label }) {
       ) : (
         '+ Add to plan'
       )}
-    </button>
-  )
-}
-
-/** "Recommended / All" switch for a single section. */
-export function SectionView({ view, setView, count, noun }) {
-  return (
-    <button type="button" className="text-link section-view" onClick={() => setView(view === 'all' ? 'rec' : 'all')}>
-      {view === 'all' ? 'Show only your plan' : `Explore all ${count} ${noun}`}
     </button>
   )
 }

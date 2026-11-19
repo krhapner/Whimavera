@@ -1,6 +1,6 @@
 import Scene from './Scene.jsx'
 import { Tag } from './ui.jsx'
-import { PlanToggle } from './PlanBar.jsx'
+import { PlanToggle, FitBadge } from './PlanBar.jsx'
 import { ShopSuppliesButton } from './Shopping.jsx'
 
 const PLACEHOLDER_KINDS = ['cake', 'tablescape', 'balloons', 'crown']
@@ -28,10 +28,10 @@ export function MenuImage({ item, theme, index = 0, eager = false }) {
 
 export const tagTone = (tag) => TONE[tag] || 'neutral'
 
-export default function FoodCard({ item, theme, index = 0, onOpen, inList, inPlan, onToggle, reason, notes = [], costLabel }) {
+export default function FoodCard({ item, theme, index = 0, onOpen, inList, inPlan, onToggle, reason, notes = [], costLabel, fit, onPeek }) {
   const isCake = !!item.recipe?.bakery
   return (
-    <article className={`act-card food-card ${inPlan ? 'act-card--in' : inPlan === false ? 'act-card--out' : ''}`}>
+    <article className={`act-card food-card ${inPlan ? 'act-card--in' : inPlan === false ? 'act-card--out' : ''} ${fit ? `is-fit-${fit.kind}` : ''}`}>
       <button
         type="button"
         className="act-card__open"
@@ -54,6 +54,7 @@ export default function FoodCard({ item, theme, index = 0, onOpen, inList, inPla
           <h3 className="display-3">{item.recipe?.title || item.name}</h3>
           <p className="act-card__desc">{item.detail}</p>
           {reason && <p className="act-card__match">✦ {reason}</p>}
+          <FitBadge fit={fit} />
           {notes.map((n) => (
             <p key={n} className="act-card__note">
               {n}
@@ -66,7 +67,7 @@ export default function FoodCard({ item, theme, index = 0, onOpen, inList, inPla
       </button>
       <div className="act-card__foot">
         {item.recipe && <ShopSuppliesButton kind="food" id={item.id} title={item.recipe?.title || item.name} label="Shop ingredients" />}
-        {onToggle && <PlanToggle inPlan={inPlan} onToggle={onToggle} label={item.recipe?.title || item.name} />}
+        {onToggle && <PlanToggle inPlan={inPlan} onToggle={onToggle} label={item.recipe?.title || item.name} onPeek={onPeek} />}
       </div>
     </article>
   )
