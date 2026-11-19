@@ -37,7 +37,7 @@ export const birthdayThemes = [
     tagline: 'Moons, constellations & soft gold',
     motif: 'star',
     ages: ['6-8', '9-12'],
-    photos: { card: 'starTable' },
+    photos: { card: 'starDessertTable', detail: 'starCake' },
     palette: [
       { name: 'Midnight', hex: '#3E4A6B' },
       { name: 'Dusk Lilac', hex: '#B8B1D3' },

@@ -49,4 +49,10 @@ export const ownPhotos = {
   zoneFavorTree: { alt: 'Kraft favor boxes tied with ribbon hanging from a potted tree', focus: '50% 40%' },
   fairyDoor: { alt: 'A lavender popsicle-stick fairy door with a brass knob at the base of a tree, with a pebble path and moss', focus: '50% 60%' },
   fairyTreats: { alt: 'Rose cupcakes and a butterfly on a moss table runner', focus: '45% 65%' },
+  starDessertTable: { alt: 'A starry night dessert table under a navy, lilac and gold balloon arch with hanging gold stars and candles', focus: '45% 55%' },
+  starCake: { alt: 'A lilac and cream ombré cake with gold stars and a gold crescent moon', focus: '50% 55%' },
+  starDetails: { alt: 'A flat lay of navy, cream and silver party details: crescent moons, pearls, paper stars and ribbon', focus: '50% 50%' },
+  starBalloons: { alt: 'A navy, slate blue and cream balloon garland with a crescent moon and hanging gold stars', focus: '50% 45%' },
+  starInvite: { alt: 'A midnight-blue invitation with a gold crescent moon and stars beside a blush envelope', focus: '53% 50%' },
+  starCrowns: { alt: 'Cream glitter star crowns on plates along a linen table with dusty blue ribbon', focus: '45% 60%' },
 }

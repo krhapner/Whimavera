@@ -7,16 +7,16 @@ export default {
     'An early-evening party among the constellations — moons, soft gold and a sky full of wishes.',
   moodWords: ['Dreamy', 'Celestial', 'Glowing', 'Cozy'],
   headings: { decor: 'Five corners of the cosmos', food: 'A moonlit menu' },
-  heroPhoto: 'starTreats',
-  foodPhoto: 'starTreats',
+  heroPhoto: 'starDessertTable',
+  foodPhoto: 'starCake',
 
   board: [
-    { kind: 'tablescape', caption: 'The constellation table', photo: 'starTable' },
-    { kind: 'cake', caption: 'Midnight cake with gold stars', photo: 'starTreats' },
-    { kind: 'detail', caption: 'Twinkling lights', photo: 'starLights' },
-    { kind: 'balloons', caption: 'Navy, lilac & gold balloons' },
-    { kind: 'invite', caption: 'Midnight-blue invitation' },
-    { kind: 'crown', caption: 'Star garland' },
+    { kind: 'tablescape', caption: 'The constellation table', photo: 'starDessertTable' },
+    { kind: 'cake', caption: 'Midnight cake with gold stars', photo: 'starCake' },
+    { kind: 'detail', caption: 'Moon & star details', photo: 'starDetails' },
+    { kind: 'balloons', caption: 'Navy, lilac & gold balloons', photo: 'starBalloons' },
+    { kind: 'invite', caption: 'Midnight-blue invitation', photo: 'starInvite' },
+    { kind: 'crown', caption: 'Star crown station', photo: 'starCrowns' },
   ],
 
   setup: [
