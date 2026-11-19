@@ -16,7 +16,7 @@ export default {
     { kind: 'detail', caption: 'Moon & star details', photo: 'starDetails' },
     { kind: 'balloons', caption: 'Navy, lilac & gold balloons', photo: 'starBalloons' },
     { kind: 'invite', caption: 'Midnight-blue invitation', photo: 'starInvite' },
-    { kind: 'crown', caption: 'Star crown station', photo: 'starCrowns' },
+    { kind: 'crown', caption: 'Wishing-star wand station', photo: 'starWands' },
   ],
 
   setup: [
