@@ -31,6 +31,8 @@ export const menuImageAlt = {
   'seaweed-veggie-cups': 'Clear cups of ranch with cucumber ribbons, snap peas and carrot sticks, labeled with fish and starfish stickers',
   'pearl-fruit-cups': 'Clear cups of melon balls, green grapes and blueberries with paper shells on a sandy board',
   'sea-star-sandwiches': 'Star-shaped jam and turkey and cheese sandwiches on a seafoam plate with smiling paper starfish',
+  'goldfish-cracker-cups': 'Fish-shaped crackers in coral, seafoam and teal paper cups decorated with paper fish and waves on a wooden tray',
+  'jellyfish-cupcakes': 'Cupcakes with fluffy pastel seafoam, coral and aqua frosting, candy eyes and sour-strip tentacles on a cream platter',
   'starry-cake': 'A navy buttercream cake with lilac clouds, gold stars, cream rosettes and a sleepy moon topper',
 }
 

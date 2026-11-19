@@ -32,6 +32,15 @@ export const activityImageAlt = {
   'astronaut-training': 'Children in pajamas tumbling out of a star-print tunnel and hopping across cushion craters beside a giant smiling moon',
   'glow-dance-party': 'Children dancing in the dark with glowing bracelets and hoops under a paper moon and stars',
   'backyard-stargazing': 'Children on blankets in the backyard at dusk, pointing at the stars with a star map, lanterns and a paper moon nearby',
+  'sunken-treasure-hunt': 'Children on the lawn opening a little treasure chest of gold coins beside a hand-drawn picture map',
+  'shell-crown-studio': 'Paper crowns in coral, seafoam and teal decorated with shells and pearls on craft trays',
+  'ocean-in-a-bottle': 'A child pouring water into clear bottles with little shells inside, with towels nearby',
+  'jellyfish-cupcakes': 'Children decorating pastel-frosted cupcakes with candy eyes and sour-strip tentacles',
+  'sharks-minnows': 'Laughing children running across a sunny backyard lawn past paper sharks and balloons',
+  'bubble-lagoon': 'Children making giant bubbles with a hoop wand over a tray of solution in the backyard',
+  'go-fishing': 'Two children with stick-and-string fishing rods catching paper fish from a blue cardboard pond',
+  'freeze-fish': 'Children dancing under seafoam crepe-paper seaweed and pink paper jellyfish',
+  'tide-pool-storytime': 'Three children reading an ocean picture book under a blue gauze canopy with octopus and starfish pillows',
   'bedtime-star-stories': 'Three girls reading a moon picture book together in a glowing blanket tent with star and moon pillows',
 }
 

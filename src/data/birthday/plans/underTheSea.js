@@ -22,26 +22,31 @@ export default {
   setup: [
     {
       zone: 'Welcome wave',
+      photo: 'seaZoneWelcome',
       description:
         'A half-arch of seafoam, pearl and coral balloons with green streamers trailing like kelp. A basket of pearl necklaces greets each guest.',
     },
     {
       zone: 'The ocean-floor table',
+      photo: 'seaZoneTable',
       description:
         'A sand-colored runner scattered with shells, glass jars of blue water and battery tealights, and a few paper fish swimming down the center.',
     },
     {
       zone: 'Craft cove',
+      photo: 'seaZoneCraft',
       description:
         'Shell crowns and ocean-in-a-bottle supplies sorted into shallow trays, with towels nearby for drips.',
     },
     {
       zone: 'Photo reef',
+      photo: 'seaZonePhotoReef',
       description:
         'Layers of blue tulle, a fishing net with paper sea creatures, and big cardboard bubbles for little divers to pose between.',
     },
     {
       zone: 'Treasure chest',
+      photo: 'seaZoneTreasure',
       description:
         'A trunk (or a painted cardboard box) filled with favor boxes — opened together at the very end.',
     },
@@ -114,8 +119,8 @@ export default {
   ],
 
   food: [
-    { name: 'Jellyfish cupcakes', detail: 'Decorated by the guests themselves', tag: 'Sweet' },
-    { name: 'Goldfish cracker cups', detail: 'Little paper cups for easy grabbing', tag: 'Savory' },
+    { name: 'Jellyfish cupcakes', detail: 'Fluffy pastel frosting, candy eyes and sour-strip tentacles, decorated by the guests', tag: 'Sweet' },
+    { name: 'Goldfish cracker cups', detail: 'Fish-shaped crackers in little coral, seafoam and teal paper cups', tag: 'Savory' },
     { name: 'Sea-star sandwiches', detail: 'Star-cut sandwiches — jam or turkey & cheese', tag: 'Savory' },
     { name: 'Pearl fruit cups', detail: 'Melon balls, blueberries and green grapes', tag: 'Fresh' },
     { name: 'Seaweed veggie cups', detail: 'Cucumber ribbons, snap peas and carrot sticks over ranch', tag: 'Fresh' },
