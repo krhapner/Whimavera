@@ -33,6 +33,13 @@ export const menuImageAlt = {
   'sea-star-sandwiches': 'Star-shaped jam and turkey and cheese sandwiches on a seafoam plate with smiling paper starfish',
   'goldfish-cracker-cups': 'Fish-shaped crackers in coral, seafoam and teal paper cups decorated with paper fish and waves on a wooden tray',
   'jellyfish-cupcakes': 'Cupcakes with fluffy pastel seafoam, coral and aqua frosting, candy eyes and sour-strip tentacles on a cream platter',
+  'tea-sandwiches': 'A pile of crustless cucumber, jam and honey tea sandwiches on a blush plate over yellow gingham',
+  'mini-scones': 'Golden mini scones filled with strawberry jam and whipped cream on a butter-yellow plate',
+  'mushroom-meringues': 'Meringue mushrooms with cocoa-dusted caps on white meringue stems',
+  'berry-bowls': 'Little pastel bowls of strawberries, raspberries and blueberries with ferns and a toy hedgehog',
+  'garden-crudites': 'A platter of carrots with their tops, radishes and snap peas around a bowl of herb dip',
+  'woodland-tea': 'Pastel teacups of iced peach tea with peach slices beside a cream teapot and a jar of honey',
+  'tea-cake': 'A naked honey layer cake topped with strawberries, raspberries, blueberries, flowers, sugar mushrooms and a bunny topper',
   'starry-cake': 'A navy buttercream cake with lilac clouds, gold stars, cream rosettes and a sleepy moon topper',
 }
 

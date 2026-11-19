@@ -123,9 +123,9 @@ export default {
     { name: 'Mini scones', detail: 'With jam and whipped cream', tag: 'Sweet' },
     { name: 'Mushroom meringues', detail: 'Meringue caps on meringue stems, dusted with cocoa', tag: 'Sweet' },
     { name: 'Berry bowls', detail: 'Strawberries, raspberries and blueberries', tag: 'Fresh' },
-    { name: 'Garden crudités', detail: 'Carrots with their tops, radishes and peas', tag: 'Fresh' },
+    { id: 'garden-crudites', name: 'Garden crudités', detail: 'Carrots with their tops, radishes and snap peas around a herb dip', tag: 'Fresh' },
     { name: 'Woodland "tea"', detail: 'Iced peach tea or caffeine-free chamomile with honey', tag: 'Drink' },
-    { name: 'The cake', detail: 'Naked honey cake with fresh berries and flowers', tag: 'Showpiece' },
+    { id: 'tea-cake', name: 'The cake', detail: 'Naked honey cake with fresh berries, flowers, sugar mushrooms and a bunny topper', tag: 'Showpiece' },
   ],
 
   startHour: 14,

@@ -72,9 +72,9 @@ export default {
     'mini-scones': { role: 'sweet', cost: { perChild: [0.5, 0.9] }, diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
     'mushroom-meringues': { role: 'sweet', cost: { perChild: [0.3, 0.6] }, diet: diet({ 'egg-free': 'no' }) },
     'berry-bowls': { role: 'fresh', cost: { perChild: [1, 1.8] }, diet: diet() },
-    'garden-crudit-s': { role: 'fresh', cost: { perChild: [0.6, 1] }, diet: diet({ 'dairy-free': 'swap', 'egg-free': 'swap' }) },
+    'garden-crudites': { role: 'fresh', cost: { perChild: [0.6, 1] }, diet: diet({ 'dairy-free': 'swap', 'egg-free': 'swap' }) },
     'woodland-tea': { role: 'drink', cost: { perChild: [0.3, 0.5] }, diet: diet() },
-    'the-cake': { role: 'showpiece', headline: true, cost: { fixed: [30, 50] }, costNote: 'Homemade estimate; fresh berries and bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
+    'tea-cake': { role: 'showpiece', headline: true, cost: { fixed: [30, 50] }, costNote: 'Homemade estimate; fresh berries and bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
   },
 
   diy: {
