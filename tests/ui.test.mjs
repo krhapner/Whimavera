@@ -9,7 +9,7 @@ window.IntersectionObserver = globalThis.IntersectionObserver = class { observe(
 window.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} })
 window.print = () => { globalThis.printed = true }
 localStorage.setItem('whimavera.hasPlan.v1', '1')
-localStorage.setItem('whimavera.answers.v1', JSON.stringify({ theme: 'fairy-garden', ageRange: '6-8', guestCount: 12, budget: 150, budgetMode: 'limit', interests: ['crafts', 'hunts'], location: 'backyard', style: 'mix', prepTime: 'week', duration: 120, diet: ['none'] }))
+localStorage.setItem('whimavera.answers.v1', JSON.stringify({ theme: 'fairy-garden', ageRange: '6-8', guestCount: 12, budget: 200, budgetMode: 'limit', interests: ['crafts', 'hunts'], location: 'backyard', style: 'mix', prepTime: 'week', duration: 120, diet: ['none'] }))
 
 // Local asset URLs (fonts, artwork) are read from disk; downloads are captured.
 const { nodeRead } = await import('./node-read.mjs')
@@ -109,23 +109,20 @@ ok(!gemRow().classList.contains('is-skipped'), 'item reselected')
 await click(gemRow().querySelector('input[type=checkbox]'))
 ok(gemRow().classList.contains('is-owned'), 'owned in list')
 
-// 5. Guest count change → quantities
+// 5. Lean tip on a modest budget, then guest count change → quantities
+// (with "show everything" on, so budget trimming doesn't change the activities)
+ok(text().includes('Keeping costs down?'), 'lean budget tip at $200')
 const gemQty = () => gemRow().querySelector('.supply__qty').textContent
 const q12 = gemQty()
 await act(async () => navigate('results'))
 await click($('.plan-bar__edit'))
+await click($$('.edit-panel input[type=checkbox]')[0])
 const plus = $$('.edit-panel button').find((b) => /increase|more|\+/i.test(b.getAttribute('aria-label') || b.textContent))
 for (let i = 0; i < 8; i++) await click(plus)
 await act(async () => navigate('shop'))
 ok(gemQty() !== q12, `gems scale with guests (${q12} → ${gemQty()})`)
 
-// 6. Budget change → lean tip
-ok(text().includes('Keeping costs down?'), 'lean budget tip at $150')
-await act(async () => navigate('results'))
-await click($('.plan-bar__edit'))
-const allBox = $$('.edit-panel input[type=checkbox]')[0]
-await click(allBox)
-await act(async () => navigate('shop'))
+// 6. Unlimited budget → no lean tip
 ok(!text().includes('Keeping costs down?'), 'no lean tip with unlimited budget')
 
 // 7. Copy / print

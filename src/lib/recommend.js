@@ -260,24 +260,70 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
   const sel = { activities: picks.map((p) => p.a.id), food: foodIds, slots, diy: diyIds }
   const total = () => estimateTotal(plan, catalog, sel, ctx)
   const upgrades = []
+  // Plan to the high end of the estimate so a recommended plan never starts
+  // out "could run over" — the parent gets headroom, not a surprise.
+  const fitsBudget = () => budget == null || total().range[1] <= budget
 
   const tryUpgrade = (apply, undo, label) => {
     apply()
-    const t = total()
-    if (budget == null || mid(t.range) <= budget) return true
+    if (fitsBudget()) return true
     undo()
     return false
   }
 
   if (budget != null) {
-    // If even the lean plan is over, trim the costliest activities (keep two).
-    while (mid(total().range) > budget && sel.activities.length > 2) {
-      const costly = [...sel.activities].sort((x, y) => mid(costRange(byId(catalog.activities, y).cost, ctx)) - mid(costRange(byId(catalog.activities, x).cost, ctx)))[0]
-      if (!mid(costRange(byId(catalog.activities, costly).cost, ctx))) break
-      sel.activities = sel.activities.filter((id) => id !== costly)
-      delete reasons[costly]
+    // If even the lean plan could run over, swap the costliest activities for
+    // cheaper ones that suit the child, then drop activities (keep at least one).
+    const actCost = (id) => mid(costRange(byId(catalog.activities, id).cost, ctx))
+    const minsOf = (a) => (a.minutes || 15) + 5
+    let guard = 20
+    while (!fitsBudget() && guard-- > 0) {
+      const costly = [...sel.activities].sort((x, y) => actCost(y) - actCost(x))[0]
+      if (!costly || !actCost(costly)) break
+      const out = byId(catalog.activities, costly)
+      const spare = minutesLeft + minsOf(out)
+      const swap = suitable
+        .filter((x) => !sel.activities.includes(x.a.id) && mid(x.cost) < actCost(costly) && minsOf(x.a) <= spare)
+        .sort((x, y) => y.matches.length - x.matches.length || mid(x.cost) - mid(y.cost))[0]
+      if (swap) {
+        sel.activities = sel.activities.map((id) => (id === costly ? swap.a.id : id))
+        minutesLeft = spare - minsOf(swap.a)
+        delete reasons[costly]
+        why(swap.a.id, `A budget-friendly pick to stay within $${budget}`)
+      } else if (sel.activities.length > 1) {
+        sel.activities = sel.activities.filter((id) => id !== costly)
+        minutesLeft = spare
+        delete reasons[costly]
+      } else break
       note(costly, `Left out to stay within $${budget}`)
+      // Drop food and prep that were only there for the removed activity.
+      const stillNeeds = (fid) => sel.activities.some((id) => byId(catalog.activities, id)?.requires?.food?.includes(fid))
+      for (const fid of out.requires?.food || []) {
+        const onlyDep = (reasons[fid] || []).every((r) => r.startsWith('Needed for'))
+        if (foodIds.includes(fid) && onlyDep && !stillNeeds(fid)) {
+          foodIds.splice(foodIds.indexOf(fid), 1)
+          delete reasons[fid]
+        }
+      }
+      for (const id of [...diyIds]) {
+        const req = byId(catalog.diy, id)?.meta?.requires
+        const ok = (!req?.activities || req.activities.some((x) => sel.activities.includes(x))) && (!req?.food || req.food.some((x) => foodIds.includes(x)))
+        if (!ok) {
+          diyIds.splice(diyIds.indexOf(id), 1)
+          delete reasons[id]
+        }
+      }
+      // A swapped-in activity may need food of its own.
+      for (const id of sel.activities) {
+        for (const fid of byId(catalog.activities, id)?.requires?.food || []) {
+          if (!foodIds.includes(fid) && foodOk[fid] !== false) {
+            foodIds.push(fid)
+            why(fid, `Needed for ${byId(catalog.activities, id).name}`)
+          }
+        }
+      }
     }
+    picks.splice(0, picks.length, ...sel.activities.map((id) => scored.find((x) => x.a.id === id)))
   }
 
   // Upgrades in priority order: classic decor for essentials, relevant extra
@@ -341,6 +387,9 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
     let added = 0
     for (const d of diyCandidates) {
       if (diyIds.includes(d.id) || added >= limit) continue
+      const req = d.meta?.requires
+      if (req?.activities && !req.activities.some((id) => sel.activities.includes(id))) continue
+      if (req?.food && !req.food.some((id) => foodIds.includes(id))) continue
       if (d.meta?.minutes && d.meta.minutes > maxDiyMinutes) continue
       const match = (d.meta?.kinds || []).filter((k) => loves.includes(k))
       if (catalog.hasMeta && !match.length) continue
@@ -352,14 +401,14 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
   }
 
   // Premium upgrades are suggested (not selected) when there's room for them.
-  const remainingMid = budget != null ? budget - mid(total().range) : null
+  const headroom = budget != null ? budget - total().range[1] : null
   for (const slot of catalog.decor) {
     for (const v of slot.variants) {
       if (v.tier !== 'premium') continue
       const c = variantCost(v, ctx)
       const current = slot.variants.find((x) => x.id === slots[slot.id])
-      const extra = c ? mid(c) - mid(current ? variantCost(current, ctx) : null) : null
-      if (budget == null || (extra != null && extra <= remainingMid)) {
+      const extra = c ? c[1] - (current ? variantCost(current, ctx)?.[1] || 0 : 0) : null
+      if (budget == null || (extra != null && extra <= headroom)) {
         upgrades.push({ slotId: slot.id, variantId: v.id, reason: budget == null ? 'A showstopping upgrade' : `Fits within your $${budget} budget` })
       }
     }
@@ -688,6 +737,6 @@ export function itemCost(catalog, section, id, ctx, variantId) {
 /** Would adding this push the plan over budget? Returns ~dollars over, or 0. */
 export function overBudgetBy(derived, range) {
   if (derived.budget == null || !range) return 0
-  const over = mid(derived.estimate.range) + mid(range) - derived.budget
+  const over = derived.estimate.range[1] + range[1] - derived.budget
   return over > 0 ? Math.round(over) : 0
 }

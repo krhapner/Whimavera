@@ -12,10 +12,11 @@
     "photos": "node scripts/fetch-photos.mjs",
     "test:links": "vite-node tests/amazon.test.mjs",
     "test:ui": "vite-node tests/ui.test.mjs",
-    "test": "npm run test:links && npm run test:printables && npm run test:ui",
+    "test": "npm run test:links && npm run test:printables && npm run test:budget && npm run test:ui",
     "test:printables": "vite-node tests/printables.test.mjs",
     "printables:proof": "vite-node scripts/proof-printables.mjs",
-    "printables:art": "python3 scripts/prepare-printable-art.py"
+    "printables:art": "python3 scripts/prepare-printable-art.py",
+    "test:budget": "vite-node tests/budget.test.mjs"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
