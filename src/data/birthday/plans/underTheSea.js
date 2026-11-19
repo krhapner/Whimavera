@@ -7,16 +7,16 @@ export default {
     'A shimmering afternoon beneath the waves — pearls, seashells and seafoam blues, with a treasure chest waiting to be found.',
   moodWords: ['Shimmering', 'Breezy', 'Pearlescent', 'Playful'],
   headings: { decor: 'Five spots beneath the waves', food: 'A seaside spread' },
-  heroPhoto: 'seaTable',
-  foodPhoto: 'seaTreats',
+  heroPhoto: 'seaDessertTable',
+  foodPhoto: 'seaCake',
 
   board: [
-    { kind: 'tablescape', caption: 'The ocean-floor table', photo: 'seaTable' },
-    { kind: 'cake', caption: 'Seafoam cake with candy shells', photo: 'seaTreats' },
-    { kind: 'detail', caption: 'Shells & pearls', photo: 'seaShells' },
-    { kind: 'balloons', caption: 'A wave of balloons' },
-    { kind: 'invite', caption: 'Pearl-white invitation' },
-    { kind: 'crown', caption: 'Shell crown station' },
+    { kind: 'tablescape', caption: 'The ocean-floor table', photo: 'seaDessertTable' },
+    { kind: 'cake', caption: 'Seafoam cake with candy shells', photo: 'seaCake' },
+    { kind: 'detail', caption: 'Shells & pearls', photo: 'seaShellDetails' },
+    { kind: 'balloons', caption: 'A wave of balloons', photo: 'seaBalloons' },
+    { kind: 'invite', caption: 'Pearl-white invitation', photo: 'seaInvite' },
+    { kind: 'crown', caption: 'Shell crown station', photo: 'seaCrowns' },
   ],
 
   setup: [

@@ -55,4 +55,10 @@ export const ownPhotos = {
   starBalloons: { alt: 'A navy, slate blue and cream balloon garland with a crescent moon and hanging gold stars', focus: '50% 45%' },
   starInvite: { alt: 'A midnight-blue invitation with a gold crescent moon and stars beside a blush envelope', focus: '53% 50%' },
   starCrowns: { alt: 'Cream glitter star crowns on plates along a linen table with dusty blue ribbon', focus: '45% 60%' },
+  seaDessertTable: { alt: 'An under the sea dessert table with a seafoam, teal and coral balloon arch, paper jellyfish and seahorses, a streamer seaweed backdrop and a shell-topped cake', focus: '50% 55%' },
+  seaCake: { alt: 'A seafoam buttercream cake with piped waves, sugar shells, pearls and a smiling pink octopus', focus: '50% 50%' },
+  seaShellDetails: { alt: 'Pearly seashells in seafoam, coral and cream with pearls and tiny starfish on linen', focus: '50% 50%' },
+  seaBalloons: { alt: 'A seafoam, teal, coral and pearl balloon garland flowing like a wave, with seashells and tulle', focus: '50% 45%' },
+  seaInvite: { alt: 'A cream invitation with a watercolor seashell and starfish border, a seafoam-lined envelope and coral ribbon', focus: '50% 50%' },
+  seaCrowns: { alt: 'Shell and pearl crowns with coral starfish and seafoam ribbon on a linen table', focus: '50% 60%' },
 }

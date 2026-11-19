@@ -22,7 +22,7 @@ export const birthdayThemes = [
     tagline: 'Pearls, shells & seafoam blues',
     motif: 'shell',
     ages: ['3-5', '6-8'],
-    photos: { card: 'seaTable' },
+    photos: { card: 'seaDessertTable', detail: 'seaCake' },
     palette: [
       { name: 'Seafoam', hex: '#B7D6CF' },
       { name: 'Pearl', hex: '#F3EDE3' },
