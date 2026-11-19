@@ -30,6 +30,7 @@ export const lovesOf = (answers) => {
 const dietsOf = (answers) => (answers.diet || []).filter((d) => d !== 'none')
 
 const add = (a, b) => (a && b ? [a[0] + b[0], a[1] + b[1]] : null)
+const pluralUnit = (u) => (/(s|x|z|ch|sh)$/.test(u) ? `${u}es` : /[^aeiou]y$/.test(u) ? `${u.slice(0, -1)}ies` : `${u}s`)
 const mid = (r) => (r ? (r[0] + r[1]) / 2 : 0)
 
 /** Cost range for a cost spec, or null if there's no estimate. */
@@ -55,7 +56,7 @@ export function buildCatalog(plan, meta) {
       energy: g.energy,
       kinds: g.kinds || [],
       minutes: parseInt(g.time, 10) || null,
-      ages: g.guide?.ages || null,
+      ages: g.guide?.ages || a.ages || null,
       space: a.space || null,
       cost: a.cost || null,
       costNote: a.costNote || null,
@@ -190,7 +191,7 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
     const unknown = diets.length && !d
     foodOk[f.id] = !bad.length
     if (bad.length) note(f.id, `Not suitable for ${bad.join(', ')} as written`)
-    if (swaps.length) note(f.id, `Use the ${swaps.join(' & ')} swap in the recipe`)
+    if (swaps.length) note(f.id, f.recipe ? `Use the ${swaps.join(' & ')} swap in the recipe` : `Choose a ${swaps.join(' & ')} version`)
     if (unknown) note(f.id, 'Check the recipe for your dietary needs')
   }
   // Lean menu: the cheapest suitable dish for each core role. Richer dishes
@@ -515,8 +516,12 @@ export function estimateTotal(plan, catalog, sel, ctx) {
     cats.push({ id, label, items, range })
   }
 
-  const ess = essentialsRange(plan, catalog.meta)
-  push('basics', 'Tableware & favors', [{ name: 'Plates, cups, napkins and favors', range: ess && [Math.round(ess[0]), Math.round(ess[1])] }])
+  const essCats = catalog.meta?.essentialsFromShop || []
+  const essItems = plan.shop
+    .filter((c) => essCats.includes(c.category))
+    .flatMap((c) => c.items)
+    .map((i) => ({ name: i.name, qty: `${i.quantity} ${i.quantity === 1 ? i.unit : pluralUnit(i.unit)}`, range: [i.estLow, i.estHigh] }))
+  push('basics', 'Tableware & favors', essItems.length ? essItems : [{ name: 'Plates, cups, napkins and favors', range: null }])
 
   push(
     'decor',

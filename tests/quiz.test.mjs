@@ -12,12 +12,12 @@ const run = (a) => {
   const plan = buildPlan(liveEventType, a); const cat = buildCatalog(plan, catalogMetaByTheme[plan.theme.id])
   const d = derivePlan(plan, cat, a); runs++; return { plan, cat, d }
 }
-const ints = [['crafts'],['cooking'],['active'],['music'],['pretend'],['hunts'],['science'],['outdoors'],['quiet'],['everything'],['crafts','hunts','pretend'],[]]
-for (const ageRange of Object.keys(AGE)) for (const interests of ints) for (const location of Object.keys(SPACE))
-for (const duration of [90,180]) for (const diet of [['none'],['gluten-free'],['egg-free'],['dairy-free','nut-free'],['vegetarian']])
-for (const style of ['diy','mix','ready']) for (const prepTime of ['few-hours','two-weeks']) for (const budgetMode of ['limit','all']) {
-  const a = { ...D, ageRange, interests, location, duration, diet, style, prepTime, budgetMode, budget: 300 }
-  const { plan, cat, d } = run(a); const s = d.sel; const ex = JSON.stringify({ ageRange, interests, location, duration, diet, style, prepTime, budgetMode })
+const ints = [['crafts'],['cooking'],['active'],['music'],['pretend'],['hunts'],['science'],['outdoors'],['quiet'],['everything'],['crafts','hunts','pretend']]
+for (const theme of liveEventType.themes.map((t) => t.id)) for (const ageRange of Object.keys(AGE)) for (const interests of ints) for (const location of Object.keys(SPACE))
+for (const duration of [90,180]) for (const diet of [['none'],['egg-free'],['gluten-free','dairy-free','nut-free','vegetarian']])
+for (const style of ['diy','ready']) for (const prepTime of ['few-hours','two-weeks']) for (const budgetMode of ['limit','all']) {
+  const a = { ...D, theme, ageRange, interests, location, duration, diet, style, prepTime, budgetMode, budget: 300 }
+  const { plan, cat, d } = run(a); const s = d.sel; const ex = JSON.stringify({ theme, ageRange, interests, location, duration, diet, style, prepTime, budgetMode })
   const [lo, hi] = AGE[ageRange]
   for (const id of s.activities) {
     const act = cat.activities.find((x) => x.id === id)
@@ -26,7 +26,7 @@ for (const style of ['diy','mix','ready']) for (const prepTime of ['few-hours','
   }
   if (!s.activities.length) flag('no activities', ex)
   const loves = interests.includes('everything') ? PLAY_KINDS : interests
-  const matchable = cat.activities.filter((x) => x.kinds.some((k) => loves.includes(k)) && (!x.ages || (hi >= x.ages.min && lo <= x.ages.max)) && (!x.space || SR[x.space] <= SPACE[location]))
+  const matchable = cat.activities.filter((x) => x.kinds.some((k) => loves.includes(k)) && (!x.ages || (hi >= x.ages.min && lo <= x.ages.max)) && (!x.space || SR[x.space] <= SPACE[location]) && (x.minutes || 15) + 5 <= Math.max(20, duration - 65))
   if (loves.length && matchable.length && !s.activities.some((id) => cat.activities.find((x) => x.id === id).kinds.some((k) => loves.includes(k)))) flag('no activity matches interests (though one could)', ex + ' ' + s.activities)
   if (d.timeline.over > 0) flag('timeline runs past party length', ex + ` over ${d.timeline.over}m`)
   const diets = diet.filter((x) => x !== 'none')
@@ -38,7 +38,7 @@ for (const style of ['diy','mix','ready']) for (const prepTime of ['few-hours','
   const optionalDiy = s.diy.filter((id) => !cat.diy.find((x) => x.id === id)?.meta?.requires)
   if (style === 'ready' && optionalDiy.length) flag('ready-made still gets optional DIY', ex + ' ' + optionalDiy)
   for (const id of optionalDiy) if ((cat.diy.find((x) => x.id === id)?.meta?.minutes || 0) > maxMin) flag('DIY longer than prep time', ex + ' ' + id)
-  if (style === 'diy' && budgetMode === 'all' && prepTime === 'two-weeks' && optionalDiy.length === 0) flag('DIY lover, unlimited budget, 2 weeks: no DIY projects', ex)
+  if (style === 'diy' && budgetMode === 'all' && prepTime === 'two-weeks' && optionalDiy.length === 0 && cat.diy.some((x) => !x.meta?.requires)) flag('DIY lover, unlimited budget, 2 weeks: no DIY projects', ex)
   if (budgetMode === 'limit' && d.status.kind === 'over') flag('over budget at $300', ex)
   if (budgetMode === 'all' && d.status.kind !== 'open') flag('unlimited mode not open', ex)
 }

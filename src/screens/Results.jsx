@@ -12,6 +12,8 @@ import { itemCost, overBudgetBy, lovesOf } from '../lib/recommend.js'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
 import { ageLabel } from '../lib/buildPlan.js'
 
+const TIER_LABEL = { budget: 'Budget', classic: 'Classic', premium: 'Premium' }
+
 const SECTIONS = [
   ['inspiration', 'Inspiration'],
   ['decor', 'Decor & setup'],
@@ -259,9 +261,27 @@ export default function Results({
                 <span className="budget__dot" style={{ background: pal[i % pal.length].hex }} />
                 <div className="budget__label">
                   <strong>{c.label}</strong>
-                  <span>{c.items.map((it) => it.name).join(' · ')}</span>
+                  <details className="budget__detail">
+                    <summary>
+                      <span className="budget__peek">{c.items.map((it) => it.name).join(' · ')}</span>
+                      <span className="budget__toggle" data-count={c.items.length} />
+                    </summary>
+                    <div className="budget__items">
+                      {c.items.map((it) => (
+                        <div className="budget__item" key={it.id || it.name}>
+                          <div className="budget__item-name">
+                            {it.name}
+                            {it.qty && <span className="budget__item-meta"> · {it.qty}</span>}
+                            {it.tier && <span className="budget__tier">{TIER_LABEL[it.tier]}</span>}
+                            {it.note && <small className="budget__item-note">{it.note}</small>}
+                          </div>
+                          <span className="budget__item-amt">{it.range ? (it.range[1] === 0 ? 'Free' : rangeText(it.range)) : 'No estimate'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
                 </div>
-                <span className="budget__amt">{c.items.every((it) => !it.range) ? 'No estimate yet' : rangeText(c.range)}</span>
+                <span className="budget__amt">{c.items.every((it) => !it.range) ? 'No estimate yet' : c.range[1] === 0 ? 'Free' : rangeText(c.range)}</span>
               </li>
             ))}
             <li className="budget__total">

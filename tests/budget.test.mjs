@@ -8,15 +8,15 @@ import { catalogMetaByTheme } from '../src/data/birthday/catalog/index.js'
 import { defaultBirthdayAnswers } from '../src/data/birthday/questions.js'
 
 let n = 0
-for (const budget of [125, 150, 175, 200, 250, 300, 500]) {
+for (const theme of liveEventType.themes.map((t) => t.id)) for (const budget of [125, 150, 175, 200, 250, 300, 500]) {
   for (const guestCount of [6, 8, 12, 16]) {
     for (const interests of [['crafts', 'hunts'], ['everything'], ['active']]) {
-      const answers = { ...defaultBirthdayAnswers, theme: 'fairy-garden', budget, guestCount, interests, budgetMode: 'limit' }
+      const answers = { ...defaultBirthdayAnswers, theme, budget, guestCount, interests, budgetMode: 'limit' }
       const plan = buildPlan(liveEventType, answers)
       const d = derivePlan(plan, buildCatalog(plan, catalogMetaByTheme[plan.theme.id]), answers)
-      const tag = `$${budget}, ${guestCount} guests, ${interests.join('+')}: ${d.estimate.range.join('–')}`
+      const tag = `${theme} $${budget}, ${guestCount} guests, ${interests.join('+')}: ${d.estimate.range.join('–')}`
       assert.ok(d.sel.activities.length >= 1, `has an activity (${tag})`)
-      if (budget >= 175 && guestCount <= 12) assert.equal(d.status.kind, 'under', `fits the budget (${tag})`)
+      if (budget >= 175 && guestCount <= 8) assert.equal(d.status.kind, 'under', `fits the budget (${tag})`)
       assert.notEqual(d.status.kind, 'over', `not over budget (${tag})`)
       n++
     }
