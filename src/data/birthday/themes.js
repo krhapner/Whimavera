@@ -52,7 +52,7 @@ export const birthdayThemes = [
     tagline: 'Teacups, ferns & honey cakes',
     motif: 'teacup',
     ages: ['3-5', '6-8', '9-12'],
-    photos: { card: 'teaTable' },
+    photos: { card: 'teaGardenTable', detail: 'teaCake' },
     palette: [
       { name: 'Fern', hex: '#9BAA8A' },
       { name: 'Honey', hex: '#E5C98F' },

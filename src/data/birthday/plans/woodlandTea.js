@@ -7,16 +7,16 @@ export default {
     'Teacups among the ferns, honey cakes and woodland friends — a gentle, storybook gathering.',
   moodWords: ['Gentle', 'Storybook', 'Honeyed', 'Leafy'],
   headings: { decor: 'Five nooks in the woods', food: 'Tea for the woodland friends' },
-  heroPhoto: 'teaTable',
-  foodPhoto: 'teaCups',
+  heroPhoto: 'teaGardenTable',
+  foodPhoto: 'teaCake',
 
   board: [
-    { kind: 'tablescape', caption: 'The woodland tea table', photo: 'teaTable' },
-    { kind: 'cake', caption: 'Honey cake with berries' },
-    { kind: 'detail', caption: 'Mismatched teacups', photo: 'teaCups' },
-    { kind: 'balloons', caption: 'Fern & honey balloons' },
-    { kind: 'invite', caption: 'Pressed-leaf invitation' },
-    { kind: 'crown', caption: 'Fern garland' },
+    { kind: 'tablescape', caption: 'The woodland tea table', photo: 'teaGardenTable' },
+    { kind: 'cake', caption: 'Honey cake with berries', photo: 'teaCake' },
+    { kind: 'detail', caption: 'Mismatched teacups', photo: 'teaCupsSet' },
+    { kind: 'balloons', caption: 'Fern & honey balloons', photo: 'teaBalloons' },
+    { kind: 'invite', caption: 'Woodland friends invitation', photo: 'teaInvite' },
+    { kind: 'crown', caption: 'Fern garland', photo: 'teaGarland' },
   ],
 
   setup: [
