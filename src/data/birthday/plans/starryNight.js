@@ -22,26 +22,31 @@ export default {
   setup: [
     {
       zone: 'Moonlit welcome',
+      photo: 'starZoneWelcome',
       description:
-        'A paper moon and a gold star garland over the door, with a basket of glow bracelets for every guest.',
+        'A paper moon on the door framed by a navy, lilac and pale-blue balloon arch, with gold stars hanging from twine and a basket of glow bracelets for every guest.',
     },
     {
       zone: 'The constellation table',
+      photo: 'starZoneTable',
       description:
         'A navy runner sprinkled with gold paper stars, battery tealights in clear jars, and little planet ornaments down the middle.',
     },
     {
       zone: 'Stargazing den',
+      photo: 'starZoneDen',
       description:
         'A blanket fort or teepee with pillows and string lights inside — the cosiest spot in the house.',
     },
     {
       zone: 'Craft observatory',
+      photo: 'starZoneCraft',
       description:
         'A table for galaxy jars and constellation cards, with flashlights ready to test them.',
     },
     {
       zone: 'Wishing wall',
+      photo: 'starZoneWishWall',
       description:
         'Star-shaped cards pegged to twine. Every guest writes or draws a birthday wish to hang up.',
     },

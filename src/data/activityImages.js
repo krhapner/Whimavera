@@ -24,6 +24,15 @@ export const activityImageAlt = {
   'wish-jars': 'Jars of pastel sand, confetti, funnels and wish scrolls on a craft table',
   'musical-toadstools': 'Red-and-white toadstool mats in a circle on the lawn',
   'fairy-storytime': 'Children in fairy wings on pastel cushions and blankets under a tree, with a basket of picture books',
+  'constellation-cards': 'Navy cards pricked with constellation patterns, one held up to a light box, with a flashlight and gold paper stars',
+  'glow-star-hunt': 'Two children with flashlights searching a sofa scattered with glow-in-the-dark stars under a smiling paper moon',
+  'straw-rocket-launch': 'A child holding a star-printed paper rocket on a straw, aiming at a paper moon target',
+  'galaxy-jars': 'Children layering cotton wool and shimmering blue, lilac and pink water into jars on a navy table',
+  'star-cookie-studio': 'Star sugar cookies with bowls of navy, lilac and white icing, gold star sprinkles and a child piping a smiley face',
+  'astronaut-training': 'Children in pajamas tumbling out of a star-print tunnel and hopping across cushion craters beside a giant smiling moon',
+  'glow-dance-party': 'Children dancing in the dark with glowing bracelets and hoops under a paper moon and stars',
+  'backyard-stargazing': 'Children on blankets in the backyard at dusk, pointing at the stars with a star map, lanterns and a paper moon nearby',
+  'bedtime-star-stories': 'Three girls reading a moon picture book together in a glowing blanket tent with star and moon pillows',
 }
 
 export const slugify = (s) =>
