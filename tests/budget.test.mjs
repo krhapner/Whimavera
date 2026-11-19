@@ -23,3 +23,22 @@ for (const budget of [125, 150, 175, 200, 250, 300, 500]) {
   }
 }
 console.log(`✓ ${n} budget checks passed`)
+
+// Decor tiers: Budget < Classic < Premium in shoppable supplies, and each
+// version's cost estimate matches the sum of its supplies.
+import { resolveSupply } from '../src/lib/shopping.js'
+const ORDER = ['budget', 'classic', 'premium']
+let t = 0
+for (const [theme, meta] of Object.entries(catalogMetaByTheme)) {
+  for (const slot of meta.decor || []) {
+    const counts = ORDER.map((tier) => slot.variants.find((v) => v.tier === tier)).map((v) => v && v.supplies.filter((s) => resolveSupply(s.name, { id: s.supply, category: 'decor' }).shop).length)
+    const present = counts.filter((c) => c != null)
+    for (let i = 1; i < present.length; i++) assert.ok(present[i] > present[i - 1], `${theme}/${slot.id}: more supplies at each tier (${counts})`)
+    for (const v of slot.variants) {
+      const sum = v.supplies.reduce((r, s) => [r[0] + s.est[0] * s.qty, r[1] + s.est[1] * s.qty], [0, 0]).map(Math.round)
+      assert.deepEqual(v.cost.fixed, sum, `${theme}/${v.id}: cost matches supplies`)
+    }
+    t++
+  }
+}
+console.log(`✓ ${t} decor zones step up by tier`)
