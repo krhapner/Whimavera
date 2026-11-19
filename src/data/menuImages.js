@@ -20,6 +20,13 @@ export const menuImageAlt = {
   'honey-pinwheel-sandwiches': 'Tortilla pinwheel sandwiches arranged in a ring on a cream platter',
   'petal-pink-lemonade': 'Pitchers of pink and pastel lemonade with edible flowers and lemon slices',
   'fairy-cake': 'A semi-naked layered vanilla cake decorated with pressed edible flowers, toadstools and pastel candles',
+  'galaxy-cupcakes': 'Cupcakes with swirled navy and lilac frosting, gold star sprinkles and moon and star toppers on a cake stand',
+  'star-sandwiches': 'Star-shaped ham and cheese and jam sandwiches on a pale blue platter with gold confetti stars',
+  'crescent-moon-crackers': 'Crescent-moon cheese slices, tiny cheese stars and round crackers on a little wooden board',
+  'shooting-star-fruit-wands': 'Skewers of star-cut melon, strawberries and blueberries on a pale blue plate',
+  'rocket-veggie-cups': 'Clear cups of dip with carrot and cucumber sticks, each wrapped in a paper rocket',
+  'twinkle-lemonade': 'Glasses of sparkling lemonade with lemon slices, ice and pale blue star stirrers',
+  'starry-cake': 'A navy buttercream cake with lilac clouds, gold stars, cream rosettes and a sleepy moon topper',
 }
 
 export const menuImageUrl = (id) => byId[id] || null

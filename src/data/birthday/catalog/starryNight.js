@@ -74,7 +74,7 @@ export default {
     'shooting-star-fruit-wands': { role: 'fresh', cost: { perChild: [0.9, 1.5] }, diet: diet() },
     'rocket-veggie-cups': { role: 'fresh', cost: { perChild: [0.6, 1] }, diet: diet({ 'dairy-free': 'swap', 'egg-free': 'swap' }) },
     'twinkle-lemonade': { role: 'drink', cost: { perChild: [0.3, 0.5] }, diet: diet() },
-    'the-cake': { role: 'showpiece', headline: true, cost: { fixed: [25, 45] }, costNote: 'Homemade estimate; bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
+    'starry-cake': { role: 'showpiece', headline: true, cost: { fixed: [25, 45] }, costNote: 'Homemade estimate; bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
   },
 
   diy: {
