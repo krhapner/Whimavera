@@ -30,12 +30,12 @@ export function BudgetLine({ derived }) {
       </span>
       <span className="budget-line__item">
         <small>Estimated cost</small>
-        {estimate.incomplete ? `${est}+` : est}
+        {estimate.incomplete ? (estimate.range[1] > 0 ? `${est}+` : 'Not estimated yet') : est}
       </span>
       <span className={`budget-line__item budget-line__status is-${status.kind}`}>
         <small>{{ over: 'Over budget', open: 'Budget', tight: 'Budget check', incomplete: 'Budget check' }[status.kind] || 'Remaining'}</small>
         {status.kind === 'open' && 'Showing everything'}
-        {status.kind === 'incomplete' && 'Some items have no estimate'}
+        {status.kind === 'incomplete' && (estimate.range[1] > 0 ? 'Some items have no estimate' : 'Cost estimates for this theme are coming soon')}
         {status.kind === 'under' && `about ${rangeText(status.left)}`}
         {status.kind === 'tight' && `fits at the low end; could run up to ${$(status.upTo)} over`}
         {status.kind === 'over' && `by about ${rangeText(status.by)}`}

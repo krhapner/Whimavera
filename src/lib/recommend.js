@@ -385,17 +385,20 @@ export function recommend(plan, catalog, answers, { adults = 0 } = {}) {
   if (style !== 'ready') {
     const limit = style === 'diy' ? 2 : 1
     let added = 0
-    for (const d of diyCandidates) {
+    // Projects matching the child's loves come first. A "Mostly DIY" parent
+    // still gets make-ahead projects when none match — the project is theirs.
+    const loveCount = (d) => (d.meta?.kinds || []).filter((k) => loves.includes(k)).length
+    for (const d of [...diyCandidates].sort((x, y) => loveCount(y) - loveCount(x))) {
       if (diyIds.includes(d.id) || added >= limit) continue
       const req = d.meta?.requires
       if (req?.activities && !req.activities.some((id) => sel.activities.includes(id))) continue
       if (req?.food && !req.food.some((id) => foodIds.includes(id))) continue
       if (d.meta?.minutes && d.meta.minutes > maxDiyMinutes) continue
       const match = (d.meta?.kinds || []).filter((k) => loves.includes(k))
-      if (catalog.hasMeta && !match.length) continue
+      if (catalog.hasMeta && !match.length && style !== 'diy') continue
       if (tryUpgrade(() => diyIds.push(d.id), () => diyIds.splice(diyIds.indexOf(d.id), 1))) {
         added++
-        why(d.id, match.length ? `A make-ahead project for a child who loves ${match.map((k) => KIND_LABEL[k]).join(' & ')}` : 'A make-ahead project')
+        why(d.id, match.length ? `A make-ahead project for a child who loves ${match.map((k) => KIND_LABEL[k]).join(' & ')}` : 'A make-ahead project for a DIY-loving host')
       }
     }
   }

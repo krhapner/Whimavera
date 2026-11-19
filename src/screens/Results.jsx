@@ -261,7 +261,7 @@ export default function Results({
                   <strong>{c.label}</strong>
                   <span>{c.items.map((it) => it.name).join(' · ')}</span>
                 </div>
-                <span className="budget__amt">{rangeText(c.range)}</span>
+                <span className="budget__amt">{c.items.every((it) => !it.range) ? 'No estimate yet' : rangeText(c.range)}</span>
               </li>
             ))}
             <li className="budget__total">
@@ -271,8 +271,8 @@ export default function Results({
                 {derived.estimate.upgrades[1] > 0 && <span>Includes optional upgrades of {rangeText(derived.estimate.upgrades)}</span>}
               </div>
               <span className="budget__amt">
-                {rangeText(derived.estimate.range)}
-                {derived.estimate.incomplete ? '+' : ''}
+                {derived.estimate.incomplete && !derived.estimate.range[1] ? 'Not estimated yet' : rangeText(derived.estimate.range)}
+                {derived.estimate.incomplete && derived.estimate.range[1] ? '+' : ''}
               </span>
             </li>
           </ul>
