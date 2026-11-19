@@ -7,16 +7,16 @@ export default {
     'Gingham blankets, berries and sunny pastels — an easy, joyful picnic made for the littlest guests.',
   moodWords: ['Sunny', 'Cheerful', 'Soft', 'Simple'],
   headings: { decor: 'Five spots on the blanket', food: 'A rainbow picnic basket' },
-  heroPhoto: 'partyFlatlay',
-  foodPhoto: 'rainbowTreats',
+  heroPhoto: 'rainbowTable',
+  foodPhoto: 'rainbowCake',
 
   board: [
-    { kind: 'tablescape', caption: 'Party hats & confetti', photo: 'partyFlatlay' },
-    { kind: 'cake', caption: 'Sprinkle cake', photo: 'rainbowTreats' },
-    { kind: 'detail', caption: 'Picnic blankets', photo: 'picnicBlanket' },
-    { kind: 'balloons', caption: 'A rainbow of balloons', photo: 'brightBalloons' },
-    { kind: 'invite', caption: 'Rainbow invitation' },
-    { kind: 'crown', caption: 'Ribbon wands' },
+    { kind: 'tablescape', caption: 'Party hats & confetti', photo: 'rainbowTable' },
+    { kind: 'cake', caption: 'Sprinkle cake', photo: 'rainbowCake' },
+    { kind: 'detail', caption: 'Picnic blankets', photo: 'rainbowPicnicBlankets' },
+    { kind: 'balloons', caption: 'A rainbow of balloons', photo: 'rainbowBalloons' },
+    { kind: 'invite', caption: 'Rainbow invitation', photo: 'rainbowInvite' },
+    { kind: 'crown', caption: 'Ribbon wands', photo: 'rainbowWands' },
   ],
 
   setup: [

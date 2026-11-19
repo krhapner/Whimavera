@@ -82,7 +82,7 @@ export const birthdayThemes = [
     tagline: 'Gingham, berries & sunny pastels',
     motif: 'rainbow',
     ages: ['1-2', '3-5'],
-    photos: { card: 'partyFlatlay' },
+    photos: { card: 'rainbowTable', detail: 'rainbowCake' },
     palette: [
       { name: 'Strawberry', hex: '#EDB3B0' },
       { name: 'Apricot', hex: '#F2CDA3' },
