@@ -223,7 +223,7 @@ export default function App() {
       )
       break
     case 'premium':
-      screen = <Premium plan={plan} hasPlan={hasPlan} />
+      screen = <Premium plan={plan} hasPlan={hasPlan} sel={derived.sel} />
       break
     default:
       screen = <Home eventType={liveEventType} onPickTheme={startWithTheme} onShowExample={showExample} />

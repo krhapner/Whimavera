@@ -109,3 +109,29 @@ Shopping is woven through the plan — activity and food cards (“Shop supplies
 - No Amazon prices, ratings, images or availability are shown. “Typical cost” ranges are generic planning estimates.
 
 **Tests:** `npm test` runs `test:links` (every generated link carries exactly one `whimavera-20` tag, params preserved, non-Amazon URLs refused) and `test:ui` (jsdom interaction checks: shopping from unselected cards, guides, add/remove, shared materials, guests, budget, owned/skip, print, persistence).
+
+## Made to Match printables
+
+A personalized stationery studio on the results page (section 08) and the Printables page: invitation 5×7, welcome sign 8×10, folded food tent cards, favor tags 2×3, treasure-hunt clue cards 3×5, activity station signs 5×7, cupcake toppers (2 in circles) and thank-you cards 4×6.
+
+**How it fits together**
+
+| Piece | File |
+|---|---|
+| Products (sizes, print sheets, tiers, instructions) | `src/printables/products.js` |
+| Collection (colors, typography, artwork slots, layouts) | `src/printables/collections/fairyGarden.js` |
+| Artwork files | `src/assets/printables/<collection>/<slot>.png` (`<slot>--<color>.png` per color) |
+| Party details (only what the parent enters) | `src/printables/details.js` |
+| Layout engine → scene | `src/printables/compose.js`, text fitting `text.js`, fonts `fonts.js` |
+| Renderers | SVG preview `components/printables/SceneSVG.jsx`, PDF `printables/pdf.js`, PNG `studio.js` |
+| Studio UI | `components/printables/MadeToMatch.jsx` |
+| Who can download what | `src/printables/entitlements.js` |
+
+- Artwork and text are separate layers. Text is real, embedded-font text, fitted to its box: long names shrink and wrap; anything that still can't fit is flagged in the editor instead of printing over the art. Artwork is never stretched; full-bleed borders fill the card keeping their proportions.
+- One layout definition drives the preview, PDF and PNG, so what you see is what prints.
+- Personalization comes from the plan: station signs for selected activities, tent cards for the chosen menu, picture clues for ages 6 and under (rhymes for older), toppers and tags for the guest count. Everything else stays browsable. Details, edits, color and chosen products persist per theme in `whimavera.printables.v1`, apart from quiz answers.
+- PDFs: US Letter with crop marks for home printing (small items tiled on sheets, tents with fold marks, toppers with cut circles), or a print-shop file at trim size with ⅛ in bleed. Every PDF ends with cutting and assembly instructions. The invitation also exports a 300 dpi PNG for sharing — the same template can later power digital invitations.
+- **Adding artwork:** drop files named after the slots into `src/assets/printables/fairy-garden/` (sizes listed in `ART` in the collection). `npm run printables:art -- <folder>` re-cuts the delivered art sheets. Supply 300 dpi files for the crispest print — the current art is about 150–210 dpi.
+- **Adding a theme:** copy `collections/fairyGarden.js`, change colors, slots and layouts, add its artwork folder and register it in `collections/index.js`. Themes without a collection show a "being designed" note — no placeholder designs.
+- **Payments aren't built.** Favor tags and cupcake toppers download free; other designs download as watermarked proofs. Set `VITE_PRINTABLES_UNLOCKED=true` (Netlify environment variable) to download everything in full while testing. `entitlements.js` is where a checkout will plug in.
+- `npm run printables:proof` renders every design to a proof PDF. Tests: `npm run test:printables` (sizes, long names, missing details, ages, edits, PDFs) and `npm run test:ui`.

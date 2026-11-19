@@ -6,6 +6,7 @@ import ActivityGuide from '../components/ActivityGuide.jsx'
 import FoodCard from '../components/FoodCard.jsx'
 import RecipeGuide from '../components/RecipeGuide.jsx'
 import Stepper from '../components/Stepper.jsx'
+import MadeToMatch from '../components/printables/MadeToMatch.jsx'
 import PlanBar, { BudgetLine, SectionView, rangeText } from '../components/PlanBar.jsx'
 import { itemCost, overBudgetBy, lovesOf } from '../lib/recommend.js'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
@@ -419,6 +420,13 @@ export default function Results({
         </div>
       </section>
 
+      {/* Made to Match printables */}
+      <section className="section section--tinted" id="printables">
+        <div className="container">
+          <MadeToMatch plan={plan} sel={derived.sel} answers={plan.answers} eyebrow="08 · Made to Match" />
+        </div>
+      </section>
+
       <section className="section container">
         <div className="cta-band">
           <div>
@@ -427,7 +435,7 @@ export default function Results({
           </div>
           <div className="cta-band__actions">
             <Button as="a" href="#shop">Shop your party</Button>
-            <Button as="a" href="#premium" variant="secondary">{theme.name} printables · $29</Button>
+            <Button as="a" href="#premium" variant="secondary">Matching printables</Button>
           </div>
         </div>
       </section>

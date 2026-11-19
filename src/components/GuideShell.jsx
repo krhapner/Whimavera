@@ -9,7 +9,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabi
  * trapped while open and returned to `returnFocusSelector` afterwards, and the
  * page behind keeps its scroll position.
  */
-export default function GuideShell({ crumb, titleId, returnFocusSelector, onClose, children }) {
+export default function GuideShell({ crumb, titleId, returnFocusSelector, onClose, children, wide = false, closeLabel = 'Close guide' }) {
   const panel = useRef(null)
   const closeBtn = useRef(null)
 
@@ -45,10 +45,10 @@ export default function GuideShell({ crumb, titleId, returnFocusSelector, onClos
 
   return createPortal(
     <div className="guide-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div ref={panel} className="guide" role="dialog" aria-modal="true" aria-labelledby={titleId} onKeyDown={onKeyDown}>
+      <div ref={panel} className={`guide ${wide ? 'guide--wide' : ''}`} role="dialog" aria-modal="true" aria-labelledby={titleId} onKeyDown={onKeyDown}>
         <div className="guide__bar">
           <span className="guide__crumb">{crumb}</span>
-          <button ref={closeBtn} className="guide__close" onClick={onClose} aria-label="Close guide">
+          <button ref={closeBtn} className="guide__close" onClick={onClose} aria-label={closeLabel}>
             <span aria-hidden="true">×</span>
           </button>
         </div>

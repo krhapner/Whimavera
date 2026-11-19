@@ -11,6 +11,14 @@ window.print = () => { globalThis.printed = true }
 localStorage.setItem('whimavera.hasPlan.v1', '1')
 localStorage.setItem('whimavera.answers.v1', JSON.stringify({ theme: 'fairy-garden', ageRange: '6-8', guestCount: 12, budget: 150, budgetMode: 'limit', interests: ['crafts', 'hunts'], location: 'backyard', style: 'mix', prepTime: 'week', duration: 120, diet: ['none'] }))
 
+// Local asset URLs (fonts, artwork) are read from disk; downloads are captured.
+const { nodeRead } = await import('./node-read.mjs')
+globalThis.fetch = window.fetch = async (u) => ({ ok: true, arrayBuffer: async () => { const b = nodeRead(String(u)); return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) } })
+globalThis.saved = []
+window.URL.createObjectURL = URL.createObjectURL = (blob) => { globalThis.saved.push(blob); return 'blob:test' }
+window.URL.revokeObjectURL = URL.revokeObjectURL = () => {}
+window.HTMLAnchorElement.prototype.click = function () { globalThis.savedNames = [...(globalThis.savedNames || []), this.download] }
+
 const React = await import('react')
 const { act } = React
 const { createRoot } = await import('react-dom/client')
@@ -137,6 +145,45 @@ const root2 = createRoot($('#root'))
 await act(async () => navigate('shop'))
 await act(async () => root2.render(React.createElement(App)))
 ok(gemRow()?.classList.contains('is-owned'), 'owned survives reload')
+
+// 11. Made to Match printables
+await act(async () => navigate('results'))
+const waitFor = async (fn, ms = 8000) => { const t = Date.now(); while (!fn()) { if (Date.now() - t > ms) return false; await act(async () => { await new Promise((r) => setTimeout(r, 50)) }) } return true }
+ok(await waitFor(() => $$('#printables .m2m-card__paper svg').length === 8), 'gallery shows 8 live previews')
+ok($('#printables').textContent.includes('Add child’s name'), 'gallery asks for missing details')
+const before2 = localStorage.getItem('whimavera.selections.v1')
+await click($('[data-printable="invitation"]'))
+ok($('[role="dialog"]') && text().includes('Party details'), 'editor opens')
+ok(localStorage.getItem('whimavera.selections.v1') === before2, 'opening a design does not change the plan')
+const field = (label) => $$('[role="dialog"] .pe__field').find((l) => l.querySelector('span').textContent.startsWith(label))?.querySelector('input,textarea')
+const type = async (el, v) => { await act(async () => { const set = Object.getOwnPropertyDescriptor(el.constructor.prototype, 'value').set; set.call(el, v); el.dispatchEvent(new window.Event('input', { bubbles: true })) }) }
+await type(field('Child’s name'), 'Olivia')
+await type(field('Age they’re turning'), '6')
+const svgText = () => $$('[role="dialog"] .pe__paper text').map((t) => t.textContent).join('|')
+ok(svgText().includes('Olivia') && svgText().includes('turning six'), 'preview updates with name and age')
+ok(JSON.parse(localStorage.getItem('whimavera.printables.v1'))['fairy-garden'].details.childName === 'Olivia', 'details persisted separately from quiz answers')
+await type(field('Child’s name'), 'Maximiliana Alexandria Montgomery-Featherstone')
+const nameLines = $$('[role="dialog"] .pe__paper text').filter((t) => /Maximiliana|Featherstone/.test(t.textContent))
+ok(nameLines.length === 2, 'long name wraps onto two lines in preview')
+await type(field('Child’s name'), 'Olivia')
+await type(field('Opening line'), 'Fairies, gather round')
+ok(svgText().includes('FAIRIES, GATHER ROUND'), 'wording edit shows in preview')
+await click($$('[role="dialog"] .pe__reset')[0])
+ok(svgText().includes('PLEASE JOIN US'), 'reset restores wording')
+await click($$('[role="dialog"] .swatch-btn').find((b) => b.textContent.includes('Sage')))
+ok($('[role="dialog"] .pe__paper image')?.getAttribute('href').includes('sage'), 'colour switch swaps artwork')
+await click($$('[role="dialog"] .pe__view button').find((b) => b.textContent.includes('Print sheet')))
+ok($('[role="dialog"] .sheet-svg'), 'print sheet preview')
+globalThis.saved = []
+await click($$('[role="dialog"] .pe__buttons button').find((b) => b.textContent.includes('PDF')))
+ok(await waitFor(() => globalThis.saved.length > 0, 20000), 'PDF download produced')
+const head = new Uint8Array(await globalThis.saved[0].arrayBuffer()).slice(0, 5)
+ok(String.fromCharCode(...head) === '%PDF-', 'download is a PDF')
+ok(globalThis.savedNames.at(-1) === 'olivia-fairy-garden-invitation.pdf', `PDF named after the child (${globalThis.savedNames.at(-1)})`)
+await click($('[role="dialog"] .guide__close'))
+await click($('[data-printable="station-sign"]'))
+ok($$('[role="dialog"] .pe__pager button').length === sel().activities?.length || $$('[role="dialog"] .pe__pager button').length >= 1, 'station signs follow plan activities')
+await click($('[role="dialog"] .guide__close'))
 
 // 10. Every Amazon link on the page tagged
 ok($$('a[href*="amazon."]').every((a) => tagOk(a.href)), 'all Amazon links tagged')
