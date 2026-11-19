@@ -7,16 +7,16 @@ export default {
     'Fossils, ferns and desert sunsets — a day for little paleontologists to dig, discover and roar.',
   moodWords: ['Adventurous', 'Earthy', 'Prehistoric', 'Roaring'],
   headings: { decor: 'Five stops on the expedition', food: 'A prehistoric picnic' },
-  heroPhoto: 'dinoParty',
-  foodPhoto: 'dinoTreats',
+  heroPhoto: 'dinoDessertTable',
+  foodPhoto: 'dinoVolcanoCake',
 
   board: [
-    { kind: 'tablescape', caption: 'Dinosaurs in party hats', photo: 'dinoParty' },
-    { kind: 'cake', caption: 'Volcano cake', photo: 'dinoTreats' },
-    { kind: 'detail', caption: 'Ferns & fossils', photo: 'dinoFossil' },
-    { kind: 'balloons', caption: 'Terracotta & olive balloons', photo: 'dinoDecor' },
-    { kind: 'invite', caption: 'Expedition invitation' },
-    { kind: 'crown', caption: 'Fern garland' },
+    { kind: 'tablescape', caption: 'Dinosaurs in party hats', photo: 'dinoDessertTable' },
+    { kind: 'cake', caption: 'Volcano cake', photo: 'dinoVolcanoCake' },
+    { kind: 'detail', caption: 'Ferns & fossils', photo: 'dinoFossilDetails' },
+    { kind: 'balloons', caption: 'Terracotta & olive balloons', photo: 'dinoBalloons' },
+    { kind: 'invite', caption: 'Expedition invitation', photo: 'dinoInvite' },
+    { kind: 'crown', caption: 'Fern garland', photo: 'dinoGarland' },
   ],
 
   setup: [

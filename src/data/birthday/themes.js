@@ -67,7 +67,7 @@ export const birthdayThemes = [
     tagline: 'Fossils, ferns & desert sunsets',
     motif: 'leaf',
     ages: ['3-5', '6-8'],
-    photos: { card: 'dinoParty' },
+    photos: { card: 'dinoDessertTable', detail: 'dinoVolcanoCake' },
     palette: [
       { name: 'Terracotta', hex: '#D8A386' },
       { name: 'Olive', hex: '#A3A57E' },
