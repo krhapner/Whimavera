@@ -139,7 +139,7 @@ export default function Questionnaire({ eventType, answers, onChange, onComplete
 
       <aside className="quiz__aside" aria-label="Your party so far">
         <div className="quiz__aside-img">
-          <Scene kind="tablescape" palette={theme.palette} motif={theme.motif} alt="" />
+          <Scene key={theme.id} kind="tablescape" photo={theme.photos?.card} palette={theme.palette} motif={theme.motif} label={theme.name} alt={`${theme.name} party table`} />
         </div>
         <Eyebrow>Your party so far</Eyebrow>
         <h3 className="display-3">{theme.name}</h3>
