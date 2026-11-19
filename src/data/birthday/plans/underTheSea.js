@@ -118,9 +118,9 @@ export default {
     { name: 'Goldfish cracker cups', detail: 'Little paper cups for easy grabbing', tag: 'Savory' },
     { name: 'Sea-star sandwiches', detail: 'Star-cut sandwiches — jam or turkey & cheese', tag: 'Savory' },
     { name: 'Pearl fruit cups', detail: 'Melon balls, blueberries and green grapes', tag: 'Fresh' },
-    { name: 'Seaweed veggie cups', detail: 'Cucumber ribbons, snap peas and ranch', tag: 'Fresh' },
+    { name: 'Seaweed veggie cups', detail: 'Cucumber ribbons, snap peas and carrot sticks over ranch', tag: 'Fresh' },
     { name: 'Sea-foam lemonade', detail: 'Lemonade with blue ice cubes', tag: 'Drink' },
-    { name: 'The cake', detail: 'Ombré seafoam cake topped with white-chocolate shells', tag: 'Showpiece' },
+    { id: 'sea-cake', name: 'The cake', detail: 'Ombré seafoam cake with white-chocolate shells, sugar pearls and seahorse and fish toppers', tag: 'Showpiece' },
   ],
 
   startHour: 14,

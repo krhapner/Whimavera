@@ -26,6 +26,11 @@ export const menuImageAlt = {
   'shooting-star-fruit-wands': 'Skewers of star-cut melon, strawberries and blueberries on a pale blue plate',
   'rocket-veggie-cups': 'Clear cups of dip with carrot and cucumber sticks, each wrapped in a paper rocket',
   'twinkle-lemonade': 'Glasses of sparkling lemonade with lemon slices, ice and pale blue star stirrers',
+  'sea-cake': 'A seafoam ombré cake with white-chocolate shells, sugar pearls, coral starfish and seahorse and fish toppers',
+  'sea-foam-lemonade': 'Cups of lemonade with seafoam-blue ice cubes, lemon slices and striped straws',
+  'seaweed-veggie-cups': 'Clear cups of ranch with cucumber ribbons, snap peas and carrot sticks, labeled with fish and starfish stickers',
+  'pearl-fruit-cups': 'Clear cups of melon balls, green grapes and blueberries with paper shells on a sandy board',
+  'sea-star-sandwiches': 'Star-shaped jam and turkey and cheese sandwiches on a seafoam plate with smiling paper starfish',
   'starry-cake': 'A navy buttercream cake with lilac clouds, gold stars, cream rosettes and a sleepy moon topper',
 }
 
