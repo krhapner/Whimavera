@@ -22,26 +22,31 @@ export default {
   setup: [
     {
       zone: 'Woodland welcome',
+      photo: 'teaZoneWelcome',
       description:
-        'A fern-wrapped sign and a path of little lanterns leading to the tea table.',
+        'An ivy-framed doorway with a fern-and-flower welcome sign, giant toadstools, woodland animal cutouts and little lanterns leading to the tea table.',
     },
     {
       zone: 'The tea table',
+      photo: 'teaZoneTable',
       description:
         'A linen cloth, mismatched teacups and saucers, tiered cake stands and honey jars filled with wildflowers.',
     },
     {
       zone: 'Hat & bonnet bar',
+      photo: 'teaZoneHatBar',
       description:
         'A hat stand or basket of sun hats, bonnets, bow ties and animal ears for proper tea-party dressing.',
     },
     {
       zone: 'Craft clearing',
+      photo: 'teaZoneCraft',
       description:
         'A low table for animal masks and teacup planters, with smocks for little painters.',
     },
     {
       zone: 'Friends of the forest',
+      photo: 'teaZoneFriends',
       description:
         'Stuffed woodland animals seated at their own tiny table — the perfect photo spot.',
     },
