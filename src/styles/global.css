@@ -4119,3 +4119,9 @@ svg {
   border-radius: 999px;
   padding: 1px 8px;
 }
+
+/* Recipe tools & serveware: name + Find link, no quantity column */
+.ingr--tools li {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}

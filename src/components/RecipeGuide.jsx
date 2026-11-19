@@ -189,12 +189,27 @@ export default function RecipeGuide({ item, theme, childCount, adults, setAdults
                   )}
                 </div>
                 <AffiliateDisclosure className="affiliate-note--inline" />
-                {recipe.equipment.length > 0 && (
-                  <>
-                    <h4 className="guide__sub">You’ll also need</h4>
-                    <Bullets items={recipe.equipment} />
-                  </>
-                )}
+                {[
+                  ['Kitchen tools', recipe.equipment.filter((e) => !e.serve)],
+                  ['To serve it', recipe.equipment.filter((e) => e.serve)],
+                ]
+                  .filter(([, items]) => items.length)
+                  .map(([title, items]) => (
+                    <div key={title} className="ingr-group">
+                      <h4 className="guide__sub">{title}</h4>
+                      <ul className="ingr ingr--tools">
+                        {items.map((e) => (
+                          <li key={e.name}>
+                            <span className="ingr__name">
+                              {e.name}
+                              {e.optional && <em> (optional)</em>}
+                            </span>
+                            {e.search && <AmazonButton link={amazonLink({ search: e.search })} label="Find" subtle className="ingr__shop" />}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
               </section>
 
               <section className="guide__section">

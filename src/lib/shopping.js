@@ -209,6 +209,28 @@ export function groceryLines(foods, { guests, adults = 0 }) {
     )
 }
 
+/** Serveware from recipes in the plan (cups, liners, stands) — optional extras. */
+export function servewareLines(foods) {
+  return foods
+    .filter((f) => f.recipe)
+    .flatMap((f) =>
+      f.recipe.equipment
+        .filter((e) => e.serve && e.search)
+        .map((e) => ({
+          key: `serve:${f.id}:${e.search}`,
+          supply: { id: `s-${slugify(e.search)}`, curated: false, name: e.name, category: 'tableware', search: e.search, shop: true },
+          qty: null,
+          unit: '',
+          unitPlural: '',
+          label: 'As needed',
+          optional: true,
+          reusable: true,
+          est: null,
+          source: { kind: 'recipe', id: f.id, name: f.recipe.title || f.name },
+        })),
+    )
+}
+
 // ---------- Consolidation ----------
 
 /**
@@ -290,7 +312,7 @@ export function shoppingForItem(plan, catalog, kind, id, { variantId, adults = 0
     if (d) lines = linesForDiy(d)
   } else if (kind === 'food') {
     const f = plan.food.find((x) => x.id === id)
-    if (f) lines = groceryLines([f], { guests: plan.guests, adults })
+    if (f) lines = [...groceryLines([f], { guests: plan.guests, adults }), ...servewareLines([f])]
   } else if (kind === 'theme') {
     lines = linesForTheme(plan)
   } else if (kind === 'favors') {
@@ -332,6 +354,7 @@ export function buildPartyShopping(plan, catalog, sel, { adults = 0 } = {}) {
   // Shelf-stable groceries for dishes in the plan.
   const foods = sel.food.map((id) => plan.food.find((f) => f.id === id)).filter(Boolean)
   lines.push(...groceryLines(foods, { guests: plan.guests, adults }))
+  lines.push(...servewareLines(foods))
 
   const items = consolidate(lines)
   const groups = CATEGORIES.map((c) => ({

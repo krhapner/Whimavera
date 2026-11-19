@@ -51,7 +51,16 @@ export const recipeSchema = {
         },
       },
     },
-    equipment: { type: 'array', items: { type: 'string' } },
+    equipment: {
+      type: 'array',
+      description: 'Kitchen tools and serveware. A string, or { name, search, serve, optional } where serve marks serveware (cups, liners, stands).',
+      items: {
+        anyOf: [
+          { type: 'string' },
+          { type: 'object', required: ['name'], properties: { name: { type: 'string' }, search: { type: 'string' }, serve: { type: 'boolean' }, optional: { type: 'boolean' } } },
+        ],
+      },
+    },
     steps: { type: 'array', items: { type: 'string' } },
     makeAhead: { type: 'array', items: { type: 'string' } },
     storage: { type: 'array', items: { type: 'string' } },
@@ -77,6 +86,17 @@ const str = (v) => (typeof v === 'string' && v.trim() ? v.trim() : null)
 const list = (v) => (Array.isArray(v) ? v.map(str).filter(Boolean) : [])
 const pos = (v, d) => (typeof v === 'number' && v > 0 ? v : d)
 
+/** "Two 12-cup muffin tins (or bake in batches)" → "Two 12-cup muffin tins". */
+const toolPhrase = (name) => name.replace(/\([^)]*\)/g, ' ').split(',')[0].replace(/\s+/g, ' ').trim()
+
+function equipmentList(v) {
+  if (!Array.isArray(v)) return []
+  return v
+    .map((e) => (typeof e === 'string' ? { name: e } : e))
+    .filter((e) => e && str(e.name))
+    .map((e) => ({ name: str(e.name), search: e.search === '' ? null : str(e.search) || toolPhrase(str(e.name)), serve: !!e.serve, optional: !!e.optional }))
+}
+
 export function normalizeRecipe(raw) {
   if (!raw || !str(raw.id)) return null
   const y = raw.yield || {}
@@ -94,6 +114,7 @@ export function normalizeRecipe(raw) {
       optional: !!i.optional,
       noShop: !!i.noShop,
       shopUnit: str(i.shopUnit),
+      noScale: !!i.noScale,
     }))
   const b = raw.bakery
   return {
@@ -112,7 +133,7 @@ export function normalizeRecipe(raw) {
     prepTime: str(raw.prepTime),
     totalTime: str(raw.totalTime),
     ingredients,
-    equipment: list(raw.equipment),
+    equipment: equipmentList(raw.equipment),
     steps: list(raw.steps),
     makeAhead: list(raw.makeAhead),
     storage: list(raw.storage),
@@ -155,8 +176,9 @@ export function scaleRecipe(recipe, { children = 0, adults = 0 } = {}) {
     tooSmall: y.fixed && needed > y.servings,
     ingredients: recipe.ingredients.map((i) => {
       const dim = dimensionOf(i.unit)
-      const base = toBase(i.qty, i.unit) * factor
-      return { ...i, dimension: dim, base, display: formatIn(i.qty * factor, i.unit) }
+      const f = i.noScale ? 1 : factor
+      const base = toBase(i.qty, i.unit) * f
+      return { ...i, dimension: dim, base, display: formatIn(i.qty * f, i.unit) }
     }),
   }
 }

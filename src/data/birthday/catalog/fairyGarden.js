@@ -313,7 +313,8 @@ export default {
     },
     'garden-veggie-cups': {
       role: 'fresh',
-      cost: { perBatch: [10, 16] },
+      cost: { perBatch: [12, 18] },
+      costNote: 'Optional tomatoes and broccoli add a few dollars.',
       diet: { 'nut-free': 'yes', 'gluten-free': 'yes', 'dairy-free': 'yes', 'egg-free': 'yes', vegetarian: 'yes' },
     },
     'honey-pinwheel-sandwiches': {
@@ -323,7 +324,8 @@ export default {
     },
     'petal-pink-lemonade': {
       role: 'drink',
-      cost: { perBatch: [4, 6] },
+      cost: { perBatch: [5, 7] },
+      costNote: 'Optional raspberries, mint and sparkling water add a few dollars.',
       diet: { 'nut-free': 'yes', 'gluten-free': 'yes', 'dairy-free': 'yes', 'egg-free': 'yes', vegetarian: 'yes' },
     },
     'fairy-cake': {
