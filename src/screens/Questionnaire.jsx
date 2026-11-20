@@ -134,6 +134,14 @@ export default function Questionnaire({ eventType, answers, onChange, onComplete
               {isLast ? 'Create my plan' : 'Continue'}
             </Button>
           </div>
+          {!isLast && (
+            <p className="quiz__skip">
+              <button type="button" className="text-link" onClick={onComplete}>
+                Skip to my plan →
+              </button>
+              <span>We’ll use sensible defaults for the rest — change anything later from your plan.</span>
+            </p>
+          )}
         </div>
       </div>
 

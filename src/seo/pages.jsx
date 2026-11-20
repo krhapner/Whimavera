@@ -15,6 +15,7 @@ const SPONSORED = 'sponsored nofollow noopener noreferrer'
 const range = (r) => (!r ? '' : r[0] === r[1] ? `$${r[0]}` : `$${r[0]}–$${r[1]}`)
 const ageText = (a) => (a ? `Ages ${a.min}–${a.max}` : null)
 const planHref = (theme) => `/?theme=${theme.id}#plan`
+const sampleHref = (theme) => `/?theme=${theme.id}&sample=1#results`
 
 /** Shared page frame: header, breadcrumbs, content, footer. */
 export function StaticPage({ route, crumbs, children }) {
@@ -72,11 +73,11 @@ export function ThemePage({ d }) {
                 <Button as="a" href={planHref(theme)} size="lg">
                   Plan this party
                 </Button>
-                <Button as="a" href="#activities" variant="ghost" size="lg">
-                  See the activities
+                <Button as="a" href={sampleHref(theme)} variant="ghost" size="lg">
+                  See a sample plan
                 </Button>
               </div>
-              <p className="hero__fine">Free · No account needed · A personalized plan in about two minutes</p>
+              <p className="hero__fine">Free · No account needed · Answer a few questions, or skip straight to a sample plan</p>
             </div>
             <figure className="hero__image">
               <Scene kind="hero" photo={plan.heroPhoto} palette={theme.palette} motif={theme.motif} label={theme.name} priority />
@@ -303,8 +304,8 @@ export function ThemePage({ d }) {
               <Button as="a" href={planHref(theme)}>
                 Plan this party
               </Button>
-              <Button as="a" href={GUIDE_PATH} variant="secondary">
-                Planning guide
+              <Button as="a" href={sampleHref(theme)} variant="secondary">
+                See a sample plan
               </Button>
             </div>
           </div>

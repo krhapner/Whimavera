@@ -17,15 +17,18 @@ const STORAGE_KEY = 'whimavera.answers.v1'
 const PLANNED_KEY = 'whimavera.hasPlan.v1'
 
 /**
- * A theme chosen on a public theme page arrives as /?theme=<id>#plan.
- * Read it once, then tidy the address bar.
+ * Public theme pages link into the planner with the theme preselected:
+ *   /?theme=<id>#plan               start the quiz on that theme
+ *   /?theme=<id>&sample=1#results   skip the quiz: a sample plan with defaults
+ * Read once, then tidy the address bar.
  */
 function themeFromUrl() {
   try {
-    const id = new URLSearchParams(window.location.search).get('theme')
+    const params = new URLSearchParams(window.location.search)
+    const id = params.get('theme')
     if (!id || !liveEventType.themes.some((t) => t.id === id)) return null
     history.replaceState(null, '', `${window.location.pathname}${window.location.hash}`)
-    return id
+    return { theme: id, sample: params.get('sample') === '1' }
   } catch {
     return null
   }
@@ -75,12 +78,21 @@ export default function App() {
   const addToList = useCallback((id) => setShoppingIds((ids) => (ids.includes(id) ? ids : [...ids, id])), [setShoppingIds])
   const removeFromList = useCallback((id) => setShoppingIds((ids) => ids.filter((x) => x !== id)), [setShoppingIds])
   const shopping = { ids: shoppingIds, add: addToList, remove: removeFromList, clear: () => setShoppingIds([]) }
+  const [fromUrl] = useState(themeFromUrl)
   const [answers, setAnswers] = useState(() => {
+    if (fromUrl?.sample) return { ...liveEventType.defaultAnswers, theme: fromUrl.theme }
     const loaded = loadAnswers()
-    const theme = themeFromUrl()
-    return theme ? { ...loaded, theme } : loaded
+    return fromUrl ? { ...loaded, theme: fromUrl.theme } : loaded
   })
   const [hasPlan, setHasPlan] = useState(() => {
+    if (fromUrl?.sample) {
+      try {
+        localStorage.setItem(PLANNED_KEY, '1')
+      } catch {
+        /* ignore */
+      }
+      return true
+    }
     try {
       return localStorage.getItem(PLANNED_KEY) === '1'
     } catch {
