@@ -59,6 +59,15 @@ export const activityImageAlt = {
   'dino-stomp': 'Three children in paper dinosaur crowns roaring with their arms up on a sunny lawn',
   'dino-tail-tag': 'Laughing children chasing each other across the lawn with fabric tails tucked into their waistbands',
   'dino-storytime': 'Children in safari hats reading a dinosaur picture book on a blanket in the shade of a big tree',
+  'rainbow-sensory-bins': 'Little hands scooping pink, peach, yellow, green and blue rice with wooden scoops in trays on a gingham blanket',
+  'bubble-meadow': 'Toddlers laughing and reaching for a cloud of bubbles on a sunny lawn, with a bubble machine and blankets behind',
+  'color-hunt': 'A toddler holding up a card of rainbow paper dots beside a basket of colorful toys, with a grown-up helping',
+  'parachute-play': 'Toddlers laughing under a rainbow play parachute as balls bounce on top, with a grown-up holding the edge',
+  'ribbon-dance': 'Laughing children twirling pastel ribbon wands on a sunny lawn',
+  'sticker-rainbows': 'Little hands pressing pastel dot stickers into rainbows on white paper on a picnic blanket',
+  'sprinkle-cookie-bar': 'A child sprinkling rainbow sprinkles onto frosted sugar cookies on a gingham cloth, with sprinkle shakers and bowls',
+  'teddy-bear-picnic': 'Two little girls in gingham dresses having a tea party with teddy bears and tiny teacups on picnic blankets',
+  'rainbow-storytime': 'Toddlers gathered close on picnic blankets as a grown-up reads a colorful picture book, with a teddy and a rainbow book nearby',
 }
 
 export const slugify = (s) =>

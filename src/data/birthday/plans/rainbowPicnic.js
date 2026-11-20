@@ -7,7 +7,7 @@ export default {
     'Gingham blankets, berries and sunny pastels — an easy, joyful picnic made for the littlest guests.',
   moodWords: ['Sunny', 'Cheerful', 'Soft', 'Simple'],
   headings: { decor: 'Five spots on the blanket', food: 'A rainbow picnic basket' },
-  heroPhoto: 'rainbowTable',
+  heroPhoto: 'rainbowGardenParty',
   foodPhoto: 'rainbowCake',
 
   board: [
@@ -22,26 +22,31 @@ export default {
   setup: [
     {
       zone: 'Rainbow welcome',
+      photo: 'rainbowZoneWelcome',
       description:
         'A pastel balloon rainbow arching over the entrance — the one photo every parent will take.',
     },
     {
       zone: 'Picnic blankets',
+      photo: 'rainbowZoneBlankets',
       description:
         'Gingham blankets in a circle with low crates or trays for food, so little ones can sit and reach.',
     },
     {
       zone: 'Little-ones play zone',
+      photo: 'rainbowZonePlay',
       description:
         'Soft cushions, sensory bins and a few board books for the youngest guests.',
     },
     {
       zone: 'Bubble meadow',
+      photo: 'rainbowZoneBubbles',
       description:
-        'A bubble machine on a chair at the edge of the lawn — instant joy, no instructions needed.',
+        'A bubble machine on a little stool at the edge of the lawn — instant joy, no instructions needed.',
     },
     {
       zone: 'Streamer photo spot',
+      photo: 'rainbowZonePhoto',
       description:
         'Pastel crepe streamers hung from a branch or curtain rod, with a little stool for the birthday child.',
     },
@@ -120,7 +125,7 @@ export default {
     { name: 'Cheese & cracker stacks', detail: 'Easy for small hands', tag: 'Savory' },
     { name: 'Picnic sandwiches', detail: 'Cut into small squares', tag: 'Savory' },
     { name: 'Strawberry-lemon water', detail: 'Lightly flavored, kind to toddlers', tag: 'Drink' },
-    { name: 'The cake', detail: 'Sprinkle cake — plus a little smash cake for a first birthday', tag: 'Showpiece' },
+    { id: 'rainbow-cake', name: 'The cake', detail: 'Vanilla sprinkle cake with pastel rosettes and a piped rainbow — plus a little smash cake for a first birthday', tag: 'Showpiece' },
   ],
 
   startHour: 10,

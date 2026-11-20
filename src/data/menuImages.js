@@ -48,6 +48,13 @@ export const menuImageAlt = {
   'fern-veggie-cups': 'Clear cups of ranch with broccoli trees and celery sticks standing upright on a rustic table',
   'lava-punch': 'A glass pitcher of orange punch with orange slices on a wooden table with ferns and terracotta napkins',
   'dino-cake': 'A chocolate volcano cake with orange lava, cookie-crumb rocks, icing ferns and toy dinosaurs around the base',
+  'rainbow-fruit-cups': 'Clear cups of strawberries, mango, kiwi, blueberries and grapes on a gingham blanket beside a picnic basket',
+  'veggie-hummus-cups': 'Little glasses of hummus with red pepper, carrot and cucumber sticks standing upright on a wooden tray',
+  'mini-muffins': 'Banana blueberry mini muffins in pink paper liners on a wooden tray with fresh blueberries',
+  'cheese-cracker-stacks': 'Stacks of pastel crackers layered with cheese slices on a wooden board with flower-shaped cheese cutouts',
+  'picnic-sandwiches': 'Small square sandwiches on lightly toasted bread piled on a pastel plate with gingham napkins',
+  'strawberry-lemon-water': 'A glass pitcher of iced water with sliced strawberries and lemon rounds beside daisies and pastel cups',
+  'rainbow-cake': 'A white sprinkle cake with pastel piped rosettes and a piped rainbow on top, with a matching cupcake beside it',
 }
 
 export const menuImageUrl = (id) => byId[id] || null

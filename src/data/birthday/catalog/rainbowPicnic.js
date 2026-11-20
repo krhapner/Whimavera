@@ -75,7 +75,7 @@ export default {
     'cheese-cracker-stacks': { role: 'savory', cost: { perChild: [0.5, 0.9] }, diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap' }) },
     'picnic-sandwiches': { role: 'savory', cost: { perChild: [0.8, 1.4] }, diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', vegetarian: 'swap' }) },
     'strawberry-lemon-water': { role: 'drink', cost: { perChild: [0.3, 0.5] }, diet: diet() },
-    'the-cake': { role: 'showpiece', headline: true, cost: { fixed: [25, 45] }, costNote: 'Homemade estimate; bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
+    'rainbow-cake': { role: 'showpiece', headline: true, cost: { fixed: [25, 45] }, costNote: 'Homemade estimate; bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
   },
 
   diy: {
