@@ -11,6 +11,7 @@
 
 import { slugify } from '../data/activityImages.js'
 import { scaleRecipe } from './recipes.js'
+import { linesForActivity, groceryLines, linesCost } from './shopping.js'
 import { buildChecklist } from '../data/birthday/plans/shared.js'
 
 // ---------------------------------------------------------------- helpers
@@ -58,7 +59,11 @@ export function buildCatalog(plan, meta) {
       minutes: parseInt(g.time, 10) || null,
       ages: g.guide?.ages || a.ages || null,
       space: a.space || null,
-      cost: a.cost || null,
+      // A priced buy list sets the cost, so the card and its list agree.
+      cost: (() => {
+        const c = linesCost(linesForActivity(g))
+        return c ? { fixed: c } : a.cost || null
+      })(),
       costNote: a.costNote || null,
       requires: a.requires || null,
       prep: a.prep || null,
@@ -79,7 +84,7 @@ export function buildCatalog(plan, meta) {
         variants: [{ id: slugify(z.zone), tier: 'classic', name: z.zone, description: z.description, cost: null, supplies: null }],
       }))
 
-  const food = plan.food.map((f) => ({ id: f.id, name: f.recipe?.title || f.name, tag: f.tag, recipe: f.recipe, meta: m.food?.[f.id] || null }))
+  const food = plan.food.map((f) => ({ id: f.id, name: f.recipe?.title || f.name, tag: f.tag, recipe: f.recipe, buy: f.buy || null, src: f, meta: m.food?.[f.id] || null }))
 
   const diy = plan.diy.map((d) => {
     const id = slugify(d.name)
@@ -90,6 +95,11 @@ export function buildCatalog(plan, meta) {
 }
 
 const foodCost = (f, ctx) => {
+  // A priced ingredient list sets the cost (scaled to children + adults).
+  if (f.src && (f.buy || f.recipe)) {
+    const c = linesCost(groceryLines([f.src], { guests: ctx.guests || 0, adults: ctx.adults || 0 }))
+    if (c) return c
+  }
   if (!f.meta?.cost) return null
   const batches = f.recipe ? scaleRecipe(f.recipe, { children: ctx.guests, adults: ctx.adults }).factor : 1
   return costRange(f.meta.cost, { guests: ctx.guests, batches })
@@ -553,6 +563,14 @@ export function estimateTotal(plan, catalog, sel, ctx) {
       return { id, name: f?.name || id, range: f ? foodCost(f, ctx) : null, note: f?.meta?.costNote }
     }),
   )
+  // Dishes share groceries (one box of butter can serve three recipes), so
+  // the menu total prices the combined shopping list, not dish by dish.
+  const foodCat = cats.find((c) => c.id === 'food')
+  const menu = sel.food.map((id) => byId(catalog.food, id)?.src).filter((f) => f && (f.buy || f.recipe))
+  if (foodCat && menu.length === sel.food.length && menu.length > 1) {
+    const combined = linesCost(groceryLines(menu, { guests: ctx.guests || 0, adults: ctx.adults || 0 }))
+    if (combined && combined[1] < foodCat.range[1]) Object.assign(foodCat, { range: combined, shared: true })
+  }
   push(
     'diy',
     'DIY projects',

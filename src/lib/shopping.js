@@ -22,8 +22,8 @@ export const CATEGORIES = [
 ]
 export const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.title]))
 
-// Baking and pantry staples are worth linking; fresh food is bought locally.
-const AMAZON_AISLES = new Set(['Baking', 'Pantry', 'Other'])
+import { GROCERY_PRICES } from '../data/supplies/groceryPrices.js'
+import { toBase } from './units.js'
 
 // ---------- Supply resolution ----------
 
@@ -81,6 +81,62 @@ export const kitsFor = (ids) => {
     .map((k) => ({ id: k, ...KITS[k] }))
 }
 
+// ---------- Buy lists ----------
+
+/**
+ * Quantity rule → number to buy for `people`.
+ *   { fixed: n }              n, whatever the party size
+ *   { perChild: n, spare }    n per child, plus spares
+ *   { per: n }                one per n children (packs, boxes, bags)
+ */
+export function buyQty(rule = { fixed: 1 }, people = 0) {
+  if (typeof rule === 'number') return rule
+  if (rule.fixed != null) return rule.fixed
+  if (rule.per) return Math.max(1, Math.ceil(people / rule.per))
+  if (rule.perChild != null) return Math.max(1, Math.ceil(rule.perChild * people + (rule.spare || 0)))
+  return 1
+}
+
+/**
+ * Lines from a buy list (see src/data/birthday/buy/). Each entry has its own
+ * Amazon search phrase and a typical cost per unit; `home: true` marks things
+ * most families already own — listed and linked, but left out of totals.
+ */
+export function buyLines(list, { people, source, category = 'activities' }) {
+  return (list || []).map((b) => {
+    const qty = buyQty(b.qty, people)
+    const unit = b.unit || ''
+    const supply = {
+      id: `b-${slugify(b.search || b.name)}`,
+      curated: true,
+      name: b.name,
+      category: b.cat || category,
+      search: b.search || searchPhrase(b.name),
+      shop: true,
+      household: !!b.home,
+    }
+    return line(supply, {
+      qty,
+      unit,
+      unitPlural: b.units,
+      label: `${qty}${unit ? ` ${qty === 1 ? unit : b.units || plural(unit)}` : ''}`,
+      optional: !!b.opt,
+      reusable: !!b.keep,
+      est: b.est ? [b.est[0] * qty, b.est[1] * qty] : null,
+      note: b.note,
+      substitute: b.save,
+      source,
+    })
+  })
+}
+
+/** Typical cost of the lines a party must buy: required, not already-at-home. */
+export function linesCost(lines) {
+  const priced = lines.filter((l) => l.est && !l.optional && !l.supply.household)
+  if (!priced.length) return null
+  return priced.reduce((r, l) => [r[0] + l.est[0], r[1] + l.est[1]], [0, 0]).map(Math.round)
+}
+
 // ---------- Lines from party items ----------
 
 function line(supply, { qty = null, unit = '', unitPlural = '', label, optional = false, reusable, est = null, note, substitute, source }) {
@@ -100,9 +156,17 @@ function line(supply, { qty = null, unit = '', unitPlural = '', label, optional 
   }
 }
 
+/** Typical cost for `qty` of a supply in the unit a guide counts it in. */
+function priceFor(supply, unit, qty) {
+  if (typeof qty !== 'number' || !isFinite(qty)) return null
+  const e = supply.estBy?.[unit] || (supply.est && (!unit || unit === supply.unit) ? supply.est : null)
+  return e ? [e[0] * qty, e[1] * qty] : null
+}
+
 /** Materials for one activity, quantities already scaled to the guest count. */
 export function linesForActivity(game) {
   const source = { kind: 'activity', id: game.id, name: game.name }
+  if (game.buy) return buyLines(game.buy, { people: game.buyFor || 0, source })
   return (game.guide?.materials || [])
     .map((m) => {
       const supply = resolveSupply(m.name, { id: m.supply })
@@ -113,6 +177,7 @@ export function linesForActivity(game) {
         label: m.quantity?.label,
         optional: m.optional,
         reusable: m.reusable || undefined,
+        est: priceFor(supply, m.unit, m.quantity?.total),
         note: [m.quantity?.detail, m.note].filter(Boolean).join(' · ') || undefined,
         substitute: m.substitute,
         source,
@@ -143,6 +208,7 @@ export function linesForZone(slot, variant) {
 /** DIY materials are free text; resolve each so curated ones link precisely. */
 export function linesForDiy(d) {
   const source = { kind: 'diy', id: d.id || slugify(d.name), name: d.name }
+  if (d.buy) return buyLines(d.buy, { people: d.buyFor || 0, source })
   return (d.materials || [])
     .map((m) => line(resolveSupply(m, { category: 'activities' }), { label: 'As needed', source }))
     .filter((l) => l.supply.shop)
@@ -181,38 +247,59 @@ export function linesForTheme(plan) {
     .filter((l) => l.supply.shop)
 }
 
-/** Shelf-stable ingredients from recipes, scaled to guests (+ adults). */
+/** Packs to buy for a recipe ingredient, priced from GROCERY_PRICES. */
+function groceryPack(i) {
+  const p = GROCERY_PRICES[i.key]
+  if (!p) return null
+  const per = toBase(p.pack[0], p.pack[1])
+  if (!per || !i.base) return null
+  const packs = Math.max(1, Math.ceil(i.base / per - 1e-9))
+  return { packs, label: p.label, est: [p.est[0] * packs, p.est[1] * packs], home: !!p.home }
+}
+
+/**
+ * Every ingredient to buy for the dishes given, scaled to children + adults.
+ * Dishes with a buy list use it; dishes with a recipe use its ingredients,
+ * priced by the pack. Fresh food is included — Amazon search covers grocery.
+ */
 export function groceryLines(foods, { guests, adults = 0 }) {
-  const withRecipes = foods.filter((f) => f.recipe)
-  if (!withRecipes.length) return []
+  const people = guests + adults
+  const lines = foods
+    .filter((f) => f.buy)
+    .flatMap((f) => buyLines(f.buy, { people, source: { kind: 'recipe', id: f.id, name: f.recipe?.title || f.name }, category: 'food' }))
+  const withRecipes = foods.filter((f) => f.recipe && !f.buy)
+  if (!withRecipes.length) return lines
   const names = Object.fromEntries(withRecipes.map((f) => [f.id, f.recipe.title || f.name]))
   const groups = buildShoppingList(
     withRecipes.map((f) => scaleRecipe(f.recipe, { children: guests, adults })),
     names,
   )
-  return groups
-    .filter((g) => AMAZON_AISLES.has(g.aisle))
-    .flatMap((g) =>
-      g.items.map((i) => ({
-        key: `grocery:${i.id}`,
-        supply: { id: `g-${i.key}`, curated: false, name: i.name, category: 'food', search: searchPhrase(i.name), shop: true },
-        qty: null,
-        unit: '',
-        unitPlural: '',
-        label: i.display,
-        optional: i.optional,
-        reusable: false,
-        est: null,
-        sources: i.sources,
-        source: { kind: 'recipe', id: 'menu', name: i.sources.join(', ') },
-      })),
-    )
+  return lines.concat(
+    groups.flatMap((g) =>
+      g.items.map((i) => {
+        const pack = groceryPack(i)
+        return {
+          key: `grocery:${i.id}`,
+          supply: { id: `g-${i.key}`, curated: false, name: i.name, category: 'food', search: GROCERY_PRICES[i.key]?.search || searchPhrase(i.name), shop: true, household: !!pack?.home },
+          qty: null,
+          unit: '',
+          unitPlural: '',
+          label: pack?.label ? `${i.display} · buy ${pack.packs} × ${pack.label}` : i.display,
+          optional: i.optional,
+          reusable: false,
+          est: pack?.est || null,
+          sources: i.sources,
+          source: { kind: 'recipe', id: 'menu', name: i.sources.join(', ') },
+        }
+      }),
+    ),
+  )
 }
 
 /** Serveware from recipes in the plan (cups, liners, stands) — optional extras. */
 export function servewareLines(foods) {
   return foods
-    .filter((f) => f.recipe)
+    .filter((f) => f.recipe && !f.buy)
     .flatMap((f) =>
       f.recipe.equipment
         .filter((e) => e.serve && e.search)
@@ -374,7 +461,7 @@ export function buildPartyShopping(plan, catalog, sel, { adults = 0 } = {}) {
 
 /** Sum of typical cost ranges for items still to buy (owned/skipped excluded). */
 export function typicalTotal(items) {
-  const priced = items.filter((i) => i.est)
+  const priced = items.filter((i) => i.est && !i.supply?.household)
   if (!priced.length) return null
   return {
     range: priced.reduce((r, i) => [r[0] + i.est[0], r[1] + i.est[1]], [0, 0]).map(Math.round),

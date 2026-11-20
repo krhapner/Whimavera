@@ -6,6 +6,7 @@ import { normalizeGuide, personalizeGuide, minimalGuide } from './guides.js'
 import { recipesByTheme } from '../data/birthday/recipes/index.js'
 import { menuImageUrl, menuImageAlt } from '../data/menuImages.js'
 import { normalizeRecipe } from './recipes.js'
+import { buyByTheme } from '../data/birthday/buy/index.js'
 
 const roundTo = (n, step = 5) => Math.round(n / step) * step
 
@@ -59,6 +60,8 @@ export function buildPlan(eventType, answers) {
   const loves = answers.interests || []
   // Guides are built here, once per plan — never when a card is opened.
   const themeGuides = guidesByTheme[theme.id] || {}
+  // Buy lists: what to purchase for each activity, dish and DIY project.
+  const themeBuy = buyByTheme[theme.id] || {}
   const guideCtx = {
     guests,
     ageRange: answers.ageRange,
@@ -82,6 +85,7 @@ export function buildPlan(eventType, answers) {
       }
       activity.guide = personalizeGuide(authored || minimalGuide(activity), { ...guideCtx, activity })
       activity.hasFullGuide = !!authored
+      if (themeBuy.activities?.[id]) Object.assign(activity, { buy: themeBuy.activities[id], buyFor: guests })
       return activity
     })
     .sort((a, b) => b.matches.length - a.matches.length || a.order - b.order)
@@ -98,6 +102,7 @@ export function buildPlan(eventType, answers) {
       imageUrl: f.imageUrl || recipe?.imageUrl || menuImageUrl(id),
       imageAlt: menuImageAlt[id] || f.name,
       recipe,
+      ...(themeBuy.food?.[id] ? { buy: themeBuy.food[id] } : {}),
     }
   })
 
@@ -128,8 +133,14 @@ export function buildPlan(eventType, answers) {
     { low: 0, high: 0 },
   )
 
+  const diy = (template.diy || []).map((d) => {
+    const id = slugify(d.name)
+    return themeBuy.diy?.[id] ? { ...d, buy: themeBuy.diy[id], buyFor: guests } : d
+  })
+
   return {
     ...template,
+    diy,
     theme,
     isPreview,
     answers,

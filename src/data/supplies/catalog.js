@@ -246,6 +246,66 @@ export const SUPPLIES = {
 }
 
 /**
+ * Typical cost per unit, keyed by the unit an activity guide uses for the
+ * material (a guide may count "blooms" or "tablespoons" where the store
+ * sells stems or bottles). Planning estimates for generic items in USD —
+ * never retailer prices. `HOUSEHOLD` supplies are things most families
+ * already own: still listed and linked, but left out of cost totals.
+ */
+const EST_BY = {
+  'pipe-cleaners': { stem: [0.05, 0.1] },
+  'faux-flower-picks': { bloom: [0.15, 0.3], stem: [0.15, 0.3] },
+  'faux-greenery': { sprig: [0.1, 0.2] },
+  'satin-ribbon': { length: [0.1, 0.2], piece: [0.1, 0.2] },
+  'floral-tape': { roll: [1.5, 3] },
+  'small-baskets': { basket: [2, 4] },
+  'wire-cutters': { pair: [6, 12] },
+  clothespins: { clothespin: [0.05, 0.1] },
+  'hand-mirror': { mirror: [5, 10] },
+  'acrylic-gems': { gem: [0.1, 0.2] },
+  'drawstring-pouches': { pouch: [0.3, 0.6] },
+  'sheet-protectors': { 'set of 6 cards': [0.6, 1], pack: [4, 7] },
+  'treasure-box': { box: [6, 12] },
+  'washi-tape': { roll: [1.5, 3] },
+  'hand-bell': { bell: [4, 8] },
+  'craft-sticks': { stick: [0.03, 0.06] },
+  'portion-cups': { cup: [0.05, 0.1] },
+  'plain-plates': { plate: [0.1, 0.2] },
+  'wet-wipes': { set: [3, 5], pack: [3, 5] },
+  'kids-aprons': { apron: [1.5, 3] },
+  'piping-bags': { bag: [0.15, 0.3] },
+  'lemon-juice': { tablespoon: [0.1, 0.15], bottle: [3, 5] },
+  'clear-cups': { cup: [0.1, 0.2] },
+  'plastic-droppers': { dropper: [0.15, 0.3] },
+  'serving-trays': { tray: [3, 6] },
+  'blank-labels': { label: [0.05, 0.1], sheet: [0.3, 0.6] },
+  'bluetooth-speaker': { speaker: [20, 35] },
+  'play-scarves': { scarf: [1, 2] },
+  'fairy-wand': { wand: [3, 6] },
+  'magnifying-glasses': { magnifier: [1, 2], glass: [1, 2] },
+  crayons: { crayon: [0.05, 0.1], pack: [2, 4] },
+  clipboards: { clipboard: [1, 2] },
+  'paper-bags': { bag: [0.05, 0.1] },
+  'plastic-jars': { jar: [0.6, 1.2] },
+  'craft-sand': { cup: [1, 2], set: [8, 14] },
+  funnels: { funnel: [0.5, 1] },
+  'plastic-spoons': { spoon: [0.03, 0.06] },
+  'paper-confetti': { 'small bag': [3, 6], pack: [3, 6] },
+  'strong-glue': { tube: [4, 7] },
+  'round-mats': { mat: [2, 4] },
+  'felt-sheets': { cap: [0.4, 0.8], pack: [6, 10] },
+  'rug-gripper': { roll: [6, 10] },
+  'picture-book': { book: [6, 12] },
+  'floor-cushions': { blanket: [8, 15], cushion: [8, 15] },
+  'fairy-lights': { lantern: [6, 10], strand: [6, 10] },
+  'butterfly-pea-flowers': { 'small bag': [6, 10], bag: [6, 10] },
+  'white-chocolate-chips': { spot: [0.02, 0.03], bag: [3, 5] },
+}
+const HOUSEHOLD = ['small-baskets', 'wire-cutters', 'hand-mirror', 'serving-trays', 'bluetooth-speaker', 'crayons', 'picture-book', 'floor-cushions', 'plastic-spoons']
+for (const [id, by] of Object.entries(EST_BY)) if (SUPPLIES[id]) SUPPLIES[id].estBy = by
+for (const id of HOUSEHOLD) if (SUPPLIES[id]) SUPPLIES[id].household = true
+
+/**
  * Supplies every party of a theme needs, outside any one activity or zone.
  * qty: { perGuest, extra } or { fixed }.
  */

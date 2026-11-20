@@ -85,6 +85,12 @@ ok(text().includes('Prefer a kit?'), 'kit suggestion in guide')
 await click($('[role="dialog"] .guide__close, [role="dialog"] button[aria-label*="Close"]'))
 
 // 3. Add/remove activities → list updates, shared materials stay
+// Budgets decide what's recommended, so add the two activities this section
+// checks explicitly — the list then has known contents at any price level.
+for (const id of ['flower-crown-studio', 'fairy-treasure-hunt']) {
+  const t = $(`[data-activity="${id}"]`).closest('article').querySelector('.plan-toggle')
+  if (t.getAttribute('aria-pressed') !== 'true') await click(t)
+}
 const goShop = async () => { await act(async () => { window.dispatchEvent(new window.CustomEvent('whimavera:navigate', { detail: 'shop' })) }) }
 const { navigate } = await import('../src/lib/router.js')
 await act(async () => navigate('shop'))
