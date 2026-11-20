@@ -8,7 +8,7 @@ const env = (k) => (typeof import.meta !== 'undefined' && import.meta.env?.[k]) 
 
 export const SITE = {
   name: 'Whimavera',
-  url: (env('VITE_SITE_URL') || 'https://www.whimavera.com').replace(/\/+$/, ''),
+  url: (env('VITE_SITE_URL') || 'https://whimavera.com').replace(/\/+$/, ''),
   tagline: 'Beautifully imagined. Effortlessly planned.',
   locale: 'en_US',
   gscVerification: env('VITE_GSC_VERIFICATION'),

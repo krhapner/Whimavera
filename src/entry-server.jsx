@@ -87,12 +87,12 @@ export function render() {
   pages.push({
     head: head({
       path: '/',
-      title: 'Whimavera — Kids’ Birthday Party Ideas & Free Party Planner',
+      title: 'Whimavera | Magical Birthday Party Ideas & Planning',
       description:
-        'Beautiful, budget-friendly birthday party themes for kids — fairy garden, dinosaur, under the sea and more — and a free planner with games, menu, timeline and shopping list.',
+        'Whimavera plans magical kids’ birthday parties: fairy garden, dinosaur, under the sea and more — with a free planner for games, menu, timeline, budget and shopping list.',
       image: shareImage('home'),
       imageAlt: ownPhotos.homeHero.alt,
-      ld: [ORG, { '@type': 'WebSite', '@id': `${SITE.url}/#website`, name: SITE.name, url: `${SITE.url}/`, publisher: { '@id': ORG['@id'] } }],
+      ld: [ORG, { '@type': 'WebSite', '@id': `${SITE.url}/#website`, name: SITE.name, alternateName: 'Whimavera Birthday Party Planner', url: `${SITE.url}/`, publisher: { '@id': ORG['@id'] } }],
     }),
     body: renderToString(
       <div className="app">

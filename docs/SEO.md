@@ -33,15 +33,14 @@ carries the Amazon Associates disclosure. No Product or review markup.
 
 ## Manual setup (not done yet)
 
-1. **Domain:** in Netlify → Domain management, make `www.whimavera.com` the
-   primary domain so `whimavera.com` redirects to it. Canonical URLs use
-   `https://www.whimavera.com`. To use the bare domain instead, set
-   `VITE_SITE_URL=https://whimavera.com` in Netlify environment variables.
+1. **Domain:** the live site is `https://whimavera.com` (www redirects to
+   it), and canonical URLs, the sitemap and social tags all use that. If the
+   primary domain ever changes, set `VITE_SITE_URL` in Netlify to match.
 2. **Google Search Console:** add a *Domain* property for `whimavera.com`
    and verify with the DNS TXT record Google gives you (best), or add a
    *URL-prefix* property and set `VITE_GSC_VERIFICATION=<token>` in Netlify
    so every page gets the verification meta tag. Then submit
-   `https://www.whimavera.com/sitemap.xml` under Sitemaps and use URL
+   `https://whimavera.com/sitemap.xml` under Sitemaps and use URL
    Inspection → Request indexing on `/themes/` and each theme page.
 3. **Rich results:** check a theme page in Google's Rich Results Test and
    the Schema Markup Validator after the first deploy.
