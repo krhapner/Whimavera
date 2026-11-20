@@ -1,6 +1,7 @@
 import Scene from '../components/Scene.jsx'
 import { Button, Eyebrow, SectionHeading, Sparkle, Divider } from '../components/ui.jsx'
 import { eventTypes } from '../data/eventTypes.js'
+import { themePath, GUIDE_PATH } from '../seo/content.js'
 
 const STEPS = [
   { n: '01', title: 'Tell us about them', body: 'Eight gentle questions — age, loves, guests, budget, and how much time you really have.' },
@@ -101,6 +102,15 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
               </button>
             ))}
           </div>
+          <p className="theme-links">
+            <span>Party ideas & guides:</span>
+            {eventType.themes.map((t) => (
+              <a key={t.id} href={themePath(t)}>
+                {t.name}
+              </a>
+            ))}
+            <a href={GUIDE_PATH}>How to plan a kids’ party</a>
+          </p>
         </div>
       </section>
 

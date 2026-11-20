@@ -9,7 +9,9 @@ import { photos, ownPhotos, photoUrl } from '../data/photos.js'
  * kinds: hero | tablescape | cake | detail | balloons | invite | crown
  * motifs: mushroom | shell | star | teacup | leaf | rainbow
  */
-export default function Scene({ kind = 'tablescape', palette, motif = 'mushroom', photo, src, label = 'Fairy Garden', alt = '', className = '' }) {
+// The first, largest image on a page loads eagerly with high priority (good
+// LCP); everything else loads lazily as it scrolls into view.
+export default function Scene({ kind = 'tablescape', palette, motif = 'mushroom', photo, src, label = 'Fairy Garden', alt = '', className = '', priority = kind === 'hero' }) {
   const uid = useId().replace(/:/g, '')
   const [failed, setFailed] = useState(false)
   const c = (palette || DEFAULT).map((p) => (typeof p === 'string' ? p : p.hex))
@@ -21,6 +23,9 @@ export default function Scene({ kind = 'tablescape', palette, motif = 'mushroom'
         src={imgSrc}
         alt={alt || photos[photo]?.alt || ownPhotos[photo]?.alt || ''}
         style={ownPhotos[photo]?.focus ? { objectPosition: ownPhotos[photo].focus } : undefined}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : undefined}
+        decoding="async"
         onError={() => setFailed(true)}
       />
     )

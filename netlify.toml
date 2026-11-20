@@ -1,0 +1,9 @@
+# The build prerenders the public pages (themes, guide, sitemap) after the
+# app build — see scripts/prerender.mjs. Netlify serves dist/404.html with a
+# real 404 status for unknown URLs.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"

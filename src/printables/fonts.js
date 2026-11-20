@@ -3,7 +3,6 @@
  * draw the on-screen preview (FontFace), and to embed in PDFs, so line
  * breaks and sizes match everywhere.
  */
-import fontkit from '@pdf-lib/fontkit'
 import scriptUrl from '@fontsource/pinyon-script/files/pinyon-script-latin-400-normal.woff?url'
 import displayUrl from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff?url'
 import displayItalicUrl from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-italic.woff?url'
@@ -29,7 +28,8 @@ let loading = null
  */
 export function loadFonts(readBytes = defaultRead) {
   if (!loading) {
-    loading = Promise.all(
+    // fontkit is large; load it only when printables are first previewed.
+    loading = import('@pdf-lib/fontkit').then(({ default: fontkit }) => Promise.all(
       Object.entries(FONT_FILES).map(async ([id, f]) => {
         const bytes = new Uint8Array(await readBytes(f.url))
         const fk = fontkit.create(bytes)
@@ -44,7 +44,7 @@ export function loadFonts(readBytes = defaultRead) {
         }
         return [id, { id, family: f.family, bytes, fk }]
       }),
-    ).then(Object.fromEntries)
+    )).then(Object.fromEntries)
   }
   return loading
 }

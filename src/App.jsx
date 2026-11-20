@@ -16,6 +16,21 @@ import { shoppingForItem, typicalTotal } from './lib/shopping.js'
 const STORAGE_KEY = 'whimavera.answers.v1'
 const PLANNED_KEY = 'whimavera.hasPlan.v1'
 
+/**
+ * A theme chosen on a public theme page arrives as /?theme=<id>#plan.
+ * Read it once, then tidy the address bar.
+ */
+function themeFromUrl() {
+  try {
+    const id = new URLSearchParams(window.location.search).get('theme')
+    if (!id || !liveEventType.themes.some((t) => t.id === id)) return null
+    history.replaceState(null, '', `${window.location.pathname}${window.location.hash}`)
+    return id
+  } catch {
+    return null
+  }
+}
+
 function loadAnswers() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -60,7 +75,11 @@ export default function App() {
   const addToList = useCallback((id) => setShoppingIds((ids) => (ids.includes(id) ? ids : [...ids, id])), [setShoppingIds])
   const removeFromList = useCallback((id) => setShoppingIds((ids) => ids.filter((x) => x !== id)), [setShoppingIds])
   const shopping = { ids: shoppingIds, add: addToList, remove: removeFromList, clear: () => setShoppingIds([]) }
-  const [answers, setAnswers] = useState(loadAnswers)
+  const [answers, setAnswers] = useState(() => {
+    const loaded = loadAnswers()
+    const theme = themeFromUrl()
+    return theme ? { ...loaded, theme } : loaded
+  })
   const [hasPlan, setHasPlan] = useState(() => {
     try {
       return localStorage.getItem(PLANNED_KEY) === '1'
