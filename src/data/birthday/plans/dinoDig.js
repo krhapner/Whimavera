@@ -7,7 +7,7 @@ export default {
     'Fossils, ferns and desert sunsets — a day for little paleontologists to dig, discover and roar.',
   moodWords: ['Adventurous', 'Earthy', 'Prehistoric', 'Roaring'],
   headings: { decor: 'Five stops on the expedition', food: 'A prehistoric picnic' },
-  heroPhoto: 'dinoDessertTable',
+  heroPhoto: 'dinoGardenParty',
   foodPhoto: 'dinoVolcanoCake',
 
   board: [
@@ -22,26 +22,31 @@ export default {
   setup: [
     {
       zone: 'Jurassic gate',
+      photo: 'dinoZoneGate',
       description:
-        'Big fern and palm leaves around the entrance with a hand-painted "Dino Dig — Explorers Only" sign.',
+        'A wooden arch hung with big paper ferns and a hand-painted "Explorer" sign, with cardboard dino footprints leading the way in and a basket of safari hats.',
     },
     {
       zone: 'Fossil feast table',
+      photo: 'dinoZoneTable',
       description:
         'Kraft paper runner, potted ferns and toy dinosaurs wearing tiny party hats marching down the middle.',
     },
     {
       zone: 'Excavation site',
+      photo: 'dinoZoneExcavation',
       description:
         'A sandbox or kiddie pool of play sand with fossils and dino skeletons buried for digging.',
     },
     {
       zone: 'Explorer station',
+      photo: 'dinoZoneExplorer',
       description:
         'Safari hats, paintbrushes, magnifying glasses and a "field notebook" for every paleontologist.',
     },
     {
       zone: 'Volcano lab',
+      photo: 'dinoZoneVolcano',
       description:
         'An outdoor table on a tray (it gets messy!) for egg-hatching and the volcano finale.',
     },
@@ -114,13 +119,13 @@ export default {
   ],
 
   food: [
-    { name: 'Volcano cupcakes', detail: 'Chocolate cupcakes with orange "lava" frosting', tag: 'Sweet' },
+    { name: 'Volcano cupcakes', detail: 'Chocolate cupcakes with swirled chocolate frosting and an orange "lava" drizzle', tag: 'Sweet' },
     { name: 'Dino dirt cups', detail: 'Chocolate pudding, cookie crumbs and a toy dino', tag: 'Sweet' },
     { name: 'Fossil sandwiches', detail: 'Dinosaur-cut sandwiches — cheese or turkey', tag: 'Savory' },
     { name: 'Dino bones', detail: 'Pretzel sticks with a mini marshmallow on each end', tag: 'Savory' },
     { name: 'Fern veggie cups', detail: 'Broccoli "trees", celery and ranch', tag: 'Fresh' },
-    { name: 'Lava punch', detail: 'Orange and pineapple juice with sparkling water', tag: 'Drink' },
-    { name: 'The cake', detail: 'Chocolate volcano cake with toy dinosaurs at the base', tag: 'Showpiece' },
+    { name: 'Lava punch', detail: 'Orange and pineapple juice with sparkling water and orange slices', tag: 'Drink' },
+    { id: 'dino-cake', name: 'The cake', detail: 'Chocolate volcano cake with orange lava, cookie-crumb rocks, icing ferns and toy dinosaurs at the base', tag: 'Showpiece' },
   ],
 
   startHour: 14,

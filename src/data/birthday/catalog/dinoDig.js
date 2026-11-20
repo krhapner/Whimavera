@@ -75,7 +75,7 @@ export default {
     'dino-bones': { role: 'savory', cost: { perChild: [0.3, 0.6] }, diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap' }) },
     'fern-veggie-cups': { role: 'fresh', cost: { perChild: [0.6, 1] }, diet: diet({ 'dairy-free': 'swap', 'egg-free': 'swap' }) },
     'lava-punch': { role: 'drink', cost: { perChild: [0.3, 0.5] }, diet: diet() },
-    'the-cake': { role: 'showpiece', headline: true, cost: { fixed: [25, 45] }, costNote: 'Homemade estimate; bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
+    'dino-cake': { role: 'showpiece', headline: true, cost: { fixed: [25, 45] }, costNote: 'Homemade estimate; bakery prices vary.', diet: diet({ 'gluten-free': 'swap', 'dairy-free': 'swap', 'egg-free': 'swap' }) },
   },
 
   diy: {

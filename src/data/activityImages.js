@@ -51,6 +51,14 @@ export const activityImageAlt = {
   'freeze-fish': 'Children dancing under seafoam crepe-paper seaweed and pink paper jellyfish',
   'tide-pool-storytime': 'Three children reading an ocean picture book under a blue gauze canopy with octopus and starfish pillows',
   'bedtime-star-stories': 'Three girls reading a moon picture book together in a glowing blanket tent with star and moon pillows',
+  'fossil-excavation': 'A child brushing sand away from a buried dinosaur skull with a paintbrush, beside a scoop, magnifier and field sketch',
+  'hatch-a-dino-egg': 'Children pouring water over clear ice eggs with toy dinosaurs frozen inside, freeing a little green dinosaur',
+  'erupting-volcano': 'A papier-mâché volcano erupting orange foam over toy dinosaurs on a tray, with squeeze bottles and ferns behind',
+  'salt-dough-fossils': 'Children pressing a toy dinosaur into salt dough beside finished rounds printed with ferns, shells and dino feet',
+  'dino-cookie-decorating': 'A child decorating dinosaur sugar cookies with bowls of sage, terracotta and cream icing and sprinkles',
+  'dino-stomp': 'Three children in paper dinosaur crowns roaring with their arms up on a sunny lawn',
+  'dino-tail-tag': 'Laughing children chasing each other across the lawn with fabric tails tucked into their waistbands',
+  'dino-storytime': 'Children in safari hats reading a dinosaur picture book on a blanket in the shade of a big tree',
 }
 
 export const slugify = (s) =>

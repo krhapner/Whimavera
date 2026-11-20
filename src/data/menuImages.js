@@ -41,6 +41,13 @@ export const menuImageAlt = {
   'woodland-tea': 'Pastel teacups of iced peach tea with peach slices beside a cream teapot and a jar of honey',
   'tea-cake': 'A naked honey layer cake topped with strawberries, raspberries, blueberries, flowers, sugar mushrooms and a bunny topper',
   'starry-cake': 'A navy buttercream cake with lilac clouds, gold stars, cream rosettes and a sleepy moon topper',
+  'volcano-cupcakes': 'Chocolate cupcakes with swirled chocolate frosting and an orange lava drizzle in kraft liners on a wooden board',
+  'dino-dirt-cups': 'Clear cups of chocolate pudding topped with cookie-crumb dirt, a toy dinosaur and a green leaf',
+  'fossil-sandwiches': 'Dinosaur-shaped turkey and cheese sandwiches on white and green bread on a wooden platter with cucumber slices',
+  'dino-bones': 'A wooden bowl of pretzel sticks with a mini marshmallow on each end, like little bones',
+  'fern-veggie-cups': 'Clear cups of ranch with broccoli trees and celery sticks standing upright on a rustic table',
+  'lava-punch': 'A glass pitcher of orange punch with orange slices on a wooden table with ferns and terracotta napkins',
+  'dino-cake': 'A chocolate volcano cake with orange lava, cookie-crumb rocks, icing ferns and toy dinosaurs around the base',
 }
 
 export const menuImageUrl = (id) => byId[id] || null
