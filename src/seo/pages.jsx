@@ -9,7 +9,7 @@ import { Header, Footer } from '../components/Layout.jsx'
 import { Button, Eyebrow, Palette, Tag, Sparkle } from '../components/ui.jsx'
 import { ActivityImage } from '../components/ActivityCard.jsx'
 import { AMAZON } from '../config/affiliate.js'
-import { themePath, GUIDE_PATH } from './content.js'
+import { themePath, GUIDE_PATH, GUIDES } from './content.js'
 
 const SPONSORED = 'sponsored nofollow noopener noreferrer'
 const range = (r) => (!r ? '' : r[0] === r[1] ? `$${r[0]}` : `$${r[0]}–$${r[1]}`)
@@ -140,7 +140,15 @@ export function ThemePage({ d }) {
             <h2 className="display-2">{seo.short} party games & activities</h2>
             <p className="lede">
               {plan.games.length} ideas, from calm crafts to running games. Mix one or two of each so quieter guests and busy ones both have a moment.
-              {indoor.length > 0 && ` ${indoor.length} of them work well indoors if the weather turns.`}
+              {indoor.length > 0 && ` ${indoor.length} of them work well indoors if the weather turns.`} More ideas:{' '}
+              <a href={GUIDES.activities.path}>party games by type</a>
+              {d.guides.ages.map((g) => (
+                <span key={g.path}>
+                  {' · '}
+                  <a href={g.path}>{g.label.replace('Birthday party ideas for ', 'ages ').replace('First & second birthday party ideas', 'first & second birthdays')}</a>
+                </span>
+              ))}
+              .
             </p>
             <div className="act-grid">
               {activities.map(({ g, meta }, i) => (
@@ -175,6 +183,9 @@ export function ThemePage({ d }) {
         {plan.diy.length > 0 && (
           <section className="section container" id="diy">
             <h2 className="display-2">DIY {seo.short.toLowerCase()} decorations & crafts</h2>
+            <p className="lede">
+              Made the week before, these save money and look handmade in the best way. More in our <a href={GUIDES.diy.path}>DIY birthday decorations</a> guide.
+            </p>
             <div className="diy-list">
               {plan.diy.map((p) => (
                 <div key={p.name} className="diy-item">
@@ -234,6 +245,9 @@ export function ThemePage({ d }) {
               <strong>{range(cost)}</strong> in supplies. The planner adjusts every quantity and cost to your guest count and budget.
             </p>
           )}
+          <p>
+            See what every theme costs, lean or full, in <a href={GUIDES.budget.path}>kids’ birthday parties on a budget</a>.
+          </p>
           {plan.substitutions?.length > 0 && (
             <>
               <h3 className="display-3">Ways to save</h3>
@@ -309,6 +323,18 @@ export function ThemePage({ d }) {
               </Button>
             </div>
           </div>
+        </section>
+
+        {/* Guides */}
+        <section className="section container" id="guides">
+          <h2 className="display-2">Party planning guides</h2>
+          <ul className="guide-links">
+            {[...d.guides.ages, ...d.guides.hubs].map((g) => (
+              <li key={g.path}>
+                <a href={g.path}>{g.label}</a>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* Related */}
@@ -516,5 +542,289 @@ export function NotFoundPage() {
         </div>
       </section>
     </StaticPage>
+  )
+}
+
+// ---------------------------------------------------------------- guides
+
+/** Compact activity card used across the guides; links to its theme page. */
+function ActivityTile({ a, i }) {
+  const { g, theme, seo, meta, cost } = a
+  return (
+    <article className="act-card">
+      <div className="act-card__media">
+        <ActivityImage activity={g} theme={theme} index={i} />
+      </div>
+      <div className="act-card__body">
+        <div className="card__meta">
+          <Tag tone={g.energy === 'Calm' ? 'sage' : 'blush'}>{g.energy}</Tag>
+          <span>
+            {g.time}
+            {ageText(meta?.ages) ? ` · ${ageText(meta.ages)}` : ''}
+            {meta?.space === 'small' ? ' · Works indoors' : ''}
+          </span>
+        </div>
+        <h3 className="display-3">{g.name}</h3>
+        <p className="act-card__desc">{g.description}</p>
+        <p className="act-card__note">
+          {cost?.[1] > 0 ? `Typically ${range(cost)} for 12 children · ` : 'Nothing to buy · '}
+          <a href={`${themePath(theme)}#activities`}>From the {seo.short.toLowerCase()} party</a>
+        </p>
+      </div>
+    </article>
+  )
+}
+
+function GuideFrame({ crumbs, eyebrow, h1, intro, children, related }) {
+  return (
+    <StaticPage route="/themes/" crumbs={crumbs}>
+      <article className="section container guide-page guide-page--wide">
+        <Eyebrow>
+          <Sparkle size={10} /> {eyebrow}
+        </Eyebrow>
+        <h1 className="display-1">{h1}</h1>
+        {intro.map((p) => (
+          <p key={p.slice(0, 24)} className="lede">
+            {p}
+          </p>
+        ))}
+        {children}
+        <div className="cta-band">
+          <div>
+            <h2 className="display-2">Plan the whole party in two minutes</h2>
+            <p className="lede">Whimavera’s free kids’ birthday party planner picks activities for your child’s age, sizes every quantity to your guest list and keeps it on budget.</p>
+          </div>
+          <div className="cta-band__actions">
+            <Button as="a" href="/#plan">
+              Start planning
+            </Button>
+            <Button as="a" href="/themes/" variant="secondary">
+              Browse themes
+            </Button>
+          </div>
+        </div>
+        {related?.length > 0 && (
+          <nav className="guide-related" aria-label="More guides">
+            <h2 className="display-3">More party guides</h2>
+            <ul>
+              {related.map((r) => (
+                <li key={r.path}>
+                  <a href={r.path}>{r.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+      </article>
+    </StaticPage>
+  )
+}
+
+/** One age group: what works, how long, which themes, tips. */
+export function AgeGuidePage({ p }) {
+  const calm = p.activities.filter((a) => a.g.energy === 'Calm')
+  const active = p.activities.filter((a) => a.g.energy !== 'Calm')
+  return (
+    <GuideFrame crumbs={p.crumbs} eyebrow="Party ideas by age" h1={p.guide.h1} intro={p.guide.intro} related={p.related}>
+      <h2 className="display-2">Party themes that suit this age</h2>
+      <ThemeCards items={p.themes} />
+
+      <h2 className="display-2">Active games ({active.length})</h2>
+      <p>Running, dancing and hunting games to burn off energy — best before food.</p>
+      <div className="act-grid">
+        {active.map((a, i) => (
+          <ActivityTile key={`${a.theme.id}-${a.g.id}`} a={a} i={i} />
+        ))}
+      </div>
+
+      <h2 className="display-2">Calm activities and crafts ({calm.length})</h2>
+      <p>Hands-on activities for settling in and winding down, many with something to take home.</p>
+      <div className="act-grid">
+        {calm.map((a, i) => (
+          <ActivityTile key={`${a.theme.id}-${a.g.id}`} a={a} i={i} />
+        ))}
+      </div>
+
+      <h2 className="display-2">Tips for this age</h2>
+      <ol className="tip-list">
+        {p.guide.tips.map((t) => (
+          <li key={t}>{t}</li>
+        ))}
+      </ol>
+    </GuideFrame>
+  )
+}
+
+/** Every activity, grouped by type. */
+export function ActivitiesHubPage({ p }) {
+  return (
+    <GuideFrame
+      crumbs={p.crumbs}
+      eyebrow="Games & activities"
+      h1="Kids’ birthday party games and activities"
+      intro={[
+        `${p.total} birthday party games and activities from Whimavera’s party themes, sorted by the kind of fun they are. Each shows the ages it suits, how long it takes and what the supplies typically cost for 12 children.`,
+        `${p.indoor} of them work indoors. For a two-hour party, plan two or three: one calm, one active, and a quiet one to finish.`,
+      ]}
+      related={p.related}
+    >
+      <nav className="guide-toc" aria-label="Activity types">
+        {p.groups.map((grp) => (
+          <a key={grp.kind} href={`#${grp.kind}`}>
+            {grp.title}
+          </a>
+        ))}
+      </nav>
+      {p.groups.map((grp) => (
+        <section key={grp.kind} id={grp.kind}>
+          <h2 className="display-2">{grp.title}</h2>
+          <div className="act-grid">
+            {grp.items.map((a, i) => (
+              <ActivityTile key={`${a.theme.id}-${a.g.id}`} a={a} i={i} />
+            ))}
+          </div>
+        </section>
+      ))}
+      <h2 className="display-2">Games by age</h2>
+      <ul className="guide-themes">
+        {p.ages.map((g) => (
+          <li key={g.path}>
+            <a href={g.path}>{g.label}</a>
+          </li>
+        ))}
+      </ul>
+    </GuideFrame>
+  )
+}
+
+/** Every DIY project, with materials, steps and cost. */
+export function DiyHubPage({ p }) {
+  return (
+    <GuideFrame
+      crumbs={p.crumbs}
+      eyebrow="DIY decorations & crafts"
+      h1="DIY birthday party decorations and crafts"
+      intro={[
+        `${p.items.length} DIY projects from Whimavera’s party themes — decorations, favors and the kind of homemade activity setups that make a party feel special without a big shop.`,
+        'Each one lists what you’ll need, how long it takes and what the materials typically cost, so you can decide what is worth making and what is easier to buy.',
+      ]}
+      related={p.related}
+    >
+      <div className="diy-list">
+        {p.items.map(({ d, theme, seo, cost }) => (
+          <div key={`${theme.id}-${d.name}`} className="diy-item">
+            <h2 className="display-3">{d.name}</h2>
+            <p className="diy-item__meta">
+              {d.time} · {d.difficulty}
+              {cost?.[1] > 0 ? ` · materials typically ${range(cost)}` : ''}
+            </p>
+            {d.saves && <p>{d.saves}.</p>}
+            <h3>You’ll need</h3>
+            <ul>
+              {d.materials.map((m) => (
+                <li key={m}>{m}</li>
+              ))}
+            </ul>
+            <h3>How to make it</h3>
+            <ol>
+              {d.steps.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ol>
+            <p className="diy-item__from">
+              <a href={`${themePath(theme)}#diy`}>For a {seo.short.toLowerCase()} party →</a>
+            </p>
+          </div>
+        ))}
+      </div>
+    </GuideFrame>
+  )
+}
+
+/** What parties really cost, and where to save. */
+export function BudgetGuidePage({ p }) {
+  return (
+    <GuideFrame
+      crumbs={p.crumbs}
+      eyebrow="Budget-friendly parties"
+      h1="Kids’ birthday party ideas on a budget"
+      intro={[
+        'A lovely birthday party at home doesn’t need a big budget — it needs a plan before you shop. These numbers come from Whimavera’s own shopping lists for real party plans, so you can see where the money actually goes.',
+        'All costs are typical planning estimates for generic items (not retailer prices), for 12 children unless noted.',
+      ]}
+      related={p.related}
+    >
+      <h2 className="display-2">What a party costs, theme by theme</h2>
+      <p>The lean version is the cheapest complete plan: a cake, a drink, one fresh dish, simple decorations and free games. The full version adds activities and a richer menu.</p>
+      <table className="guide-table">
+        <thead>
+          <tr>
+            <th scope="col">Theme</th>
+            <th scope="col">Lean plan</th>
+            <th scope="col">Full plan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.costs.map((c) => (
+            <tr key={c.theme.id}>
+              <th scope="row">
+                <a href={themePath(c.theme)}>{c.seo.label}</a>
+              </th>
+              <td>{range(c.lean)}</td>
+              <td>{range(c.full)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2 className="display-2">Party games that cost nothing</h2>
+      <ul className="guide-themes">
+        {p.free.map((a) => (
+          <li key={`${a.theme.id}-${a.g.id}`}>
+            <strong>{a.g.name}</strong> — {a.g.description} <a href={`${themePath(a.theme)}#activities`}>({a.seo.short.toLowerCase()} party)</a>
+          </li>
+        ))}
+      </ul>
+
+      <h2 className="display-2">Homemade swaps that save the most</h2>
+      <ul className="save-list">
+        {p.saves.map((s) => (
+          <li key={s.swap}>
+            <strong>{s.for}</strong> instead of {s.swap.toLowerCase()} — {s.why.toLowerCase()}.
+          </li>
+        ))}
+      </ul>
+
+      <h2 className="display-2">How to split the budget</h2>
+      <table className="guide-table">
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Share</th>
+            <th scope="col">On $150</th>
+            <th scope="col">On $300</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.split.map((b) => (
+            <tr key={b.id}>
+              <th scope="row">{b.label}</th>
+              <td>{Math.round(b.share * 100)}%</td>
+              <td>${Math.round(b.share * 150)}</td>
+              <td>${Math.round(b.share * 300)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2 className="display-2">More ways to keep it affordable</h2>
+      <ol className="tip-list">
+        <li>Invite fewer children. Costs scale with the guest list more than anything else — a common rule of thumb is about as many guests as the age they’re turning, plus one.</li>
+        <li>Pick one showpiece (usually the cake or a balloon arch) and keep everything else simple.</li>
+        <li>Choose activities that double as favors: a crown, a planter or a jar of “galaxy” goes home instead of a goody bag.</li>
+        <li>Check what you already own before you shop. Speakers, baking trays, blankets and picture books rarely need buying.</li>
+        <li>Buy multipacks for anything you need one-per-guest; they cost far less per piece than singles.</li>
+      </ol>
+    </GuideFrame>
   )
 }

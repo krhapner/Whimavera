@@ -1,7 +1,7 @@
 import Scene from '../components/Scene.jsx'
 import { Button, Eyebrow, SectionHeading, Sparkle, Divider } from '../components/ui.jsx'
 import { eventTypes } from '../data/eventTypes.js'
-import { themePath, GUIDE_PATH } from '../seo/content.js'
+import { themePath, GUIDE_PATH, GUIDES, AGE_GUIDES } from '../seo/content.js'
 
 const STEPS = [
   { n: '01', title: 'Tell us about them', body: 'Eight gentle questions — age, loves, guests, budget, and how much time you really have.' },
@@ -19,17 +19,18 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
       <section className="hero">
         <div className="container hero__grid">
           <div className="hero__copy">
-            <Eyebrow>
-              <Sparkle size={10} /> Children’s birthday planner
-            </Eyebrow>
-            <h1 className="display-1">
+            {/* The page's heading names what Whimavera is; the brand line keeps its look. */}
+            <h1 className="eyebrow">
+              <Sparkle size={10} /> Free kids’ birthday party planner
+            </h1>
+            <p className="display-1">
               Beautifully imagined.
               <br />
               <em>Effortlessly planned.</em>
-            </h1>
+            </p>
             <p className="lede">
-              Whimavera turns a few thoughtful answers into a complete, personalized party — from the
-              palette and the games to the very last favor tag.
+              Whimavera is a free, personalized birthday party planner for kids. A few thoughtful answers become a
+              complete party — from the palette and the games to the menu, budget and the very last favor tag.
             </p>
             <div className="hero__actions">
               <Button as="a" href="#plan" size="lg">
@@ -156,6 +157,46 @@ export default function Home({ eventType, onPickTheme, onShowExample }) {
           </div>
           <Scene kind="invite" photo="paperSuite" palette={featured.palette} motif={featured.motif} className="teaser__img" alt="Matching fairy garden invitation, note card, place card and favor tag" />
         </div>
+      </section>
+
+      {/* Questions parents ask — answered plainly */}
+      <section className="section container home-faq">
+        <SectionHeading eyebrow="Good to know" title="About the Whimavera party planner" />
+        <h3 className="display-3">Is Whimavera free?</h3>
+        <p>
+          Yes. Planning a party is free, with no account needed. Matching printables (invitations, signs, games and favor
+          tags) are an optional extra, and shopping links go to Amazon.
+        </p>
+        <h3 className="display-3">What do I get?</h3>
+        <p>
+          A personalized plan built around your child’s age, interests, guest count, budget and how much time you have: a
+          mood board and palette, decorations, age-appropriate games, a menu with recipes, a party-day timeline, a checklist
+          and a shopping list with typical costs.
+        </p>
+        <h3 className="display-3">What ages is it for?</h3>
+        <p>
+          First birthdays through about age twelve. See ideas for{' '}
+          {AGE_GUIDES.map((g, i) => (
+            <span key={g.path}>
+              {i > 0 && (i === AGE_GUIDES.length - 1 ? ' and ' : ', ')}
+              <a href={g.path}>{g.label.replace('Birthday party ideas for ', '').replace('First & second birthday party ideas', 'first & second birthdays')}</a>
+            </span>
+          ))}
+          .
+        </p>
+        <h3 className="display-3">Can I plan on a budget?</h3>
+        <p>
+          Every plan is costed and fits the budget you set; free games and homemade swaps are built in. Our guide to{' '}
+          <a href={GUIDES.budget.path}>kids’ birthday parties on a budget</a> shows what each theme really costs.
+        </p>
+        <p className="theme-links">
+          <span>Guides:</span>
+          {[GUIDES.planning, GUIDES.activities, GUIDES.diy].map((g) => (
+            <a key={g.path} href={g.path}>
+              {g.label}
+            </a>
+          ))}
+        </p>
       </section>
 
       {/* Future categories */}

@@ -11,12 +11,13 @@ import { liveEventType } from './data/eventTypes.js'
 import { buildPlan } from './lib/buildPlan.js'
 import { buildCatalog, derivePlan, costRange } from './lib/recommend.js'
 import { catalogMetaByTheme } from './data/birthday/catalog/index.js'
-import { buildPartyShopping } from './lib/shopping.js'
+import { buildPartyShopping, linesForDiy, linesCost } from './lib/shopping.js'
 import { defaultBudget, buildChecklist } from './data/birthday/plans/shared.js'
 import { photoUrl, ownPhotos } from './data/photos.js'
 import { SITE, absolute } from './config/site.js'
-import { seoFor, themePath, GUIDE_PATH } from './seo/content.js'
-import { ThemePage, ThemesIndexPage, GuidePage, NotFoundPage } from './seo/pages.jsx'
+import { seoFor, themePath, GUIDE_PATH, GUIDES, AGE_GUIDES, ACTIVITY_TYPES } from './seo/content.js'
+import { slugify } from './data/activityImages.js'
+import { ThemePage, ThemesIndexPage, GuidePage, NotFoundPage, AgeGuidePage, ActivitiesHubPage, DiyHubPage, BudgetGuidePage } from './seo/pages.jsx'
 import { Header, Footer } from './components/Layout.jsx'
 import Home from './screens/Home.jsx'
 
@@ -35,7 +36,12 @@ function themeData(theme) {
     .filter((i) => !i.optional && !i.supply?.household && i.link && ['decor', 'activities', 'favors', 'paper'].includes(i.category))
     .sort((a, b) => (b.est?.[1] || 0) - (a.est?.[1] || 0))
     .slice(0, 10)
-  return { theme, seo, plan, catalog, derived, cost: derived.estimate.range, shopping, guests: GUESTS, costOf: (c) => costRange(c, { guests: GUESTS }) }
+  const [lo, hi] = [Math.min(...(theme.ages || ['3-5']).map((a) => +a.split('-')[0])), Math.max(...(theme.ages || ['3-5']).map((a) => +a.split('-')[1]))]
+  const guides = {
+    ages: AGE_GUIDES.filter((g) => g.min <= hi && g.max >= lo),
+    hubs: [GUIDES.activities, GUIDES.diy, GUIDES.budget, GUIDES.planning],
+  }
+  return { theme, seo, plan, catalog, derived, cost: derived.estimate.range, shopping, guides, guests: GUESTS, costOf: (c) => costRange(c, { guests: GUESTS }) }
 }
 
 const themes = liveEventType.themes
@@ -87,9 +93,9 @@ export function render() {
   pages.push({
     head: head({
       path: '/',
-      title: 'Whimavera | Magical Birthday Party Ideas & Planning',
+      title: 'Whimavera | Kids’ Birthday Party Planner & Magical Party Ideas',
       description:
-        'Whimavera plans magical kids’ birthday parties: fairy garden, dinosaur, under the sea and more — with a free planner for games, menu, timeline, budget and shopping list.',
+        'Whimavera is a free, personalized kids’ birthday party planner: magical themes, age-right games, a menu, budget, timeline and shopping list in about two minutes.',
       image: shareImage('home'),
       imageAlt: ownPhotos.homeHero.alt,
       ld: [ORG, { '@type': 'WebSite', '@id': `${SITE.url}/#website`, name: SITE.name, alternateName: 'Whimavera Birthday Party Planner', url: `${SITE.url}/`, publisher: { '@id': ORG['@id'] } }],
@@ -184,9 +190,8 @@ export function render() {
   pages.push({
     head: head({
       path: GUIDE_PATH,
-      title: 'How to Plan a Kids’ Birthday Party: Checklist & Budget',
-      description:
-        'A step-by-step guide to planning a kids’ birthday party at home: choosing a theme, a realistic budget, games by age, a party-day timeline and a planning checklist.',
+      title: GUIDES.planning.title,
+      description: GUIDES.planning.description,
       image: shareImage('guide'),
       imageAlt: 'Planning a child’s birthday party',
       type: 'article',
@@ -230,6 +235,140 @@ export function render() {
     ),
     lastmod: today,
   })
+
+  // ---------- Evergreen guides built from every theme's data
+  const allGuides = [GUIDES.planning, ...AGE_GUIDES, GUIDES.activities, GUIDES.diy, GUIDES.budget]
+  const relatedTo = (path) => allGuides.filter((g) => g.path !== path).map((g) => ({ path: g.path, label: g.label }))
+  const guidePage = ({ g, crumbs, body }) => ({
+    head: head({
+      path: g.path,
+      title: g.title,
+      description: g.description,
+      image: shareImage('guide'),
+      imageAlt: 'Planning a child’s birthday party',
+      type: 'article',
+      ld: [
+        ORG,
+        breadcrumbLd(crumbs),
+        {
+          '@type': 'Article',
+          headline: g.h1 || g.label,
+          description: g.description,
+          image: [shareImage('guide')],
+          author: { '@id': ORG['@id'] },
+          publisher: { '@id': ORG['@id'] },
+          datePublished: SITE.published,
+          dateModified: today,
+          mainEntityOfPage: absolute(g.path),
+        },
+      ],
+    }),
+    body,
+    lastmod: today,
+  })
+  const guideCrumbs = (g) => [HOME_CRUMB, { name: g.label, path: g.path }]
+  const activityPool = all.flatMap((d) =>
+    d.plan.games.map((g) => {
+      const meta = d.catalog.activities.find((a) => a.id === g.id)
+      return { g, theme: d.theme, seo: d.seo, meta, cost: costRange(meta?.cost, { guests: GUESTS }) }
+    }),
+  )
+
+  for (const g of AGE_GUIDES) {
+    // Best fits for this age: the range must include the group's middle,
+    // ranked by how close the activity's own sweet spot is. Many activities
+    // suit 3–10, so ranking keeps each age guide distinct.
+    const center = (g.min + g.max) / 2
+    const fit = ({ meta }) => Math.abs((meta.ages.min + meta.ages.max) / 2 - center) + (meta.ages.max - meta.ages.min) / 20
+    const ranked = activityPool
+      .filter(({ meta }) => meta?.ages && meta.ages.min <= center && meta.ages.max >= center)
+      .sort((x, y) => fit(x) - fit(y))
+    const pick = (calm) => ranked.filter((a) => (a.g.energy === 'Calm') === calm).slice(0, 8)
+    const activities = [...pick(false), ...pick(true)]
+    const fits = all.filter((d) => (d.theme.ages || []).some((a) => +a.split('-')[0] <= g.max && +a.split('-')[1] >= g.min))
+    const crumbs = guideCrumbs(g)
+    pages.push(
+      guidePage({
+        g,
+        crumbs,
+        body: renderToString(
+          <AgeGuidePage p={{ guide: g, crumbs, activities, themes: fits.map((d) => ({ theme: d.theme, seo: d.seo, photo: d.theme.photos?.card })), related: relatedTo(g.path) }} />,
+        ),
+      }),
+    )
+  }
+
+  {
+    const g = GUIDES.activities
+    const crumbs = guideCrumbs(g)
+    const used = new Set()
+    const groups = ACTIVITY_TYPES.map((t) => {
+      const items = activityPool.filter((a) => (a.g.kinds || [])[0] === t.kind && !used.has(a) && used.add(a))
+      return { ...t, items }
+    })
+    // Anything whose first kind isn't listed goes to its best match.
+    const rest = activityPool.filter((a) => !used.has(a))
+    for (const a of rest) (groups.find((t) => (a.g.kinds || []).includes(t.kind)) || groups[groups.length - 1]).items.push(a)
+    pages.push(
+      guidePage({
+        g,
+        crumbs,
+        body: renderToString(
+          <ActivitiesHubPage
+            p={{
+              crumbs,
+              total: activityPool.length,
+              indoor: activityPool.filter((a) => a.meta?.space === 'small').length,
+              groups: groups.filter((t) => t.items.length),
+              ages: AGE_GUIDES,
+              related: relatedTo(g.path),
+            }}
+          />,
+        ),
+      }),
+    )
+  }
+
+  {
+    const g = GUIDES.diy
+    const crumbs = guideCrumbs(g)
+    const items = all.flatMap((d) =>
+      d.plan.diy.map((p) => ({ d: p, theme: d.theme, seo: d.seo, cost: linesCost(linesForDiy({ ...p, id: slugify(p.name) })) })),
+    )
+    pages.push(guidePage({ g, crumbs, body: renderToString(<DiyHubPage p={{ crumbs, items, related: relatedTo(g.path) }} />) }))
+  }
+
+  {
+    const g = GUIDES.budget
+    const crumbs = guideCrumbs(g)
+    const costs = themes.map((t) => {
+      const at = (budget, mode) => {
+        const answers = { ...liveEventType.defaultAnswers, theme: t.id, guestCount: GUESTS, budget, budgetMode: mode }
+        const plan = buildPlan(liveEventType, answers)
+        return derivePlan(plan, buildCatalog(plan, catalogMetaByTheme[t.id]), answers).estimate.range
+      }
+      return { theme: t, seo: all.find((d) => d.theme.id === t.id).seo, lean: at(1, 'limit'), full: at(null, 'all') }
+    })
+    const free = activityPool.filter((a) => a.cost && a.cost[1] === 0)
+    pages.push(
+      guidePage({
+        g,
+        crumbs,
+        body: renderToString(
+          <BudgetGuidePage
+            p={{
+              crumbs,
+              costs,
+              free,
+              split: defaultBudget,
+              saves: all.flatMap((d) => d.plan.substitutions || []).filter((x, i, a) => a.findIndex((y) => y.for === x.for) === i),
+              related: relatedTo(g.path),
+            }}
+          />,
+        ),
+      }),
+    )
+  }
 
   // 404
   pages.push({

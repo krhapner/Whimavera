@@ -137,5 +137,139 @@ export function seoFor(theme, plan) {
 /** URL path of a theme's public page. */
 export const themePath = (theme) => `/themes/${THEME_SEO[theme.id]?.slug || `${theme.id}-birthday`}/`
 
+
+// ---------------------------------------------------------------- guides
+
 /** The planning guide's URL. */
 export const GUIDE_PATH = '/guides/how-to-plan-a-kids-birthday-party/'
+
+/**
+ * Evergreen guides. Each is built from the theme data (activities, ages,
+ * DIY projects, costs), so it grows with every new theme; the copy here
+ * is the hand-written framing.
+ */
+export const GUIDES = {
+  planning: {
+    path: GUIDE_PATH,
+    label: 'How to plan a kids’ birthday party',
+    title: 'How to Plan a Kids’ Birthday Party: Checklist & Budget | Whimavera',
+    description:
+      'A step-by-step guide to planning a kids’ birthday party at home: choosing a theme, a realistic budget, games by age, a party-day timeline and a planning checklist.',
+  },
+  activities: {
+    path: '/guides/birthday-party-games-and-activities/',
+    label: 'Birthday party games & activities',
+    title: 'Kids’ Birthday Party Games & Activities by Type and Age | Whimavera',
+    description:
+      'Kids’ birthday party games and activities sorted by type — crafts, active games, treasure hunts, science and quiet play — with ages, timings and indoor ideas.',
+  },
+  diy: {
+    path: '/guides/diy-birthday-decorations/',
+    label: 'DIY birthday decorations & crafts',
+    title: 'DIY Kids’ Birthday Decorations & Party Crafts | Whimavera',
+    description:
+      'DIY birthday party decorations and crafts for kids’ parties, with materials, step-by-step instructions, time needed and typical cost for each project.',
+  },
+  budget: {
+    path: '/guides/birthday-party-on-a-budget/',
+    label: 'Kids’ birthday party on a budget',
+    title: 'Kids’ Birthday Party Ideas on a Budget | Whimavera',
+    description:
+      'Budget-friendly kids’ birthday party ideas: what a party really costs per theme, free games, homemade swaps and how to split a party budget.',
+  },
+}
+
+/** Age guides, one page per age group. `ages` matches activity age ranges. */
+export const AGE_GUIDES = [
+  {
+    id: 'toddlers',
+    min: 1,
+    max: 2,
+    path: '/guides/first-birthday-party-ideas/',
+    label: 'First & second birthday party ideas',
+    h1: 'First and second birthday party ideas',
+    title: 'First & Second Birthday Party Ideas for Toddlers | Whimavera',
+    description:
+      'Gentle first and second birthday party ideas: toddler-friendly activities, food cut small, nap-friendly timing and a party plan the grown-ups enjoy too.',
+    intro: [
+      'At one and two, the party is really for the grown-ups who love your child — and that is fine. The birthday child will be happiest with familiar faces, a soft place to sit, and things to touch, scoop and chase.',
+      'Keep it short (about 90 minutes), plan around nap time, and choose activities that need no rules at all: bubbles, sensory bins, a parachute to lift together.',
+    ],
+    tips: [
+      'Invite parents to stay — toddlers need their grown-up close, and it doubles your helpers.',
+      'Cut grapes and cherry tomatoes into quarters lengthwise and skip whole nuts and popcorn for under-fours.',
+      'Have a quiet corner with board books and cushions for a guest who needs a break.',
+    ],
+  },
+  {
+    id: '3-5',
+    min: 3,
+    max: 5,
+    path: '/guides/birthday-party-ideas-for-3-to-5-year-olds/',
+    label: 'Birthday party ideas for 3, 4 and 5 year olds',
+    h1: 'Birthday party ideas for 3, 4 and 5 year olds',
+    title: 'Birthday Party Ideas & Games for 3, 4 & 5 Year Olds | Whimavera',
+    description:
+      'Birthday party games and activities for 3, 4 and 5 year olds — simple crafts, hunts and movement games — plus how long the party should be and themes they love.',
+    intro: [
+      'Preschoolers love a party with a story: they are fairies for the afternoon, or paleontologists, or pirates. They can follow simple instructions and play together, but attention spans are short — ten to fifteen minutes per activity is plenty.',
+      'Plan for about two hours, alternate something calm with something active, and give every guest a thing to make or find that they can carry home.',
+    ],
+    tips: [
+      'Show, don’t explain: do the first step of a craft yourself while they watch.',
+      'Avoid games where children are “out” — preschoolers would rather keep playing than win.',
+      'Have an extra adult for every five or six children, especially for messy or water activities.',
+    ],
+  },
+  {
+    id: '6-8',
+    min: 6,
+    max: 8,
+    path: '/guides/birthday-party-ideas-for-6-to-8-year-olds/',
+    label: 'Birthday party ideas for 6, 7 and 8 year olds',
+    h1: 'Birthday party ideas for 6, 7 and 8 year olds',
+    title: 'Birthday Party Ideas & Games for 6, 7 & 8 Year Olds | Whimavera',
+    description:
+      'Birthday party ideas for 6, 7 and 8 year olds: team games, treasure hunts, science activities and crafts with real results, plus party themes that fit.',
+    intro: [
+      'Six to eight is the golden age of the themed party. Children this age can play in teams, follow a treasure map, wait their turn for a volcano to erupt, and they care about doing a craft properly.',
+      'Two to two and a half hours works well. Plan two bigger activities, one running game and a calm finish while parents arrive.',
+    ],
+    tips: [
+      'Give hunts and digs a little challenge — clues to read, or a map to follow — so they don’t finish in two minutes.',
+      'Science activities like volcanoes and ice eggs land especially well at this age; do them outside on a tray.',
+      'Let the birthday child help plan: choosing between two themes keeps it theirs without endless options.',
+    ],
+  },
+  {
+    id: '9-12',
+    min: 9,
+    max: 12,
+    path: '/guides/birthday-party-ideas-for-9-to-12-year-olds/',
+    label: 'Birthday party ideas for 9 to 12 year olds',
+    h1: 'Birthday party ideas for 9 to 12 year olds',
+    title: 'Birthday Party Ideas for 9, 10, 11 & 12 Year Olds | Whimavera',
+    description:
+      'Birthday party ideas for tweens aged 9 to 12: activities that don’t feel babyish, evening and glow parties, crafts worth keeping, and themes older kids enjoy.',
+    intro: [
+      'Older children want a party that feels grown up: something to make that is actually good, a bit of independence, and time to just hang out with friends. A smaller guest list usually works better than inviting the whole class.',
+      'An early-evening party, with the lights low for glow games or stargazing, feels special at this age without needing a venue.',
+    ],
+    tips: [
+      'Ask your child which friends and which activities — tweens have strong opinions, and that is half the fun.',
+      'Choose crafts with a finished piece they would keep: a galaxy jar, a planter, a proper journal.',
+      'Leave unstructured time; free time with friends is part of the party for this age.',
+    ],
+  },
+]
+
+/** Activity types for the games & activities hub, in display order. */
+export const ACTIVITY_TYPES = [
+  { kind: 'crafts', title: 'Crafts to make and take home' },
+  { kind: 'active', title: 'Active party games' },
+  { kind: 'hunts', title: 'Treasure hunts and scavenger hunts' },
+  { kind: 'science', title: 'Science and sensory activities' },
+  { kind: 'cooking', title: 'Cooking and decorating' },
+  { kind: 'pretend', title: 'Pretend play and dress-up' },
+  { kind: 'quiet', title: 'Calm and quiet activities' },
+]

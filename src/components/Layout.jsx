@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Sparkle } from './ui.jsx'
 import { birthdayThemes } from '../data/birthday/themes.js'
-import { themePath, GUIDE_PATH } from '../seo/content.js'
+import { themePath, GUIDE_PATH, GUIDES, AGE_GUIDES } from '../seo/content.js'
 import { AMAZON } from '../config/affiliate.js'
 
 // `route` items are planner screens (hash routes on the home page); `href`
@@ -84,6 +84,14 @@ export function Footer({ base = '' }) {
             {birthdayThemes.map((t) => (
               <a key={t.id} href={themePath(t)}>
                 {t.name}
+              </a>
+            ))}
+          </div>
+          <div>
+            <h4>Party guides</h4>
+            {[...AGE_GUIDES, GUIDES.activities, GUIDES.diy, GUIDES.budget].map((g) => (
+              <a key={g.path} href={g.path}>
+                {g.label}
               </a>
             ))}
           </div>

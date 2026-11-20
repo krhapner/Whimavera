@@ -4664,3 +4664,93 @@ a.theme-card {
 .not-found .lede {
   margin: 14px 0 26px;
 }
+.guide-page--wide {
+  max-width: 1200px;
+}
+.guide-page--wide > .lede,
+.guide-page--wide > p,
+.guide-page--wide .tip-list,
+.guide-page--wide .save-list,
+.guide-page--wide .guide-table {
+  max-width: 820px;
+}
+.guide-page .act-grid {
+  margin-top: 18px;
+}
+.guide-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 26px;
+}
+.guide-toc a {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  text-decoration: none;
+}
+.guide-related {
+  margin-top: clamp(32px, 5vw, 56px);
+}
+.guide-related ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  padding: 0;
+  list-style: none;
+}
+.guide-related a,
+.act-card__note a,
+.diy-item__from a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--blush);
+  text-underline-offset: 3px;
+}
+.diy-item h2.display-3 {
+  margin: 0;
+}
+.diy-item h3 {
+  margin: 14px 0 6px;
+  font: 500 12px/1.2 var(--sans);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.home-faq {
+  max-width: 820px;
+}
+.home-faq h3 {
+  margin: 24px 0 6px;
+}
+.home-faq p {
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+.guide-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  padding: 0;
+  list-style: none;
+}
+.guide-links a,
+.theme-page .lede a,
+.theme-page .section > p a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--blush);
+  text-underline-offset: 3px;
+}
+.home-faq p a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--blush);
+  text-underline-offset: 3px;
+}
+h1.eyebrow {
+  line-height: 1.4;
+}
