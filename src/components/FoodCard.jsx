@@ -66,7 +66,7 @@ export default function FoodCard({ item, theme, index = 0, onOpen, inList, inPla
         </div>
       </button>
       <div className="act-card__foot">
-        {item.recipe && <ShopSuppliesButton kind="food" id={item.id} title={item.recipe?.title || item.name} label="Shop ingredients" />}
+        <ShopSuppliesButton kind="food" id={item.id} title={item.recipe?.title || item.name} label="Shop ingredients" />
         {onToggle && <PlanToggle inPlan={inPlan} onToggle={onToggle} label={item.recipe?.title || item.name} onPeek={onPeek} />}
       </div>
     </article>

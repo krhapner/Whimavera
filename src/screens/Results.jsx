@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Scene from '../components/Scene.jsx'
 import ZoneExplorer from '../components/ZoneExplorer.jsx'
 import ActivityCard from '../components/ActivityCard.jsx'
@@ -11,6 +11,8 @@ import PlanBar, { BudgetLine, BudgetMini, rangeText } from '../components/PlanBa
 import { itemCost, lovesOf, fitFor, FIT_ORDER } from '../lib/recommend.js'
 import { Button, Eyebrow, SectionHeading, Palette, Tag, Sparkle, money } from '../components/ui.jsx'
 import { ageLabel } from '../lib/buildPlan.js'
+import { buildPartyShopping } from '../lib/shopping.js'
+import { PartyShopBar, useShop } from '../components/Shopping.jsx'
 
 const TIER_LABEL = { budget: 'Budget', classic: 'Classic', premium: 'Premium' }
 
@@ -58,6 +60,11 @@ export default function Results({
   const { theme, answers } = plan
   const pal = theme.palette
   const { rec, sel, ctx } = derived
+  // Everything to buy for the plan as it stands, for the sticky shop bar.
+  const shop = useShop()
+  const party = useMemo(() => buildPartyShopping(plan, catalog, sel, { adults }), [plan, catalog, sel, adults])
+  const toBuy = party.groups.flatMap((g) => g.required).filter((i) => !shop?.owned.has(i.id) && !shop?.skipped.has(i.id))
+
   // Budget preview while hovering "Add to plan": { name, fit }.
   const [peek, setPeek] = useState(null)
   const peekFor = (name, fit) => (on) => setPeek(on && fit?.total ? { name, fit } : null)
@@ -165,7 +172,7 @@ export default function Results({
               <li>{LABELS.prepTime[answers.prepTime]}</li>
             </ul>
             <div className="hero__actions">
-              <Button as="a" href="#shop">Shop or DIY this plan</Button>
+              <Button as="a" href="#shop">Shop this party</Button>
               <Button as="a" href="#plan" variant="ghost">Retake the quiz</Button>
             </div>
           </div>
@@ -200,6 +207,9 @@ export default function Results({
                 {label}
               </button>
             ))}
+            <a className="section-nav__shop" href="#shop">
+              Shop the list <span aria-hidden="true">→</span>
+            </a>
           </div>
           <BudgetMini derived={derived} peek={peek} />
         </div>
@@ -462,6 +472,7 @@ export default function Results({
           </div>
         </div>
       </section>
+      <PartyShopBar count={toBuy.length} />
     </div>
   )
 }

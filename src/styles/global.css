@@ -3320,30 +3320,160 @@ svg {
   color: var(--ink-faint);
   line-height: 1.5;
 }
+/* "Shop supplies" on every card: a filled pill with what there is to buy
+   and what it typically costs, so shopping is never hidden. */
 .shop-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 4px;
+  gap: 10px;
+  padding: 9px 16px 9px 14px;
   border: 0;
-  background: none;
-  color: var(--ink-soft);
-  font: 500 13px/1 var(--sans);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--ivory);
+  font: 500 13px/1.15 var(--sans);
   letter-spacing: 0.03em;
+  text-align: left;
   cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: var(--blush);
-  text-underline-offset: 4px;
+  transition: background 0.25s, transform 0.25s var(--ease);
 }
 .shop-trigger:hover {
-  color: var(--ink);
-  text-decoration-color: var(--blush-deep);
+  background: #4a403a;
+  transform: translateY(-1px);
 }
 .shop-trigger:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
-  border-radius: 4px;
 }
+.shop-trigger svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+.shop-trigger__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.shop-trigger__meta {
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: rgba(251, 247, 240, 0.78);
+}
+
+/* Section nav: a shop link that stands apart from the in-page jumps. */
+.section-nav__shop {
+  flex: none;
+  margin-left: auto;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--ivory);
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.section-nav__shop:hover {
+  background: #4a403a;
+}
+
+/* Sticky "Shop your party" bar along the bottom of the plan. */
+.shop-bar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(640px, calc(100% - 32px));
+  margin: 24px auto 16px;
+  padding: 12px 14px 12px 12px;
+  border-radius: 999px;
+  background: rgba(47, 41, 37, 0.96);
+  color: var(--ivory);
+  text-decoration: none;
+  box-shadow: 0 14px 34px -14px rgba(40, 30, 25, 0.55);
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s var(--ease);
+}
+.shop-bar:hover {
+  transform: translateY(-2px);
+}
+.shop-bar:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.shop-bar__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--blush);
+  color: var(--ink);
+}
+.shop-bar__icon svg {
+  width: 18px;
+  height: 18px;
+}
+.shop-bar__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 13px;
+  color: rgba(251, 247, 240, 0.8);
+}
+.shop-bar__text strong {
+  font: 500 16px/1.1 var(--sans);
+  color: var(--ivory);
+}
+.shop-bar__go {
+  flex: none;
+  margin-left: auto;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--ivory);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+@media (max-width: 520px) {
+  .shop-bar__go {
+    padding: 10px 12px;
+  }
+  .shop-bar__go-label {
+    display: none;
+  }
+  .shop-bar__wide {
+    display: none;
+  }
+}
+
+/* Typical cost on each shopping row and in a shopping panel header. */
+.supply__est {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.supply__est.is-home {
+  color: var(--ink-faint);
+}
+.supply__home {
+  color: var(--sage-deep);
+}
+.sheet__total {
+  margin: 12px 0 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.sheet__total strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
 .act-card__foot {
   justify-content: space-between;
   align-items: center;

@@ -11,6 +11,7 @@ import Results from './screens/Results.jsx'
 import ShopDiy from './screens/ShopDiy.jsx'
 import Premium from './screens/Premium.jsx'
 import { ShopContext, SupplySheet } from './components/Shopping.jsx'
+import { shoppingForItem, typicalTotal } from './lib/shopping.js'
 
 const STORAGE_KEY = 'whimavera.answers.v1'
 const PLANNED_KEY = 'whimavera.hasPlan.v1'
@@ -150,6 +151,9 @@ export default function App() {
   const [skippedIds, setSkippedIds] = usePersisted('whimavera.skipped.v1', [])
   const [shopRequest, setShopRequest] = useState(null)
   const flip = (setter) => (id) => setter((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
+  // Item count and typical cost for any card's "Shop" button, computed once
+  // per plan (the same lists the shopping panel shows).
+  const summaryCache = useMemo(() => new Map(), [plan, catalog, adults])
   const shopApi = useMemo(
     () => ({
       owned: new Set(ownedIds),
@@ -157,9 +161,17 @@ export default function App() {
       toggleOwned: flip(setOwnedIds),
       toggleSkipped: flip(setSkippedIds),
       openShop: (req) => setShopRequest(req),
+      summary: (kind, id, variantId) => {
+        const key = `${kind}:${id}:${variantId || ''}`
+        if (!summaryCache.has(key)) {
+          const r = shoppingForItem(plan, catalog, kind, id, { variantId, adults })
+          summaryCache.set(key, { count: r.required.length + r.optional.length, range: typicalTotal(r.required)?.range || null })
+        }
+        return summaryCache.get(key)
+      },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ownedIds, skippedIds],
+    [ownedIds, skippedIds, summaryCache],
   )
 
   const startWithTheme = (themeId) => {

@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo } from 'react'
 import GuideShell from './GuideShell.jsx'
 import { PlanToggle } from './PlanBar.jsx'
 import { AMAZON } from '../config/affiliate.js'
-import { CATEGORY_LABEL, shoppingForItem } from '../lib/shopping.js'
+import { CATEGORY_LABEL, shoppingForItem, typicalTotal } from '../lib/shopping.js'
 import { amazonSearchUrl } from '../lib/amazon.js'
 
 /**
@@ -35,10 +35,18 @@ export function AffiliateDisclosure({ className = '' }) {
   return <p className={`affiliate-note ${className}`}>{AMAZON.disclosure} Links open Amazon search results unless a specific product is shown.</p>
 }
 
-/** Button that opens the shopping panel for one item, from any card. */
+/** "$12–20" from a [low, high] range. */
+export const money = (r) => (!r ? '' : r[0] === r[1] ? `$${r[0]}` : `$${r[0]}–${r[1]}`)
+
+/**
+ * Button that opens the shopping panel for one item, from any card. Shows
+ * how many things there are to buy and what they typically cost, so the
+ * shopping is visible at a glance.
+ */
 export function ShopSuppliesButton({ kind, id, title, variantId, label = 'Shop supplies' }) {
   const shop = useShop()
   if (!shop) return null
+  const s = shop.summary?.(kind, id, variantId)
   return (
     <button
       type="button"
@@ -49,8 +57,42 @@ export function ShopSuppliesButton({ kind, id, title, variantId, label = 'Shop s
         shop.openShop({ kind, id, title, variantId })
       }}
     >
-      <BagIcon /> {label}
+      <BagIcon />
+      <span className="shop-trigger__text">
+        <span className="shop-trigger__label">{label}</span>
+        {s?.count > 0 && (
+          <span className="shop-trigger__meta">
+            {s.count} {s.count === 1 ? 'item' : 'items'}
+            {s.range && s.range[1] > 0 ? ` · ${money(s.range)}` : ''}
+          </span>
+        )}
+      </span>
     </button>
+  )
+}
+
+/**
+ * Sticky "shop your party" bar: how much there is to buy for the whole plan
+ * and one tap to the combined list. Hidden when there is nothing to buy.
+ */
+export function PartyShopBar({ count }) {
+  if (!count) return null
+  return (
+    <a className="shop-bar no-print" href="#shop">
+      <span className="shop-bar__icon" aria-hidden="true">
+        <BagIcon />
+      </span>
+      <span className="shop-bar__text">
+        <strong>Shop your party</strong>
+        <span>
+          {count} {count === 1 ? 'thing' : 'things'} to buy<span className="shop-bar__wide">, each linked to Amazon</span>
+        </span>
+      </span>
+      <span className="shop-bar__go">
+        <span className="shop-bar__go-label">See the list </span>
+        <span aria-hidden="true">→</span>
+      </span>
+    </a>
   )
 }
 
@@ -76,10 +118,12 @@ export function SupplyRow({ item, showCategory = true, onSkip, skipped = false, 
           <span className="supply__name">{item.name}</span>
           <span className="supply__qty">{item.label}</span>
         </div>
+        {item.est && <p className={`supply__est ${item.supply?.household ? 'is-home' : ''}`}>Typically {money(item.est.map(Math.round))}</p>}
         <div className="supply__meta">
           {showCategory && <span>{CATEGORY_LABEL[item.category] || 'Supplies'}</span>}
           {item.reusable && <span>Reusable</span>}
           {item.optional && <span>Optional</span>}
+          {item.supply?.household && <span className="supply__home">Most homes have this</span>}
           {isProduct && <span className="supply__pick">Whimavera pick</span>}
           {showSources && item.sources?.length > 0 && <span className="supply__for">For {item.sources.join(', ')}</span>}
         </div>
@@ -174,6 +218,7 @@ export function SupplySheet({ request, plan, catalog, derived, planApi, onClose,
         : null
   const titleId = `shop-title-${kind}-${id}`
   const total = result.required.length + result.optional.length
+  const typical = typicalTotal(result.required)?.range
 
   return (
     <GuideShell crumb={KIND_CRUMB[kind] || 'Shop supplies'} titleId={titleId} returnFocusSelector={`[data-shop="${kind}-${id}"]`} onClose={onClose}>
@@ -186,6 +231,12 @@ export function SupplySheet({ request, plan, catalog, derived, planApi, onClose,
             ? `Everything you’ll need${plan.guests ? `, with quantities for ${plan.guests} guests` : ''}. Tick off what you already have.`
             : 'A detailed supply list for this one is on its way.'}
         </p>
+        {typical && typical[1] > 0 && (
+          <p className="sheet__total">
+            <strong>Typically {money(typical)}</strong> for everything required
+            <span> · each item opens on Amazon</span>
+          </p>
+        )}
         {section && (
           <div className="sheet__plan">
             <span className="fine">
@@ -230,7 +281,7 @@ export function SupplySheet({ request, plan, catalog, derived, planApi, onClose,
       )}
       <section className="guide__section">
         <KitList kits={result.kits} />
-        {kind === 'food' && <p className="fine">Fresh produce, dairy and eggs are on your food shopping list — best bought locally.</p>}
+        {kind === 'food' && <p className="fine">Fresh produce, dairy and bread link to Amazon’s grocery search — or take the list to your local store.</p>}
         <AffiliateDisclosure />
       </section>
     </GuideShell>
